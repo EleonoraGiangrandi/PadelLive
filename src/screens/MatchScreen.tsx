@@ -17,6 +17,8 @@ import { StatsResponse, StatsGroup, Match } from '../types/models';
 import { useAppTheme, AppTheme } from '../utils/theme';
 import { Badge } from '../components/common/Badge';
 import { StatBar } from '../components/match/StatBar';
+import { LiveStreamButton } from '../components/match/LiveStreamButton';
+import { WhereToWatchModal } from '../components/common/WhereToWatchModal';
 import { decodeHtmlEntities } from '../utils/text';
 import { useTranslation } from '../i18n';
 
@@ -34,6 +36,7 @@ export const MatchScreen: React.FC = () => {
   const { match, event, day } = route.params;
 
   const [activeTab, setActiveTab] = useState<TabKey>('match');
+  const [showWhereToWatch, setShowWhereToWatch] = useState(false);
 
   // Recupera gli aggiornamenti live del tabellone partite ogni 10 secondi
   const { data: dayMatches } = useQuery<Match[]>({
@@ -301,6 +304,13 @@ export const MatchScreen: React.FC = () => {
           ) : null}
         </View>
 
+        {/* Live Stream & Where to Watch Actions */}
+        <LiveStreamButton
+          event={event}
+          match={currentMatch}
+          onPressWhereToWatch={() => setShowWhereToWatch(true)}
+        />
+
         {/* Set Selector Tabs */}
         <View style={styles.tabsRow}>
           {[
@@ -418,6 +428,11 @@ export const MatchScreen: React.FC = () => {
           </View>
         )}
       </ScrollView>
+
+      <WhereToWatchModal
+        visible={showWhereToWatch}
+        onClose={() => setShowWhereToWatch(false)}
+      />
     </View>
   );
 };

@@ -131,6 +131,15 @@ export const translations = {
       deselectAll: 'Clear All',
       apply: 'Apply Filters',
     },
+    streaming: {
+      watchLive: 'Watch Live',
+      watchLiveYouTube: 'Watch Live on YouTube',
+      watchLiveRedBull: 'Watch on Red Bull TV',
+      whereToWatch: 'Where to watch',
+      whereToWatchTitle: 'Where to Watch Padel',
+      officialStream: 'Official Live Stream',
+      liveBadge: 'LIVE STREAM',
+    },
     common: {
       loading: 'Loading...',
       error: 'Error',
@@ -269,6 +278,15 @@ export const translations = {
       deselectAll: 'Deseleziona Tutti',
       apply: 'Applica Filtri',
     },
+    streaming: {
+      watchLive: 'Guarda Live',
+      watchLiveYouTube: 'Guarda Live su YouTube',
+      watchLiveRedBull: 'Guarda su Red Bull TV',
+      whereToWatch: 'Dove vedere',
+      whereToWatchTitle: 'Dove vedere il Padel',
+      officialStream: 'Diretta Streaming Ufficiale',
+      liveBadge: 'DIRETTA',
+    },
     common: {
       loading: 'Caricamento...',
       error: 'Errore',
@@ -406,6 +424,15 @@ export const translations = {
       selectAll: 'Seleccionar Todos',
       deselectAll: 'Deseleccionar Todos',
       apply: 'Aplicar Filtros',
+    },
+    streaming: {
+      watchLive: 'Ver en Directo',
+      watchLiveYouTube: 'Ver en Directo en YouTube',
+      watchLiveRedBull: 'Ver en Red Bull TV',
+      whereToWatch: 'Dónde ver',
+      whereToWatchTitle: 'Dónde ver el Pádel',
+      officialStream: 'Emisión Oficial en Directo',
+      liveBadge: 'EN DIRECTO',
     },
     common: {
       loading: 'Cargando...',

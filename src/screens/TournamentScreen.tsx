@@ -27,6 +27,7 @@ import { getHdImageUrl } from '../components/tournament/TournamentCard';
 import { evaluateMatches, matchHasFavoritePlayer } from '../services/matchTrackerService';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useTranslation } from '../i18n';
+import { WhereToWatchModal } from '../components/common/WhereToWatchModal';
 
 type RouteProps = RouteProp<RootStackParamList, 'Tournament'>;
 type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -60,6 +61,7 @@ export const TournamentScreen: React.FC = () => {
   const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [showWhereToWatch, setShowWhereToWatch] = useState(false);
 
   const isMatchFollowed = useNotificationStore((s) => s.isMatchFollowed);
 
@@ -207,12 +209,21 @@ export const TournamentScreen: React.FC = () => {
           )}
 
           {!isSearching && (
-            <TouchableOpacity
-              onPress={() => setIsSearching(true)}
-              style={styles.searchButton}
-            >
-              <Text style={styles.searchIcon}>🔍</Text>
-            </TouchableOpacity>
+            <View style={styles.topBarRight}>
+              <TouchableOpacity
+                onPress={() => setShowWhereToWatch(true)}
+                style={styles.watchHeaderBtn}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Text style={styles.watchHeaderIcon}>📺</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setIsSearching(true)}
+                style={styles.searchButton}
+              >
+                <Text style={styles.searchIcon}>🔍</Text>
+              </TouchableOpacity>
+            </View>
           )}
         </View>
 
@@ -236,10 +247,21 @@ export const TournamentScreen: React.FC = () => {
               <Text style={styles.heroDates} numberOfLines={1}>
                 📅 {formatDateRange(event.startDate, event.endDate)}
               </Text>
-              <View style={styles.heroCategoryPill}>
-                <Text style={styles.heroCategoryText}>
-                  {event.type.replace(/^fip-/, '').replace(/-/g, ' ').toUpperCase()}
-                </Text>
+              <View style={styles.heroBadgeRow}>
+                <View style={styles.heroCategoryPill}>
+                  <Text style={styles.heroCategoryText}>
+                    {event.type.replace(/^fip-/, '').replace(/-/g, ' ').toUpperCase()}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.heroWatchPill}
+                  onPress={() => setShowWhereToWatch(true)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.heroWatchText}>
+                    📺 {language === 'it' ? 'Dove vedere' : language === 'es' ? 'Dónde ver' : 'Where to watch'}
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -341,6 +363,11 @@ export const TournamentScreen: React.FC = () => {
             }
           />
         )}
+
+        <WhereToWatchModal
+          visible={showWhereToWatch}
+          onClose={() => setShowWhereToWatch(false)}
+        />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -380,6 +407,17 @@ const createStyles = (theme: AppTheme) =>
     headerSubtitle: {
       ...theme.typography.caption,
       color: theme.colors.textSecondary,
+    },
+    topBarRight: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+    watchHeaderBtn: {
+      padding: 6,
+    },
+    watchHeaderIcon: {
+      fontSize: 18,
     },
     searchButton: {
       padding: 6,
@@ -457,6 +495,11 @@ const createStyles = (theme: AppTheme) =>
       fontWeight: '600',
       marginBottom: 8,
     },
+    heroBadgeRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
     heroCategoryPill: {
       alignSelf: 'flex-start',
       backgroundColor: theme.colors.cardSecondary,
@@ -465,6 +508,21 @@ const createStyles = (theme: AppTheme) =>
       borderRadius: 6,
       borderWidth: 1,
       borderColor: theme.colors.cardBorder,
+    },
+    heroWatchPill: {
+      alignSelf: 'flex-start',
+      backgroundColor: theme.colors.cardSecondary,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: 6,
+      borderWidth: 1,
+      borderColor: theme.colors.cardBorder,
+    },
+    heroWatchText: {
+      ...theme.typography.caption,
+      fontSize: 10,
+      color: theme.colors.textSecondary,
+      fontWeight: '600',
     },
     heroCategoryText: {
       ...theme.typography.badge,

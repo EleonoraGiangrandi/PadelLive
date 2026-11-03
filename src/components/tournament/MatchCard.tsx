@@ -181,11 +181,19 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
         </View>
       </View>
 
-      {match.courtName ? (
-        <Text style={styles.courtName} numberOfLines={1}>
-          📍 {decodeHtmlEntities(match.courtName)}
-        </Text>
-      ) : null}
+      <View style={styles.metaRow}>
+        {match.courtName ? (
+          <Text style={styles.courtName} numberOfLines={1}>
+            📍 {decodeHtmlEntities(match.courtName)}
+          </Text>
+        ) : <View />}
+
+        {isOngoing && (
+          <View style={styles.liveStreamBadge}>
+            <Text style={styles.liveStreamText}>▶ LIVE STREAM</Text>
+          </View>
+        )}
+      </View>
 
       <View style={styles.teamsContainer}>
         {renderTeamRow(match.team1, match.team1.isWinner, isP1Fav, isP2Fav)}
@@ -256,8 +264,29 @@ const createStyles = (theme: AppTheme) =>
     courtName: {
       ...theme.typography.caption,
       color: theme.colors.textMuted,
-      marginBottom: 8,
       fontSize: 11,
+      flex: 1,
+    },
+    metaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 8,
+      gap: 8,
+    },
+    liveStreamBadge: {
+      backgroundColor: '#E6000018',
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+      borderRadius: 4,
+      borderWidth: 1,
+      borderColor: '#E6000044',
+    },
+    liveStreamText: {
+      color: '#E60000',
+      fontSize: 9,
+      fontWeight: '700',
+      letterSpacing: 0.4,
     },
     scheduledText: {
       ...theme.typography.caption,
