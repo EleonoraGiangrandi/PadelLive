@@ -37,7 +37,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ visible, onClose }) => {
         <View style={styles.dialog}>
           <View style={styles.logoRow}>
             <Trophy size={26} color={theme.colors.primary} />
-            <Text style={styles.logo}>PadelPulse</Text>
+            <Text style={styles.logo}>PadelLive</Text>
           </View>
           <Text style={styles.title}>{t.aboutModal.title}</Text>
           <Text style={styles.version}>{t.aboutModal.version}</Text>

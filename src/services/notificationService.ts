@@ -23,7 +23,7 @@ export async function setupNotifications(): Promise<void> {
 
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
-        name: 'Partite Live PadelPulse',
+        name: 'Partite Live PadelLive',
         importance: AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#00e676',

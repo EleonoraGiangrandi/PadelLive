@@ -7,7 +7,7 @@ export const translations = {
       settings: 'Profile',
     },
     home: {
-      appName: 'PadelPulse',
+      appName: 'PadelLive',
       subtitle: 'Tournaments & Live Scores',
       searchPlaceholder: 'Search tournament or location...',
       ongoing: 'In Progress',
@@ -111,7 +111,7 @@ export const translations = {
       languageTitle: 'Application Language',
       languageDesc: 'Select your preferred language',
       aboutSection: 'ABOUT',
-      aboutTitle: 'PadelPulse v2.0.0',
+      aboutTitle: 'PadelLive v2.0.0',
       aboutSub: 'Live scores, calendars and official rankings directly from FIP & Premier Padel.',
     },
     aboutModal: {
@@ -178,7 +178,7 @@ export const translations = {
       settings: 'Profilo',
     },
     home: {
-      appName: 'PadelPulse',
+      appName: 'PadelLive',
       subtitle: 'Tornei & Punteggi Live',
       searchPlaceholder: 'Cerca torneo o città...',
       ongoing: 'In corso',
@@ -282,7 +282,7 @@ export const translations = {
       languageTitle: 'Lingua dell\'applicazione',
       languageDesc: 'Seleziona la tua lingua preferita',
       aboutSection: 'INFORMAZIONI',
-      aboutTitle: 'PadelPulse v2.0.0',
+      aboutTitle: 'PadelLive v2.0.0',
       aboutSub: 'Punteggi live, calendari e classifiche ufficiali direttamente da FIP & Premier Padel.',
     },
     aboutModal: {
@@ -349,7 +349,7 @@ export const translations = {
       settings: 'Perfil',
     },
     home: {
-      appName: 'PadelPulse',
+      appName: 'PadelLive',
       subtitle: 'Torneos y Marcadores en Directo',
       searchPlaceholder: 'Buscar torneo o ciudad...',
       ongoing: 'En curso',
@@ -453,7 +453,7 @@ export const translations = {
       languageTitle: 'Idioma de la aplicación',
       languageDesc: 'Selecciona tu idioma preferido',
       aboutSection: 'ACERCA DE',
-      aboutTitle: 'PadelPulse v2.0.0',
+      aboutTitle: 'PadelLive v2.0.0',
       aboutSub: 'Marcadores en directo, calendarios y clasificaciones oficiales de la FIP y Premier Padel.',
     },
     aboutModal: {

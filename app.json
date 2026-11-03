@@ -1,17 +1,19 @@
 {
   "expo": {
-    "name": "PadelPulse - Padel Live Scores",
-    "slug": "padel-pulse",
+    "name": "PadelLive",
+    "slug": "padel-live",
     "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "net.padelscore.app"
+      "bundleIdentifier": "net.padellive.app"
     },
     "android": {
-      "package": "net.padelscore.app",
+      "package": "net.padellive.app",
+      "versionCode": 1,
+      "permissions": ["POST_NOTIFICATIONS"],
       "adaptiveIcon": {
         "backgroundColor": "#0d1117",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -19,6 +21,14 @@
       },
       "predictiveBackGestureEnabled": false
     },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "color": "#00e676"
+        }
+      ]
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
     }
