@@ -12,6 +12,16 @@ import {
   Keyboard,
   ActivityIndicator,
 } from 'react-native';
+import {
+  ChevronLeft,
+  Search,
+  X,
+  Tv,
+  MapPin,
+  Calendar,
+  Trophy,
+  Star,
+} from 'lucide-react-native';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
@@ -27,6 +37,7 @@ import { getHdImageUrl } from '../components/tournament/TournamentCard';
 import { evaluateMatches, matchHasFavoritePlayer } from '../services/matchTrackerService';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { useFavoritesStore } from '../store/useFavoritesStore';
+import { usePreferencesStore } from '../store/usePreferencesStore';
 import { useTranslation } from '../i18n';
 import { WhereToWatchModal } from '../components/common/WhereToWatchModal';
 import { TournamentDrawView } from '../components/tournament/TournamentDrawView';
@@ -64,7 +75,7 @@ export const TournamentScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [showWhereToWatch, setShowWhereToWatch] = useState(false);
-  const [viewMode, setViewMode] = useState<'matches' | 'draw'>('matches');
+  const { tournamentViewMode: viewMode, setTournamentViewMode: setViewMode } = usePreferencesStore();
 
   const isMatchFollowed = useNotificationStore((s) => s.isMatchFollowed);
   const favorites = useFavoritesStore((s) => s.favorites);
@@ -180,7 +191,7 @@ export const TournamentScreen: React.FC = () => {
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
-            <Text style={styles.backText}>‹</Text>
+            <ChevronLeft size={24} color={theme.colors.textPrimary} />
           </TouchableOpacity>
 
           {isSearching ? (
@@ -198,7 +209,7 @@ export const TournamentScreen: React.FC = () => {
                 onPress={handleCloseSearch}
                 style={styles.searchClose}
               >
-                <Text style={styles.searchCloseText}>✕</Text>
+                <X size={18} color={theme.colors.textMuted} />
               </TouchableOpacity>
             </View>
           ) : (
@@ -206,9 +217,12 @@ export const TournamentScreen: React.FC = () => {
               <Text style={styles.headerTitle} numberOfLines={1}>
                 {event.name}
               </Text>
-              <Text style={styles.headerSubtitle} numberOfLines={1}>
-                📍 {event.location} • {formatDateRange(event.startDate, event.endDate)}
-              </Text>
+              <View style={styles.headerSubtitleRow}>
+                <MapPin size={11} color={theme.colors.textSecondary} />
+                <Text style={styles.headerSubtitle} numberOfLines={1}>
+                  {event.location} • {formatDateRange(event.startDate, event.endDate)}
+                </Text>
+              </View>
             </View>
           )}
 
@@ -218,14 +232,16 @@ export const TournamentScreen: React.FC = () => {
                 onPress={() => setShowWhereToWatch(true)}
                 style={styles.watchHeaderBtn}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                accessibilityLabel="Dove vedere"
               >
-                <Text style={styles.watchHeaderIcon}>📺</Text>
+                <Tv size={20} color={theme.colors.primary} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setIsSearching(true)}
                 style={styles.searchButton}
+                accessibilityLabel="Cerca"
               >
-                <Text style={styles.searchIcon}>🔍</Text>
+                <Search size={20} color={theme.colors.textPrimary} />
               </TouchableOpacity>
             </View>
           )}
@@ -245,12 +261,18 @@ export const TournamentScreen: React.FC = () => {
               <Text style={styles.heroTournamentName} numberOfLines={2}>
                 {event.name}
               </Text>
-              <Text style={styles.heroLocation} numberOfLines={1}>
-                📍 {event.location || 'Location TBA'}
-              </Text>
-              <Text style={styles.heroDates} numberOfLines={1}>
-                📅 {formatDateRange(event.startDate, event.endDate)}
-              </Text>
+              <View style={styles.heroMetaRow}>
+                <MapPin size={12} color={theme.colors.textSecondary} />
+                <Text style={styles.heroLocation} numberOfLines={1}>
+                  {event.location || 'Location TBA'}
+                </Text>
+              </View>
+              <View style={styles.heroMetaRow}>
+                <Calendar size={12} color={theme.colors.primary} />
+                <Text style={styles.heroDates} numberOfLines={1}>
+                  {formatDateRange(event.startDate, event.endDate)}
+                </Text>
+              </View>
               <View style={styles.heroBadgeRow}>
                 <View style={styles.heroCategoryPill}>
                   <Text style={styles.heroCategoryText}>
@@ -262,8 +284,9 @@ export const TournamentScreen: React.FC = () => {
                   onPress={() => setShowWhereToWatch(true)}
                   activeOpacity={0.7}
                 >
+                  <Tv size={12} color={theme.colors.primary} />
                   <Text style={styles.heroWatchText}>
-                    📺 {language === 'it' ? 'Dove vedere' : language === 'es' ? 'Dónde ver' : 'Where to watch'}
+                    {language === 'it' ? 'Dove vedere' : language === 'es' ? 'Dónde ver' : 'Where to watch'}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -278,9 +301,15 @@ export const TournamentScreen: React.FC = () => {
             onPress={() => setViewMode('matches')}
             activeOpacity={0.8}
           >
-            <Text style={[styles.viewModeBtnText, viewMode === 'matches' && styles.viewModeBtnTextActive]}>
-              📅 {t.draw.matchesView}
-            </Text>
+            <View style={styles.viewModeBtnContent}>
+              <Calendar
+                size={14}
+                color={viewMode === 'matches' ? '#FFFFFF' : theme.colors.textSecondary}
+              />
+              <Text style={[styles.viewModeBtnText, viewMode === 'matches' && styles.viewModeBtnTextActive]}>
+                {t.draw.matchesView}
+              </Text>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -288,9 +317,15 @@ export const TournamentScreen: React.FC = () => {
             onPress={() => setViewMode('draw')}
             activeOpacity={0.8}
           >
-            <Text style={[styles.viewModeBtnText, viewMode === 'draw' && styles.viewModeBtnTextActive]}>
-              🏆 {t.draw.drawView}
-            </Text>
+            <View style={styles.viewModeBtnContent}>
+              <Trophy
+                size={14}
+                color={viewMode === 'draw' ? '#FFFFFF' : theme.colors.textSecondary}
+              />
+              <Text style={[styles.viewModeBtnText, viewMode === 'draw' && styles.viewModeBtnTextActive]}>
+                {t.draw.drawView}
+              </Text>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -344,14 +379,21 @@ export const TournamentScreen: React.FC = () => {
                 style={[styles.genderChip, onlyFavorites && styles.genderChipFavActive]}
                 onPress={() => setOnlyFavorites(!onlyFavorites)}
               >
-                <Text
-                  style={[
-                    styles.genderChipText,
-                    onlyFavorites && styles.genderChipFavTextActive,
-                  ]}
-                >
-                  ⭐ {t.tournament.favorites}
-                </Text>
+                <View style={styles.genderChipFavContent}>
+                  <Star
+                    size={12}
+                    color={onlyFavorites ? '#000000' : '#f59e0b'}
+                    fill={onlyFavorites ? '#000000' : '#f59e0b'}
+                  />
+                  <Text
+                    style={[
+                      styles.genderChipText,
+                      onlyFavorites && styles.genderChipFavTextActive,
+                    ]}
+                  >
+                    {t.tournament.favorites}
+                  </Text>
+                </View>
               </TouchableOpacity>
             </View>
 
@@ -390,7 +432,7 @@ export const TournamentScreen: React.FC = () => {
                 }
                 ListEmptyComponent={
                   <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyIcon}>🎾</Text>
+                    <Trophy size={42} color={theme.colors.textMuted} style={{ marginBottom: 12 }} />
                     <Text style={styles.emptyTitle}>
                       {onlyFavorites
                         ? (language === 'it'
@@ -460,6 +502,11 @@ const createStyles = (theme: AppTheme) =>
     viewModeBtnActive: {
       backgroundColor: theme.colors.primary,
     },
+    viewModeBtnContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
     viewModeBtnText: {
       ...theme.typography.caption,
       color: theme.colors.textSecondary,
@@ -485,6 +532,12 @@ const createStyles = (theme: AppTheme) =>
     headerTitle: {
       ...theme.typography.title,
       fontSize: 16,
+    },
+    headerSubtitleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      marginTop: 2,
     },
     headerSubtitle: {
       ...theme.typography.caption,
@@ -564,23 +617,28 @@ const createStyles = (theme: AppTheme) =>
       lineHeight: 22,
       marginBottom: 4,
     },
+    heroMetaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      marginBottom: 3,
+    },
     heroLocation: {
       ...theme.typography.body,
       fontSize: 13,
       color: theme.colors.textSecondary,
-      marginBottom: 2,
     },
     heroDates: {
       ...theme.typography.caption,
       fontSize: 12,
       color: theme.colors.primary,
       fontWeight: '600',
-      marginBottom: 8,
     },
     heroBadgeRow: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: 8,
+      marginTop: 4,
     },
     heroCategoryPill: {
       alignSelf: 'flex-start',
@@ -592,6 +650,9 @@ const createStyles = (theme: AppTheme) =>
       borderColor: theme.colors.cardBorder,
     },
     heroWatchPill: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
       alignSelf: 'flex-start',
       backgroundColor: theme.colors.cardSecondary,
       paddingHorizontal: 8,
@@ -627,6 +688,11 @@ const createStyles = (theme: AppTheme) =>
       paddingVertical: 5,
       borderRadius: theme.borderRadius.full,
       backgroundColor: theme.colors.cardSecondary,
+    },
+    genderChipFavContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
     },
     genderChipActive: {
       backgroundColor: theme.colors.primary,

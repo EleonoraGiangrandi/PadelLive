@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
+import { ChevronLeft } from 'lucide-react-native';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
@@ -18,7 +19,6 @@ import { RootStackParamList } from '../types/navigation';
 import { useAppTheme, AppTheme } from '../utils/theme';
 import { decodeHtmlEntities } from '../utils/text';
 import { FavoriteStar } from '../components/common/FavoriteStar';
-import { useFavoritesStore } from '../store/useFavoritesStore';
 import { useTranslation } from '../i18n';
 
 type RouteProps = RouteProp<RootStackParamList, 'Profile'>;
@@ -67,7 +67,7 @@ export const ProfileScreen: React.FC = () => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backButtonText}>←</Text>
+          <ChevronLeft size={24} color={theme.colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.topBarTitle}>{t.profile.title}</Text>
         <FavoriteStar player={player} size={24} style={styles.topBarStar} />

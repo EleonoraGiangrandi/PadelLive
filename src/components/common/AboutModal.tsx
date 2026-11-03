@@ -5,8 +5,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TouchableWithoutFeedback,
 } from 'react-native';
+import { Trophy, ShieldCheck } from 'lucide-react-native';
 import { useAppTheme, AppTheme } from '../../utils/theme';
 import { useTranslation } from '../../i18n';
 
@@ -35,7 +35,10 @@ export const AboutModal: React.FC<AboutModalProps> = ({ visible, onClose }) => {
         />
 
         <View style={styles.dialog}>
-          <Text style={styles.logo}>🎾 PadelPulse</Text>
+          <View style={styles.logoRow}>
+            <Trophy size={26} color={theme.colors.primary} />
+            <Text style={styles.logo}>PadelPulse</Text>
+          </View>
           <Text style={styles.title}>{t.aboutModal.title}</Text>
           <Text style={styles.version}>{t.aboutModal.version}</Text>
 
@@ -48,7 +51,10 @@ export const AboutModal: React.FC<AboutModalProps> = ({ visible, onClose }) => {
 
           <Text style={styles.desc}>{t.aboutModal.desc}</Text>
 
-          <Text style={styles.securityNote}>🔒 {t.aboutModal.privacy}</Text>
+          <View style={styles.securityRow}>
+            <ShieldCheck size={14} color={theme.colors.textMuted} style={{ marginRight: 6 }} />
+            <Text style={styles.securityNote}>{t.aboutModal.privacy}</Text>
+          </View>
 
           <TouchableOpacity style={styles.closeBtn} onPress={onClose} activeOpacity={0.8}>
             <Text style={styles.closeBtnText}>{t.aboutModal.close}</Text>
@@ -84,12 +90,17 @@ const createStyles = (theme: AppTheme) =>
       padding: theme.spacing.xl,
       alignItems: 'center',
     },
+    logoRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      marginBottom: 8,
+    },
     logo: {
       ...theme.typography.title,
       color: theme.colors.textPrimary,
       fontSize: 26,
       fontWeight: '800',
-      marginBottom: 8,
     },
     title: {
       ...theme.typography.title,
@@ -139,12 +150,17 @@ const createStyles = (theme: AppTheme) =>
       marginBottom: theme.spacing.md,
       fontSize: 13,
     },
+    securityRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: theme.spacing.lg,
+    },
     securityNote: {
       ...theme.typography.caption,
       color: theme.colors.textMuted,
       textAlign: 'center',
       lineHeight: 16,
-      marginBottom: theme.spacing.lg,
     },
     closeBtn: {
       backgroundColor: theme.colors.primary,

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import { Tv, X, Info } from 'lucide-react-native';
 import { useAppTheme, AppTheme } from '../../utils/theme';
 import { useTranslation } from '../../i18n';
 import { BROADCASTERS_BY_COUNTRY } from '../../services/streamingService';
@@ -44,9 +45,12 @@ export const WhereToWatchModal: React.FC<WhereToWatchModalProps> = ({ visible, o
 
           <View style={styles.header}>
             <View style={styles.headerTitles}>
-              <Text style={styles.title}>
-                {language === 'it' ? '📺 Dove Vedere i Match' : language === 'es' ? '📺 Dónde Ver los Partidos' : '📺 Where to Watch Matches'}
-              </Text>
+              <View style={styles.titleRow}>
+                <Tv size={18} color={theme.colors.primary} style={{ marginRight: 6 }} />
+                <Text style={styles.title}>
+                  {language === 'it' ? 'Dove Vedere i Match' : language === 'es' ? 'Dónde Ver los Partidos' : 'Where to Watch Matches'}
+                </Text>
+              </View>
               <Text style={styles.subtitle}>
                 {language === 'it'
                   ? 'Canali TV e streaming ufficiali per paese'
@@ -56,7 +60,7 @@ export const WhereToWatchModal: React.FC<WhereToWatchModalProps> = ({ visible, o
               </Text>
             </View>
             <TouchableOpacity onPress={onClose} style={styles.closeButton} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Text style={styles.closeText}>✕</Text>
+              <X size={20} color={theme.colors.textMuted} />
             </TouchableOpacity>
           </View>
 
@@ -89,12 +93,13 @@ export const WhereToWatchModal: React.FC<WhereToWatchModalProps> = ({ visible, o
             ))}
 
             <View style={styles.footerNote}>
+              <Info size={14} color={theme.colors.primary} style={{ marginRight: 6, marginTop: 2 }} />
               <Text style={styles.footerNoteText}>
                 {language === 'it'
-                  ? 'ℹ️ Le prime fasi sono sempre trasmesse su YouTube. Dai quarti Premier Padel le partite sono su Red Bull TV e broadcaster TV autorizzati.'
+                  ? 'Le prime fasi sono sempre trasmesse su YouTube. Dai quarti Premier Padel le partite sono su Red Bull TV e broadcaster TV autorizzati.'
                   : language === 'es'
-                  ? 'ℹ️ Las primeras fases se emiten siempre en YouTube. A partir de cuartos de Premier Padel se transmiten en Red Bull TV y canales autorizados.'
-                  : 'ℹ️ Early rounds always stream on YouTube. From Premier Padel quarterfinals onwards, matches are on Red Bull TV & licensed broadcasters.'}
+                  ? 'Las primeras fases se emiten siempre en YouTube. A partir de cuartos de Premier Padel se transmiten en Red Bull TV y canales autorizados.'
+                  : 'Early rounds always stream on YouTube. From Premier Padel quarterfinals onwards, matches are on Red Bull TV & licensed broadcasters.'}
               </Text>
             </View>
           </ScrollView>
@@ -146,6 +151,10 @@ const createStyles = (theme: AppTheme) =>
     headerTitles: {
       flex: 1,
       marginRight: 10,
+    },
+    titleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     title: {
       ...theme.typography.title,
@@ -229,14 +238,16 @@ const createStyles = (theme: AppTheme) =>
       marginTop: 2,
     },
     footerNote: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
       paddingVertical: theme.spacing.md,
       paddingHorizontal: theme.spacing.sm,
       marginTop: theme.spacing.xs,
     },
     footerNoteText: {
+      flex: 1,
       ...theme.typography.caption,
       color: theme.colors.textSecondary,
-      textAlign: 'center',
       lineHeight: 16,
       fontSize: 11,
     },

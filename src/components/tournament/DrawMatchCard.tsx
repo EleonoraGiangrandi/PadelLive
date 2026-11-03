@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Star, Check } from 'lucide-react-native';
 import { DrawMatch, DrawTeam } from '../../services/drawService';
 import { useAppTheme, AppTheme } from '../../utils/theme';
 import { decodeHtmlEntities } from '../../utils/text';
@@ -46,7 +47,9 @@ export const DrawMatchCard: React.FC<DrawMatchCardProps> = ({ match, onPress }) 
             >
               {p1Name}
             </Text>
-            {isP1Fav && <Text style={styles.favStar}>★</Text>}
+            {isP1Fav && (
+              <Star size={11} color="#f59e0b" fill="#f59e0b" style={styles.favStar} />
+            )}
           </View>
 
           {/* Giocatore 2 */}
@@ -65,7 +68,9 @@ export const DrawMatchCard: React.FC<DrawMatchCardProps> = ({ match, onPress }) 
               >
                 {p2Name}
               </Text>
-              {isP2Fav && <Text style={styles.favStar}>★</Text>}
+              {isP2Fav && (
+                <Star size={11} color="#f59e0b" fill="#f59e0b" style={styles.favStar} />
+              )}
             </View>
           ) : null}
         </View>
@@ -97,7 +102,7 @@ export const DrawMatchCard: React.FC<DrawMatchCardProps> = ({ match, onPress }) 
             ))
           ) : isWinner ? (
             <View style={styles.winnerBadge}>
-              <Text style={styles.checkIcon}>✓</Text>
+              <Check size={11} color="#FFFFFF" strokeWidth={3} />
             </View>
           ) : null}
         </View>
@@ -118,7 +123,8 @@ export const DrawMatchCard: React.FC<DrawMatchCardProps> = ({ match, onPress }) 
         </Text>
         {hasFav && (
           <View style={styles.favBadge}>
-            <Text style={styles.favBadgeText}>⭐ PREFERITI</Text>
+            <Star size={10} color="#f59e0b" fill="#f59e0b" style={{ marginRight: 3 }} />
+            <Text style={styles.favBadgeText}>PREFERITI</Text>
           </View>
         )}
       </View>
@@ -159,6 +165,8 @@ const createStyles = (theme: AppTheme) =>
       letterSpacing: 0.5,
     },
     favBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
       backgroundColor: '#f59e0b22',
       paddingHorizontal: 6,
       paddingVertical: 1,

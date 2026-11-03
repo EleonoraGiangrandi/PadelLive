@@ -7,6 +7,15 @@ import {
   Switch,
   TouchableOpacity,
 } from 'react-native';
+import {
+  Bell,
+  Star,
+  Clock,
+  Globe,
+  Check,
+  Moon,
+  Trophy,
+} from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme, AppTheme } from '../utils/theme';
 import { useNotificationStore } from '../store/useNotificationStore';
@@ -48,7 +57,8 @@ export const SettingsScreen: React.FC = () => {
       >
         {/* SEZIONE 1: NOTIFICHE */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>🔔 {t.settings.notificationsSection}</Text>
+          <Bell size={16} color={theme.colors.primary} />
+          <Text style={styles.sectionTitle}>{t.settings.notificationsSection}</Text>
         </View>
 
         <View style={styles.card}>
@@ -73,7 +83,10 @@ export const SettingsScreen: React.FC = () => {
               {/* Only Favorites */}
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
-                  <Text style={styles.settingLabel}>⭐ {t.settings.onlyFavorites}</Text>
+                  <View style={styles.labelWithIcon}>
+                    <Star size={14} color="#f59e0b" fill="#f59e0b" />
+                    <Text style={styles.settingLabel}>{t.settings.onlyFavorites}</Text>
+                  </View>
                   <Text style={styles.settingDesc}>
                     {t.settings.onlyFavoritesDesc}
                   </Text>
@@ -138,7 +151,10 @@ export const SettingsScreen: React.FC = () => {
 
               {/* Promemoria Pre-Match */}
               <View style={styles.settingColumn}>
-                <Text style={styles.settingLabel}>⏰ {t.settings.reminder}</Text>
+                <View style={styles.labelWithIcon}>
+                  <Clock size={14} color={theme.colors.primary} />
+                  <Text style={styles.settingLabel}>{t.settings.reminder}</Text>
+                </View>
                 <Text style={styles.settingDesc}>{t.settings.reminderDesc}</Text>
                 <View style={styles.chipRow}>
                   {reminderOptions.map((mins) => {
@@ -163,7 +179,8 @@ export const SettingsScreen: React.FC = () => {
 
         {/* SEZIONE 2: LINGUA */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>🌐 {t.settings.languageSection}</Text>
+          <Globe size={16} color={theme.colors.primary} />
+          <Text style={styles.sectionTitle}>{t.settings.languageSection}</Text>
         </View>
 
         <View style={styles.card}>
@@ -185,7 +202,7 @@ export const SettingsScreen: React.FC = () => {
                   </View>
                   {isSelected && (
                     <View style={styles.checkBadge}>
-                      <Text style={styles.checkText}>✓</Text>
+                      <Check size={13} color="#FFFFFF" strokeWidth={3} />
                     </View>
                   )}
                 </TouchableOpacity>
@@ -196,7 +213,8 @@ export const SettingsScreen: React.FC = () => {
 
         {/* SEZIONE 3: TEMA & ASPETTO */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>🎨 {t.settings.appearanceSection}</Text>
+          <Moon size={16} color={theme.colors.primary} />
+          <Text style={styles.sectionTitle}>{t.settings.appearanceSection}</Text>
         </View>
 
         <View style={styles.card}>
@@ -218,7 +236,10 @@ export const SettingsScreen: React.FC = () => {
 
         {/* SEZIONE 4: INFORMAZIONI APP */}
         <View style={styles.aboutFooter}>
-          <Text style={styles.aboutTitle}>🎾 {t.settings.aboutTitle}</Text>
+          <View style={styles.aboutTitleRow}>
+            <Trophy size={15} color={theme.colors.primary} />
+            <Text style={styles.aboutTitle}>{t.settings.aboutTitle}</Text>
+          </View>
           <Text style={styles.aboutSub}>{t.settings.aboutSub}</Text>
         </View>
       </ScrollView>
@@ -257,6 +278,9 @@ const createStyles = (theme: AppTheme) =>
       paddingBottom: theme.spacing.xl * 2,
     },
     sectionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
       marginTop: theme.spacing.md,
       marginBottom: theme.spacing.xs,
       paddingHorizontal: 4,
@@ -287,6 +311,11 @@ const createStyles = (theme: AppTheme) =>
     settingInfo: {
       flex: 1,
       marginRight: theme.spacing.md,
+    },
+    labelWithIcon: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
     },
     settingLabel: {
       ...theme.typography.body,
@@ -368,6 +397,11 @@ const createStyles = (theme: AppTheme) =>
       alignItems: 'center',
       marginTop: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
+    },
+    aboutTitleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
     },
     aboutTitle: {
       ...theme.typography.subtitle,

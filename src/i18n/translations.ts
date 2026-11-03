@@ -1,5 +1,3 @@
-import { AppLanguage } from './types';
-
 export const translations = {
   en: {
     tabs: {

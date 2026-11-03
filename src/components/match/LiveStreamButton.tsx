@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { Play, Zap, Tv, ExternalLink } from 'lucide-react-native';
 import { FipEvent, Match } from '../../types/models';
 import { getStreamInfo, openLiveStream } from '../../services/streamingService';
 import { useAppTheme, AppTheme } from '../../utils/theme';
@@ -84,9 +85,11 @@ export const LiveStreamButton: React.FC<LiveStreamButtonProps> = ({
             onPress={handlePressStream}
             activeOpacity={0.8}
           >
-            <Text style={styles.compactStreamIcon}>
-              {isYouTube ? '▶' : '⚡'}
-            </Text>
+            {isYouTube ? (
+              <Play size={10} color="#FFFFFF" fill="#FFFFFF" />
+            ) : (
+              <Zap size={10} color="#FFFFFF" fill="#FFFFFF" />
+            )}
             <Text style={styles.compactStreamText} numberOfLines={1}>
               {isYouTube ? 'YouTube Live' : 'Red Bull TV'}
             </Text>
@@ -99,8 +102,9 @@ export const LiveStreamButton: React.FC<LiveStreamButtonProps> = ({
             onPress={onPressWhereToWatch}
             activeOpacity={0.7}
           >
+            <Tv size={11} color={theme.colors.textSecondary} style={{ marginRight: 4 }} />
             <Text style={styles.compactWhereText}>
-              {language === 'it' ? '📺 Dove vedere' : language === 'es' ? '📺 Dónde ver' : '📺 Where to watch'}
+              {language === 'it' ? 'Dove vedere' : language === 'es' ? 'Dónde ver' : 'Where to watch'}
             </Text>
           </TouchableOpacity>
         )}
@@ -121,7 +125,11 @@ export const LiveStreamButton: React.FC<LiveStreamButtonProps> = ({
         >
           <View style={styles.btnLeft}>
             <View style={styles.playIconCircle}>
-              <Text style={styles.playIconChar}>{isYouTube ? '▶' : '⚡'}</Text>
+              {isYouTube ? (
+                <Play size={15} color="#FFFFFF" fill="#FFFFFF" style={{ marginLeft: 2 }} />
+              ) : (
+                <Zap size={16} color="#FFFFFF" fill="#FFFFFF" />
+              )}
             </View>
             <View style={styles.btnTextCol}>
               <Text style={styles.mainTitle}>{platformTitle}</Text>
@@ -134,8 +142,9 @@ export const LiveStreamButton: React.FC<LiveStreamButtonProps> = ({
           </View>
           <View style={styles.openPill}>
             <Text style={styles.openPillText}>
-              {language === 'it' ? 'APRI' : language === 'es' ? 'ABRIR' : 'OPEN'} ↗
+              {language === 'it' ? 'APRI' : language === 'es' ? 'ABRIR' : 'OPEN'}
             </Text>
+            <ExternalLink size={11} color="#FFFFFF" style={{ marginLeft: 3 }} />
           </View>
         </TouchableOpacity>
       )}
@@ -146,8 +155,9 @@ export const LiveStreamButton: React.FC<LiveStreamButtonProps> = ({
           onPress={onPressWhereToWatch}
           activeOpacity={0.7}
         >
+          <Tv size={13} color={theme.colors.textSecondary} style={{ marginRight: 6 }} />
           <Text style={styles.whereToWatchText}>
-            📺 {language === 'it' ? 'Dove vedere le partite nel tuo paese' : language === 'es' ? 'Dónde ver los partidos en tu país' : 'Where to watch matches in your country'}
+            {language === 'it' ? 'Dove vedere le partite nel tuo paese' : language === 'es' ? 'Dónde ver los partidos en tu país' : 'Where to watch matches in your country'}
           </Text>
         </TouchableOpacity>
       )}
@@ -219,6 +229,8 @@ const createStyles = (theme: AppTheme) =>
       fontWeight: '500',
     },
     openPill: {
+      flexDirection: 'row',
+      alignItems: 'center',
       backgroundColor: 'rgba(255, 255, 255, 0.2)',
       paddingVertical: 5,
       paddingHorizontal: 10,
@@ -231,6 +243,8 @@ const createStyles = (theme: AppTheme) =>
       letterSpacing: 0.5,
     },
     whereToWatchLink: {
+      flexDirection: 'row',
+      alignItems: 'center',
       alignSelf: 'center',
       marginTop: 8,
       paddingVertical: 4,
@@ -268,6 +282,8 @@ const createStyles = (theme: AppTheme) =>
       fontWeight: '700',
     },
     compactWhereBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
       paddingVertical: 5,
       paddingHorizontal: 8,
       borderRadius: 8,

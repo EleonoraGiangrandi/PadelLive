@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Linking,
 } from 'react-native';
+import { Newspaper } from 'lucide-react-native';
 import { useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getNewsArticles } from '../api/news';
@@ -130,7 +131,7 @@ export const NewsScreen: React.FC = () => {
           }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyIcon}>📰</Text>
+              <Newspaper size={44} color={theme.colors.textMuted} style={{ marginBottom: 12 }} />
               <Text style={styles.emptyTitle}>Nessuna notizia disponibile</Text>
               <Text style={styles.emptySubtitle}>
                 Trascina verso il basso per ricaricare le notizie più recenti

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle } from 'react-native';
+import { TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
+import { Star } from 'lucide-react-native';
 import { useFavoritesStore, normalizePlayerName, matchesPlayerName } from '../../store/useFavoritesStore';
 import { PlayerRanking, FavoritePlayer } from '../../types/models';
 
@@ -47,9 +48,11 @@ export const FavoriteStar: React.FC<FavoriteStarProps> = ({
       hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       style={[styles.btn, style]}
     >
-      <Text style={[styles.starIcon, { fontSize: size, color: isFav ? '#f59e0b' : '#64748b' }]}>
-        {isFav ? '★' : '☆'}
-      </Text>
+      <Star
+        size={size}
+        color={isFav ? '#f59e0b' : '#64748b'}
+        fill={isFav ? '#f59e0b' : 'none'}
+      />
     </TouchableOpacity>
   );
 };
@@ -59,8 +62,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 4,
-  },
-  starIcon: {
-    lineHeight: 22,
   },
 });

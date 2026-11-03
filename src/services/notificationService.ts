@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
+import { AndroidImportance } from 'expo-notifications';
 import { Match, FipEvent } from '../types/models';
 
 const CHANNEL_ID = 'padel_live_matches';
@@ -23,7 +24,7 @@ export async function setupNotifications(): Promise<void> {
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
         name: 'Partite Live PadelPulse',
-        importance: Notifications.AndroidImportance.MAX,
+        importance: AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#00e676',
         enableVibrate: true,

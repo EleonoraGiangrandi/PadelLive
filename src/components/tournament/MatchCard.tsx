@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Star, Bell, MapPin, Play } from 'lucide-react-native';
 import { Match, Team } from '../../types/models';
 import { useAppTheme, AppTheme } from '../../utils/theme';
 import { Badge } from '../common/Badge';
@@ -94,7 +95,9 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
             >
               {p1Name}
             </Text>
-            {isFirstPlayerFav && <Text style={styles.favStar}>★</Text>}
+            {isFirstPlayerFav && (
+              <Star size={11} color="#f59e0b" fill="#f59e0b" style={styles.favStar} />
+            )}
           </View>
           <View style={styles.playerItem}>
             {team.player2.flag ? (
@@ -109,13 +112,15 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
             >
               {p2Name}
             </Text>
-            {isSecondPlayerFav && <Text style={styles.favStar}>★</Text>}
+            {isSecondPlayerFav && (
+              <Star size={11} color="#f59e0b" fill="#f59e0b" style={styles.favStar} />
+            )}
           </View>
         </View>
 
         {team.isServing ? (
           <View style={styles.servingIndicator}>
-            <Text style={styles.servingBall}>🎾</Text>
+            <View style={styles.servingDot} />
           </View>
         ) : (
           <View style={styles.servingSpacer} />
@@ -163,10 +168,13 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
               toggleFollowMatch(match.matchId);
             }}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityLabel="Segui match"
           >
-            <Text style={[styles.bellText, isFollowed && styles.bellTextActive]}>
-              🔔
-            </Text>
+            <Bell
+              size={15}
+              color={isFollowed ? '#f59e0b' : theme.colors.textMuted}
+              fill={isFollowed ? '#f59e0b' : 'none'}
+            />
           </TouchableOpacity>
 
           {isOngoing ? (
@@ -183,14 +191,18 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
 
       <View style={styles.metaRow}>
         {match.courtName ? (
-          <Text style={styles.courtName} numberOfLines={1}>
-            📍 {decodeHtmlEntities(match.courtName)}
-          </Text>
+          <View style={styles.courtNameRow}>
+            <MapPin size={11} color={theme.colors.textMuted} />
+            <Text style={styles.courtName} numberOfLines={1}>
+              {decodeHtmlEntities(match.courtName)}
+            </Text>
+          </View>
         ) : <View />}
 
         {isOngoing && (
           <View style={styles.liveStreamBadge}>
-            <Text style={styles.liveStreamText}>▶ LIVE STREAM</Text>
+            <Play size={9} color="#E60000" fill="#E60000" style={{ marginRight: 3 }} />
+            <Text style={styles.liveStreamText}>LIVE STREAM</Text>
           </View>
         )}
       </View>
@@ -261,6 +273,12 @@ const createStyles = (theme: AppTheme) =>
       fontWeight: '600',
       flex: 1,
     },
+    courtNameRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 3,
+      flex: 1,
+    },
     courtName: {
       ...theme.typography.caption,
       color: theme.colors.textMuted,
@@ -275,6 +293,8 @@ const createStyles = (theme: AppTheme) =>
       gap: 8,
     },
     liveStreamBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
       backgroundColor: '#E6000018',
       paddingHorizontal: 6,
       paddingVertical: 2,
@@ -333,12 +353,16 @@ const createStyles = (theme: AppTheme) =>
     servingIndicator: {
       width: 22,
       alignItems: 'center',
+      justifyContent: 'center',
     },
     servingSpacer: {
       width: 22,
     },
-    servingBall: {
-      fontSize: 11,
+    servingDot: {
+      width: 7,
+      height: 7,
+      borderRadius: 4,
+      backgroundColor: '#a3e635', // bright vibrant tennis-ball yellow-green
     },
     scoresContainer: {
       flexDirection: 'row',

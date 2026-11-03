@@ -8,6 +8,12 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
+import {
+  ChevronLeft,
+  MapPin,
+  Clock,
+  BarChart2,
+} from 'lucide-react-native';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -129,7 +135,7 @@ export const MatchScreen: React.FC = () => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backButtonText}>←</Text>
+          <ChevronLeft size={24} color={theme.colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.topBarTitle} numberOfLines={1}>
           {event.name}
@@ -156,7 +162,10 @@ export const MatchScreen: React.FC = () => {
           </View>
 
           {currentMatch.courtName ? (
-            <Text style={styles.courtText}>📍 {decodeHtmlEntities(currentMatch.courtName)}</Text>
+            <View style={styles.courtRow}>
+              <MapPin size={11} color={theme.colors.textMuted} />
+              <Text style={styles.courtText}>{decodeHtmlEntities(currentMatch.courtName)}</Text>
+            </View>
           ) : null}
 
           {/* Teams Table */}
@@ -215,7 +224,7 @@ export const MatchScreen: React.FC = () => {
               </View>
 
               {currentMatch.team1.isServing ? (
-                <Text style={styles.servingIcon}>🎾</Text>
+                <View style={styles.servingDot} />
               ) : (
                 <View style={styles.servingPlaceholder} />
               )}
@@ -279,7 +288,7 @@ export const MatchScreen: React.FC = () => {
               </View>
 
               {currentMatch.team2.isServing ? (
-                <Text style={styles.servingIcon}>🎾</Text>
+                <View style={styles.servingDot} />
               ) : (
                 <View style={styles.servingPlaceholder} />
               )}
@@ -299,7 +308,8 @@ export const MatchScreen: React.FC = () => {
 
           {stats?.duration ? (
             <View style={styles.durationRow}>
-              <Text style={styles.durationText}>⏱️ Durata: {stats.duration}</Text>
+              <Clock size={12} color={theme.colors.textSecondary} style={{ marginRight: 4 }} />
+              <Text style={styles.durationText}>Durata: {stats.duration}</Text>
             </View>
           ) : null}
         </View>
@@ -346,7 +356,7 @@ export const MatchScreen: React.FC = () => {
           </View>
         ) : !hasStats ? (
           <View style={styles.statsEmpty}>
-            <Text style={styles.statsEmptyIcon}>📊</Text>
+            <BarChart2 size={38} color={theme.colors.textMuted} style={{ marginBottom: 8 }} />
             <Text style={styles.statsEmptyTitle}>{t.match.stats}</Text>
             <Text style={styles.statsEmptyDesc}>{t.match.noStats}</Text>
           </View>
@@ -504,11 +514,16 @@ const createStyles = (theme: AppTheme) =>
     ...theme.typography.badge,
     color: theme.colors.textMuted,
   },
+  courtRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 10,
+  },
   courtText: {
     ...theme.typography.caption,
     color: theme.colors.textMuted,
     fontSize: 11,
-    marginBottom: 10,
   },
   scoreboardTable: {
     marginTop: 4,
@@ -567,13 +582,15 @@ const createStyles = (theme: AppTheme) =>
     color: theme.colors.textPrimary,
     fontWeight: '700',
   },
-  servingIcon: {
-    width: 20,
-    fontSize: 12,
-    textAlign: 'center',
+  servingDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: '#a3e635',
+    marginHorizontal: 6,
   },
   servingPlaceholder: {
-    width: 20,
+    width: 19,
   },
   setScoreCell: {
     minWidth: 26,
@@ -617,11 +634,13 @@ const createStyles = (theme: AppTheme) =>
     marginVertical: 2,
   },
   durationRow: {
+    flexDirection: 'row',
     marginTop: 10,
     paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: theme.colors.cardBorder,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   durationText: {
     ...theme.typography.caption,

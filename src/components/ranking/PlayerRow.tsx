@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { X } from 'lucide-react-native';
 import { PlayerRanking } from '../../types/models';
 import { useAppTheme, AppTheme } from '../../utils/theme';
 import { decodeHtmlEntities } from '../../utils/text';
@@ -95,7 +96,7 @@ export const PlayerRow: React.FC<PlayerRowProps> = ({
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
           <View style={styles.removeBadge}>
-            <Text style={styles.removeText}>✕</Text>
+            <X size={13} color="#ef4444" strokeWidth={2.5} />
           </View>
         </TouchableOpacity>
       ) : (

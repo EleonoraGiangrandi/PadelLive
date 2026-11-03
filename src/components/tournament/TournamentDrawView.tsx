@@ -11,6 +11,7 @@ import {
   Linking,
   Alert,
 } from 'react-native';
+import { User, FileText, Trophy } from 'lucide-react-native';
 import { useQuery } from '@tanstack/react-query';
 import { FipEvent, Match } from '../../types/models';
 import { fetchTournamentDraw, TournamentDraw, DrawRound } from '../../services/drawService';
@@ -103,14 +104,20 @@ export const TournamentDrawView: React.FC<TournamentDrawViewProps> = ({
             onPress={() => setSelectedGender('men')}
             activeOpacity={0.8}
           >
-            <Text
-              style={[
-                styles.genderTabText,
-                selectedGender === 'men' && styles.genderTabTextActive,
-              ]}
-            >
-              👨 {t.draw.menDraw}
-            </Text>
+            <View style={styles.genderTabBtnContent}>
+              <User
+                size={13}
+                color={selectedGender === 'men' ? '#FFFFFF' : theme.colors.men}
+              />
+              <Text
+                style={[
+                  styles.genderTabText,
+                  selectedGender === 'men' && styles.genderTabTextActive,
+                ]}
+              >
+                {t.draw.menDraw}
+              </Text>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -121,14 +128,20 @@ export const TournamentDrawView: React.FC<TournamentDrawViewProps> = ({
             onPress={() => setSelectedGender('women')}
             activeOpacity={0.8}
           >
-            <Text
-              style={[
-                styles.genderTabText,
-                selectedGender === 'women' && styles.genderTabTextActive,
-              ]}
-            >
-              👩 {t.draw.womenDraw}
-            </Text>
+            <View style={styles.genderTabBtnContent}>
+              <User
+                size={13}
+                color={selectedGender === 'women' ? '#FFFFFF' : theme.colors.women}
+              />
+              <Text
+                style={[
+                  styles.genderTabText,
+                  selectedGender === 'women' && styles.genderTabTextActive,
+                ]}
+              >
+                {t.draw.womenDraw}
+              </Text>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -138,7 +151,10 @@ export const TournamentDrawView: React.FC<TournamentDrawViewProps> = ({
             onPress={handleOpenPdf}
             activeOpacity={0.7}
           >
-            <Text style={styles.pdfBtnText}>📄 {t.draw.downloadPdf}</Text>
+            <View style={styles.pdfBtnContent}>
+              <FileText size={13} color={theme.colors.primary} />
+              <Text style={styles.pdfBtnText}>{t.draw.downloadPdf}</Text>
+            </View>
           </TouchableOpacity>
         ) : null}
       </View>
@@ -202,12 +218,15 @@ export const TournamentDrawView: React.FC<TournamentDrawViewProps> = ({
         </View>
       ) : rounds.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyIcon}>🏆</Text>
+          <Trophy size={42} color={theme.colors.textMuted} style={{ marginBottom: 12 }} />
           <Text style={styles.emptyTitle}>{t.draw.noDrawTitle}</Text>
           <Text style={styles.emptySub}>{t.draw.noDrawSub}</Text>
           {draw?.pdfUrl ? (
             <TouchableOpacity style={styles.pdfEmptyBtn} onPress={handleOpenPdf}>
-              <Text style={styles.pdfEmptyText}>📄 {t.draw.downloadPdf}</Text>
+              <View style={styles.pdfBtnContent}>
+                <FileText size={13} color={theme.colors.primary} />
+                <Text style={styles.pdfEmptyText}>{t.draw.downloadPdf}</Text>
+              </View>
             </TouchableOpacity>
           ) : null}
         </View>
@@ -308,6 +327,11 @@ const createStyles = (theme: AppTheme) =>
     genderTabBtnActive: {
       backgroundColor: theme.colors.primary,
     },
+    genderTabBtnContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 5,
+    },
     genderTabText: {
       ...theme.typography.caption,
       color: theme.colors.textSecondary,
@@ -327,6 +351,11 @@ const createStyles = (theme: AppTheme) =>
       backgroundColor: theme.colors.cardSecondary,
       borderWidth: 1,
       borderColor: theme.colors.cardBorder,
+    },
+    pdfBtnContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 5,
     },
     pdfBtnText: {
       ...theme.typography.caption,

@@ -1,7 +1,8 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Trophy, Users, Newspaper, Settings } from 'lucide-react-native';
 import { BottomTabParamList } from '../types/navigation';
 import { HomeScreen } from '../screens/HomeScreen';
 import { RankingsScreen } from '../screens/RankingsScreen';
@@ -39,7 +40,9 @@ export const BottomTabNavigator: React.FC = () => {
         component={HomeScreen}
         options={{
           tabBarLabel: t.tabs.tournaments,
-          tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>🎾</Text>,
+          tabBarIcon: ({ color, focused }) => (
+            <Trophy size={20} color={color} strokeWidth={focused ? 2.5 : 2} />
+          ),
         }}
       />
       <Tab.Screen
@@ -47,7 +50,9 @@ export const BottomTabNavigator: React.FC = () => {
         component={RankingsScreen}
         options={{
           tabBarLabel: t.tabs.players,
-          tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>🏆</Text>,
+          tabBarIcon: ({ color, focused }) => (
+            <Users size={20} color={color} strokeWidth={focused ? 2.5 : 2} />
+          ),
         }}
       />
       <Tab.Screen
@@ -55,7 +60,9 @@ export const BottomTabNavigator: React.FC = () => {
         component={NewsScreen}
         options={{
           tabBarLabel: t.tabs.news,
-          tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>📰</Text>,
+          tabBarIcon: ({ color, focused }) => (
+            <Newspaper size={20} color={color} strokeWidth={focused ? 2.5 : 2} />
+          ),
         }}
       />
       <Tab.Screen
@@ -63,7 +70,9 @@ export const BottomTabNavigator: React.FC = () => {
         component={SettingsScreen}
         options={{
           tabBarLabel: t.tabs.settings,
-          tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>⚙️</Text>,
+          tabBarIcon: ({ color, focused }) => (
+            <Settings size={20} color={color} strokeWidth={focused ? 2.5 : 2} />
+          ),
         }}
       />
     </Tab.Navigator>
@@ -75,8 +84,5 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700',
     marginTop: 2,
-  },
-  tabIcon: {
-    fontSize: 20,
   },
 });

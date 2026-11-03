@@ -11,6 +11,15 @@ import {
   Keyboard,
   ActivityIndicator,
 } from 'react-native';
+import {
+  Search,
+  SlidersHorizontal,
+  Info,
+  X,
+  Trophy,
+  ArrowUpDown,
+  ChevronDown,
+} from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
@@ -23,23 +32,22 @@ import { isEventFuture, isEventOngoing, isEventPast, parseDate } from '../utils/
 import { TournamentCard } from '../components/tournament/TournamentCard';
 import { FilterModal } from '../components/common/FilterModal';
 import { AboutModal } from '../components/common/AboutModal';
-import { usePreferencesStore, ALL_TOURNAMENT_CATEGORIES } from '../store/usePreferencesStore';
+import { usePreferencesStore, ALL_TOURNAMENT_CATEGORIES, HomeTab } from '../store/usePreferencesStore';
 import { useTranslation } from '../i18n';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
-type StatusTab = 'in_corso' | 'futuri' | 'recenti' | 'tutti';
+type StatusTab = HomeTab;
 
 export const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const insets = useSafeAreaInsets();
-  const { theme, isDark } = useAppTheme();
+  const { theme } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
 
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [isAboutVisible, setIsAboutVisible] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [activeTab, setActiveTab] = useState<StatusTab>('in_corso');
   const [sortAsc, setSortAsc] = useState<boolean>(true);
 
   const {
@@ -47,6 +55,8 @@ export const HomeScreen: React.FC = () => {
     searchQuery,
     setSearchQuery,
     loadPreferences,
+    homeTab: activeTab,
+    setHomeTab: setActiveTab,
   } = usePreferencesStore();
 
   useEffect(() => {
@@ -195,13 +205,16 @@ export const HomeScreen: React.FC = () => {
                 onPress={handleCloseSearch}
                 style={styles.searchClose}
               >
-                <Text style={styles.searchCloseText}>✕</Text>
+                <X size={18} color={theme.colors.textMuted} />
               </TouchableOpacity>
             </View>
           ) : (
             <>
               <View>
-                <Text style={styles.appName}>🎾 {t.home.appName}</Text>
+                <View style={styles.titleRow}>
+                  <Trophy size={18} color={theme.colors.primary} style={styles.titleIcon} />
+                  <Text style={styles.appName}>{t.home.appName}</Text>
+                </View>
                 <Text style={styles.screenSubtitle}>{t.home.subtitle}</Text>
               </View>
 
@@ -211,7 +224,7 @@ export const HomeScreen: React.FC = () => {
                   style={styles.iconButton}
                   accessibilityLabel="Cerca torneo"
                 >
-                  <Text style={styles.actionIcon}>🔍</Text>
+                  <Search size={19} color={theme.colors.textPrimary} />
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -219,7 +232,7 @@ export const HomeScreen: React.FC = () => {
                   style={styles.iconButton}
                   accessibilityLabel="Info app"
                 >
-                  <Text style={styles.actionIcon}>ℹ️</Text>
+                  <Info size={19} color={theme.colors.textPrimary} />
                 </TouchableOpacity>
               </View>
             </>
@@ -278,11 +291,11 @@ export const HomeScreen: React.FC = () => {
             }}
             activeOpacity={0.7}
           >
-            <Text style={styles.categoryMenuIcon}>🏷️</Text>
+            <SlidersHorizontal size={14} color={theme.colors.primary} />
             <Text style={styles.categoryMenuText}>
               Categorie ({selectedCategories.length}/{ALL_TOURNAMENT_CATEGORIES.length})
             </Text>
-            <Text style={styles.categoryMenuArrow}>▾</Text>
+            <ChevronDown size={14} color={theme.colors.textMuted} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -290,7 +303,7 @@ export const HomeScreen: React.FC = () => {
             onPress={() => setSortAsc(!sortAsc)}
             activeOpacity={0.7}
           >
-            <Text style={styles.sortToggleIcon}>{sortAsc ? '↑' : '↓'}</Text>
+            <ArrowUpDown size={14} color={theme.colors.textSecondary} />
             <Text style={styles.sortToggleLabel}>
               {sortAsc ? 'Più vicini' : 'Più lontani'}
             </Text>
@@ -337,7 +350,7 @@ export const HomeScreen: React.FC = () => {
 
             {displayedEvents.length === 0 && (
               <View style={styles.emptyState}>
-                <Text style={styles.emptyIcon}>🎾</Text>
+                <Trophy size={48} color={theme.colors.textMuted} style={styles.emptyIcon} />
                 <Text style={styles.emptyTitle}>{t.home.noTournaments}</Text>
                 <Text style={styles.emptySubtitle}>{t.home.noTournamentsSub}</Text>
                 {selectedCategories.length < ALL_TOURNAMENT_CATEGORIES.length && (
@@ -385,6 +398,14 @@ const createStyles = (theme: AppTheme) =>
     backgroundColor: theme.colors.card,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.cardBorder,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  titleIcon: {
+    marginRight: 2,
   },
   appName: {
     ...theme.typography.title,

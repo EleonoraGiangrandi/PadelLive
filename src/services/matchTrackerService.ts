@@ -1,6 +1,6 @@
 import { Match, FipEvent, Player } from '../types/models';
 import { useNotificationStore } from '../store/useNotificationStore';
-import { useFavoritesStore, matchesPlayerName } from '../store/useFavoritesStore';
+import { useFavoritesStore } from '../store/useFavoritesStore';
 import { notifyMatchStart, notifyMatchEnd, notifySetEnd } from './notificationService';
 
 interface TrackedMatchState {

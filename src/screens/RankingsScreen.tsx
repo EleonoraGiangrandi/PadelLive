@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
+import { Search, X, Star, Users } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
@@ -19,6 +20,7 @@ import { RootStackParamList } from '../types/navigation';
 import { useAppTheme, AppTheme } from '../utils/theme';
 import { PlayerRow } from '../components/ranking/PlayerRow';
 import { useFavoritesStore } from '../store/useFavoritesStore';
+import { usePreferencesStore } from '../store/usePreferencesStore';
 import { useTranslation } from '../i18n';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -30,8 +32,12 @@ export const RankingsScreen: React.FC = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
   const { t } = useTranslation();
 
-  const [gender, setGender] = useState<'men' | 'women'>('men');
-  const [viewMode, setViewMode] = useState<'all' | 'favorites'>('all');
+  const {
+    rankingsGender: gender,
+    setRankingsGender: setGender,
+    rankingsViewMode: viewMode,
+    setRankingsViewMode: setViewMode,
+  } = usePreferencesStore();
   const [searchQuery, setSearchQuery] = useState('');
   const favorites = useFavoritesStore((s) => s.favorites);
 
@@ -155,19 +161,27 @@ export const RankingsScreen: React.FC = () => {
               setViewMode(viewMode === 'favorites' ? 'all' : 'favorites');
             }}
           >
-            <Text
-              style={[
-                styles.toggleText,
-                viewMode === 'favorites' && styles.toggleTextFavActive,
-              ]}
-            >
-              ⭐ {t.rankings.favorites} {favorites.length > 0 ? `(${favorites.length})` : ''}
-            </Text>
+            <View style={styles.toggleFavContent}>
+              <Star
+                size={13}
+                color={viewMode === 'favorites' ? '#000000' : '#f59e0b'}
+                fill={viewMode === 'favorites' ? '#000000' : '#f59e0b'}
+              />
+              <Text
+                style={[
+                  styles.toggleText,
+                  viewMode === 'favorites' && styles.toggleTextFavActive,
+                ]}
+              >
+                {t.rankings.favorites} {favorites.length > 0 ? `(${favorites.length})` : ''}
+              </Text>
+            </View>
           </TouchableOpacity>
         </View>
 
         {/* Search Input */}
         <View style={styles.searchContainer}>
+          <Search size={16} color={theme.colors.textMuted} style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
             placeholder={
@@ -191,7 +205,7 @@ export const RankingsScreen: React.FC = () => {
               onPress={() => setSearchQuery('')}
               style={styles.clearSearch}
             >
-              <Text style={styles.clearSearchText}>✕</Text>
+              <X size={16} color={theme.colors.textMuted} />
             </TouchableOpacity>
           )}
         </View>
@@ -247,7 +261,11 @@ export const RankingsScreen: React.FC = () => {
           }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyIcon}>{viewMode === 'favorites' ? '⭐' : '🏆'}</Text>
+              {viewMode === 'favorites' ? (
+                <Star size={44} color="#f59e0b" fill="#f59e0b" style={{ marginBottom: 12 }} />
+              ) : (
+                <Users size={44} color={theme.colors.textMuted} style={{ marginBottom: 12 }} />
+              )}
               <Text style={styles.emptyTitle}>
                 {viewMode === 'favorites'
                   ? t.rankings.emptyFavTitle
@@ -312,6 +330,11 @@ const createStyles = (theme: AppTheme) =>
     toggleBtnFavActive: {
       backgroundColor: '#f59e0b',
     },
+    toggleFavContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 5,
+    },
     toggleText: {
       ...theme.typography.badge,
       color: theme.colors.textMuted,
@@ -326,12 +349,18 @@ const createStyles = (theme: AppTheme) =>
     },
     searchContainer: {
       position: 'relative',
+      justifyContent: 'center',
+    },
+    searchIcon: {
+      position: 'absolute',
+      left: 12,
+      zIndex: 1,
     },
     searchInput: {
       height: 40,
       backgroundColor: theme.colors.cardSecondary,
       borderRadius: theme.borderRadius.sm,
-      paddingHorizontal: theme.spacing.md,
+      paddingLeft: 36,
       paddingRight: 36,
       color: theme.colors.textPrimary,
       fontSize: 14,

@@ -5,9 +5,9 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   ScrollView,
 } from 'react-native';
+import { Check, X } from 'lucide-react-native';
 import { useAppTheme, AppTheme } from '../../utils/theme';
 import {
   usePreferencesStore,
@@ -41,107 +41,122 @@ export const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose }) =>
       animationType="slide"
       onRequestClose={onClose}
     >
-      <TouchableOpacity
-        style={styles.overlay}
-        activeOpacity={1}
-        onPress={onClose}
-      >
-        <TouchableWithoutFeedback>
-          <View style={styles.sheet}>
-            <View style={styles.dragHandle} />
+      <View style={styles.overlay}>
+        <TouchableOpacity
+          style={styles.backdrop}
+          activeOpacity={1}
+          onPress={onClose}
+        />
 
-            <View style={styles.header}>
-              <View>
-                <Text style={styles.title}>{t.filterModal.title}</Text>
-                <Text style={styles.subtitle}>{t.filterModal.subtitle}</Text>
+        <View style={styles.sheet}>
+          <View style={styles.dragHandle} />
+
+          <View style={styles.header}>
+            <View>
+              <Text style={styles.title}>{t.filterModal.title}</Text>
+              <Text style={styles.subtitle}>{t.filterModal.subtitle}</Text>
+            </View>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <X size={20} color={theme.colors.textMuted} />
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView
+            style={styles.body}
+            contentContainerStyle={styles.bodyContent}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={true}
+            bounces={true}
+          >
+            <View style={styles.categoryHeader}>
+              <Text style={styles.sectionTitle}>
+                Circuiti ({selectedCategories.length}/{ALL_TOURNAMENT_CATEGORIES.length})
+              </Text>
+              <View style={styles.quickActions}>
+                <TouchableOpacity onPress={selectAllCategories}>
+                  <Text style={styles.actionText}>{t.filterModal.selectAll}</Text>
+                </TouchableOpacity>
+                <Text style={styles.actionDivider}>•</Text>
+                <TouchableOpacity onPress={clearCategories}>
+                  <Text style={styles.actionText}>{t.filterModal.deselectAll}</Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <Text style={styles.closeText}>✕</Text>
-              </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
-              <View style={styles.categoryHeader}>
-                <Text style={styles.sectionTitle}>
-                  Circuiti ({selectedCategories.length}/{ALL_TOURNAMENT_CATEGORIES.length})
-                </Text>
-                <View style={styles.quickActions}>
-                  <TouchableOpacity onPress={selectAllCategories}>
-                    <Text style={styles.actionText}>{t.filterModal.selectAll}</Text>
-                  </TouchableOpacity>
-                  <Text style={styles.actionDivider}>•</Text>
-                  <TouchableOpacity onPress={clearCategories}>
-                    <Text style={styles.actionText}>{t.filterModal.deselectAll}</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+            <View style={styles.categoriesGrid}>
+              {ALL_TOURNAMENT_CATEGORIES.map((cat) => {
+                const isSelected = selectedCategories.includes(cat.id);
+                const isPremier = cat.id.startsWith('premier');
 
-              <View style={styles.categoriesGrid}>
-                {ALL_TOURNAMENT_CATEGORIES.map((cat) => {
-                  const isSelected = selectedCategories.includes(cat.id);
-                  const isPremier = cat.id.startsWith('premier');
-
-                  return (
-                    <TouchableOpacity
-                      key={cat.id}
-                      style={[
-                        styles.categoryChip,
-                        isSelected && styles.categoryChipActive,
-                        isSelected && isPremier && styles.categoryChipPremierActive,
-                      ]}
-                      onPress={() => toggleCategory(cat.id)}
-                    >
+                return (
+                  <TouchableOpacity
+                    key={cat.id}
+                    style={[
+                      styles.categoryChip,
+                      isSelected && styles.categoryChipActive,
+                      isSelected && isPremier && styles.categoryChipPremierActive,
+                    ]}
+                    onPress={() => toggleCategory(cat.id)}
+                  >
+                    <View style={styles.categoryChipContent}>
+                      {isSelected && (
+                        <Check
+                          size={12}
+                          color={isPremier ? theme.colors.gold : theme.colors.primary}
+                          strokeWidth={3}
+                          style={{ marginRight: 4 }}
+                        />
+                      )}
                       <Text
                         style={[
                           styles.categoryText,
                           isSelected && styles.categoryTextActive,
                         ]}
                       >
-                        {isSelected ? '✓ ' : ''}
                         {cat.label}
                       </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
 
-              <Text style={styles.sectionTitle}>{t.rankings.title}</Text>
-              <View style={styles.genreRow}>
-                {[
-                  { id: 'both', label: t.tournament.all },
-                  { id: 'men', label: t.tournament.men },
-                  { id: 'women', label: t.tournament.women },
-                ].map((g) => {
-                  const isSelected = genre === g.id;
-                  return (
-                    <TouchableOpacity
-                      key={g.id}
+            <Text style={styles.sectionTitle}>{t.rankings.title}</Text>
+            <View style={styles.genreRow}>
+              {[
+                { id: 'both', label: t.tournament.all },
+                { id: 'men', label: t.tournament.men },
+                { id: 'women', label: t.tournament.women },
+              ].map((g) => {
+                const isSelected = genre === g.id;
+                return (
+                  <TouchableOpacity
+                    key={g.id}
+                    style={[
+                      styles.genreButton,
+                      isSelected && styles.genreButtonActive,
+                    ]}
+                    onPress={() => setGenre(g.id as any)}
+                  >
+                    <Text
                       style={[
-                        styles.genreButton,
-                        isSelected && styles.genreButtonActive,
+                        styles.genreText,
+                        isSelected && styles.genreTextActive,
                       ]}
-                      onPress={() => setGenre(g.id as any)}
                     >
-                      <Text
-                        style={[
-                          styles.genreText,
-                          isSelected && styles.genreTextActive,
-                        ]}
-                      >
-                        {g.label}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
+                      {g.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
 
-              <TouchableOpacity style={styles.applyButton} onPress={onClose}>
-                <Text style={styles.applyButtonText}>{t.filterModal.apply}</Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
-        </TouchableWithoutFeedback>
-      </TouchableOpacity>
+            <TouchableOpacity style={styles.applyButton} onPress={onClose}>
+              <Text style={styles.applyButtonText}>{t.filterModal.apply}</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+      </View>
     </Modal>
   );
 };
@@ -152,6 +167,13 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       flex: 1,
       backgroundColor: 'rgba(0, 0, 0, 0.65)',
       justifyContent: 'flex-end',
+    },
+    backdrop: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
     },
     sheet: {
       backgroundColor: theme.colors.card,
@@ -198,7 +220,10 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       color: theme.colors.textMuted,
     },
     body: {
-      padding: theme.spacing.lg,
+      paddingHorizontal: theme.spacing.lg,
+    },
+    bodyContent: {
+      paddingBottom: theme.spacing.xl,
     },
     categoryHeader: {
       flexDirection: 'row',
@@ -237,6 +262,10 @@ const createStyles = (theme: AppTheme, isDark: boolean) =>
       backgroundColor: theme.colors.cardSecondary,
       borderWidth: 1,
       borderColor: 'transparent',
+    },
+    categoryChipContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     categoryChipActive: {
       backgroundColor: isDark ? 'rgba(31, 111, 235, 0.2)' : 'rgba(9, 105, 218, 0.12)',

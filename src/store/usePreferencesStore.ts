@@ -4,6 +4,10 @@ import { Gender } from '../types/models';
 import { AppLanguage } from '../i18n/types';
 
 export type ThemeMode = 'dark' | 'light';
+export type HomeTab = 'in_corso' | 'futuri' | 'recenti' | 'tutti';
+export type RankingsGender = 'men' | 'women';
+export type RankingsViewMode = 'all' | 'favorites';
+export type TournamentViewMode = 'matches' | 'draw';
 
 export interface CategoryDefinition {
   id: string;
@@ -34,6 +38,10 @@ interface PreferencesState {
   isFilterLoaded: boolean;
   themeMode: ThemeMode;
   language: AppLanguage;
+  homeTab: HomeTab;
+  rankingsGender: RankingsGender;
+  rankingsViewMode: RankingsViewMode;
+  tournamentViewMode: TournamentViewMode;
   setGenre: (genre: Gender) => void;
   toggleCategory: (category: string) => void;
   selectAllCategories: () => void;
@@ -42,6 +50,10 @@ interface PreferencesState {
   setThemeMode: (mode: ThemeMode) => void;
   toggleThemeMode: () => void;
   setLanguage: (lang: AppLanguage) => void;
+  setHomeTab: (tab: HomeTab) => void;
+  setRankingsGender: (gender: RankingsGender) => void;
+  setRankingsViewMode: (mode: RankingsViewMode) => void;
+  setTournamentViewMode: (mode: TournamentViewMode) => void;
   loadPreferences: () => Promise<void>;
 }
 
@@ -49,6 +61,10 @@ const PREF_GENRE_KEY = '@padely_genre';
 const PREF_FILTERS_KEY = '@padely_filters_v2';
 const PREF_THEME_KEY = '@padely_theme_mode';
 const PREF_LANGUAGE_KEY = '@padely_language_v1';
+const PREF_HOME_TAB_KEY = '@padely_home_tab_v1';
+const PREF_RANKINGS_GENDER_KEY = '@padely_rankings_gender_v1';
+const PREF_RANKINGS_VIEW_KEY = '@padely_rankings_view_v1';
+const PREF_TOURNAMENT_VIEW_KEY = '@padely_tournament_view_v1';
 
 export const usePreferencesStore = create<PreferencesState>((set, get) => ({
   genre: 'both',
@@ -57,6 +73,10 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
   isFilterLoaded: false,
   themeMode: 'dark',
   language: 'en', // Default in inglese come richiesto
+  homeTab: 'in_corso',
+  rankingsGender: 'men',
+  rankingsViewMode: 'all',
+  tournamentViewMode: 'matches',
 
   setGenre: async (genre: Gender) => {
     set({ genre });
@@ -92,6 +112,42 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
       await AsyncStorage.setItem(PREF_THEME_KEY, nextMode);
     } catch (e) {
       console.warn('Error toggling theme mode:', e);
+    }
+  },
+
+  setHomeTab: async (homeTab: HomeTab) => {
+    set({ homeTab });
+    try {
+      await AsyncStorage.setItem(PREF_HOME_TAB_KEY, homeTab);
+    } catch (e) {
+      console.warn('Error saving home tab:', e);
+    }
+  },
+
+  setRankingsGender: async (rankingsGender: RankingsGender) => {
+    set({ rankingsGender });
+    try {
+      await AsyncStorage.setItem(PREF_RANKINGS_GENDER_KEY, rankingsGender);
+    } catch (e) {
+      console.warn('Error saving rankings gender:', e);
+    }
+  },
+
+  setRankingsViewMode: async (rankingsViewMode: RankingsViewMode) => {
+    set({ rankingsViewMode });
+    try {
+      await AsyncStorage.setItem(PREF_RANKINGS_VIEW_KEY, rankingsViewMode);
+    } catch (e) {
+      console.warn('Error saving rankings view mode:', e);
+    }
+  },
+
+  setTournamentViewMode: async (tournamentViewMode: TournamentViewMode) => {
+    set({ tournamentViewMode });
+    try {
+      await AsyncStorage.setItem(PREF_TOURNAMENT_VIEW_KEY, tournamentViewMode);
+    } catch (e) {
+      console.warn('Error saving tournament view mode:', e);
     }
   },
 
@@ -134,10 +190,25 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
 
   loadPreferences: async () => {
     try {
-      const savedGenre = await AsyncStorage.getItem(PREF_GENRE_KEY);
-      const savedFilters = await AsyncStorage.getItem(PREF_FILTERS_KEY);
-      const savedTheme = await AsyncStorage.getItem(PREF_THEME_KEY);
-      const savedLang = await AsyncStorage.getItem(PREF_LANGUAGE_KEY);
+      const [
+        savedGenre,
+        savedFilters,
+        savedTheme,
+        savedLang,
+        savedHomeTab,
+        savedRankingsGender,
+        savedRankingsView,
+        savedTournamentView,
+      ] = await Promise.all([
+        AsyncStorage.getItem(PREF_GENRE_KEY),
+        AsyncStorage.getItem(PREF_FILTERS_KEY),
+        AsyncStorage.getItem(PREF_THEME_KEY),
+        AsyncStorage.getItem(PREF_LANGUAGE_KEY),
+        AsyncStorage.getItem(PREF_HOME_TAB_KEY),
+        AsyncStorage.getItem(PREF_RANKINGS_GENDER_KEY),
+        AsyncStorage.getItem(PREF_RANKINGS_VIEW_KEY),
+        AsyncStorage.getItem(PREF_TOURNAMENT_VIEW_KEY),
+      ]);
 
       const validLang = savedLang === 'it' || savedLang === 'es' || savedLang === 'en' ? savedLang : 'en';
 
@@ -148,6 +219,10 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
           : ALL_TOURNAMENT_CATEGORIES.map((c) => c.id),
         themeMode: savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : 'dark',
         language: validLang,
+        homeTab: (savedHomeTab as HomeTab) || 'in_corso',
+        rankingsGender: (savedRankingsGender as RankingsGender) || 'men',
+        rankingsViewMode: (savedRankingsView as RankingsViewMode) || 'all',
+        tournamentViewMode: (savedTournamentView as TournamentViewMode) || 'matches',
         isFilterLoaded: true,
       });
     } catch (e) {

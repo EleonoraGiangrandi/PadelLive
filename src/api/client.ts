@@ -55,7 +55,7 @@ export async function fetchPadely<T>(endpoint: string, options?: RequestInit): P
 
   try {
     return JSON.parse(text) as T;
-  } catch (e) {
+  } catch {
     throw new Error(`Failed to parse response: ${text.slice(0, 100)}`);
   }
 }

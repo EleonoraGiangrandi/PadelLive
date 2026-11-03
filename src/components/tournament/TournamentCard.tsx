@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { MapPin, Calendar } from 'lucide-react-native';
 import { FipEvent } from '../../types/models';
 import { useAppTheme, AppTheme } from '../../utils/theme';
 import { Badge } from '../common/Badge';
@@ -102,13 +103,19 @@ export const TournamentCard: React.FC<TournamentCardProps> = ({
             {eventName}
           </Text>
 
-          <Text style={styles.horizontalLocation} numberOfLines={1}>
-            📍 {eventLocation || 'Location TBA'}
-          </Text>
+          <View style={styles.metaRow}>
+            <MapPin size={11} color={theme.colors.textSecondary} />
+            <Text style={styles.horizontalLocation} numberOfLines={1}>
+              {eventLocation || 'Location TBA'}
+            </Text>
+          </View>
 
-          <Text style={styles.horizontalDates} numberOfLines={1}>
-            📅 {dateLabel}
-          </Text>
+          <View style={styles.metaRow}>
+            <Calendar size={11} color={theme.colors.primary} />
+            <Text style={styles.horizontalDates} numberOfLines={1}>
+              {dateLabel}
+            </Text>
+          </View>
         </View>
       </TouchableOpacity>
     );
@@ -149,13 +156,19 @@ export const TournamentCard: React.FC<TournamentCardProps> = ({
           {eventName}
         </Text>
 
-        <Text style={styles.verticalLocation} numberOfLines={1}>
-          📍 {eventLocation || 'Location TBA'}
-        </Text>
+        <View style={styles.metaRow}>
+          <MapPin size={11} color={theme.colors.textSecondary} />
+          <Text style={styles.verticalLocation} numberOfLines={1}>
+            {eventLocation || 'Location TBA'}
+          </Text>
+        </View>
 
-        <Text style={styles.verticalDates} numberOfLines={1}>
-          📅 {dateLabel}
-        </Text>
+        <View style={styles.metaRow}>
+          <Calendar size={11} color={theme.colors.primary} />
+          <Text style={styles.verticalDates} numberOfLines={1}>
+            {dateLabel}
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -219,16 +232,23 @@ const createStyles = (theme: AppTheme) =>
       lineHeight: 20,
       fontWeight: '700',
     },
+    metaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      marginBottom: 3,
+    },
     verticalLocation: {
       ...theme.typography.body,
       color: theme.colors.textSecondary,
       fontSize: 13,
-      marginBottom: 4,
+      flex: 1,
     },
     verticalDates: {
       ...theme.typography.caption,
       color: theme.colors.primary,
       fontWeight: '600',
+      flex: 1,
     },
 
     // --- HORIZONTAL CAROUSEL CARD ---
