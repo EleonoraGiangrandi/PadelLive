@@ -1,20 +1,58 @@
+import React, { useEffect, useMemo } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { RootNavigator } from './src/navigation/RootNavigator';
+import { usePreferencesStore } from './src/store/usePreferencesStore';
+import { useAppTheme } from './src/utils/theme';
 
-export default function App() {
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      staleTime: 30000,
+    },
+  },
+});
+
+function MainApp() {
+  const { theme, isDark } = useAppTheme();
+  const loadPreferences = usePreferencesStore((s) => s.loadPreferences);
+
+  useEffect(() => {
+    loadPreferences();
+  }, [loadPreferences]);
+
+  const navigationTheme = useMemo(() => {
+    const baseTheme = isDark ? DarkTheme : DefaultTheme;
+    return {
+      ...baseTheme,
+      colors: {
+        ...baseTheme.colors,
+        background: theme.colors.background,
+        card: theme.colors.card,
+        text: theme.colors.textPrimary,
+        border: theme.colors.cardBorder,
+        primary: theme.colors.primary,
+      },
+    };
+  }, [isDark, theme]);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer theme={navigationTheme}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <RootNavigator />
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <MainApp />
+      </QueryClientProvider>
+    </SafeAreaProvider>
+  );
+}

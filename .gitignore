@@ -39,3 +39,13 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# APK files and extraction
+*.apk
+*.apks
+extracted_apks/
+
+# Agent & local temp
+.agents/
+.antigravity/
+.todo
