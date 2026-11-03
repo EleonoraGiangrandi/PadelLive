@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme, AppTheme } from '../utils/theme';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { requestNotificationPermission } from '../services/notificationService';
+import { useTranslation, SUPPORTED_LANGUAGES } from '../i18n';
 
 export const SettingsScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
@@ -18,12 +19,13 @@ export const SettingsScreen: React.FC = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const { preferences, updatePreferences } = useNotificationStore();
+  const { t, language, setLanguage } = useTranslation();
 
   const handleToggleMasterNotifications = async (val: boolean) => {
     if (val) {
       const granted = await requestNotificationPermission();
       if (!granted) {
-        // Se non concessi, non forziamo ON o lasciamo attivo
+        // Se non concessi
       }
     }
     updatePreferences({ enabled: val });
@@ -35,8 +37,8 @@ export const SettingsScreen: React.FC = () => {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Preferenze & Profilo</Text>
-        <Text style={styles.subtitle}>Personalizza notifiche, preferiti e visualizzazione</Text>
+        <Text style={styles.title}>{t.settings.title}</Text>
+        <Text style={styles.subtitle}>{t.settings.subtitle}</Text>
       </View>
 
       <ScrollView
@@ -46,15 +48,15 @@ export const SettingsScreen: React.FC = () => {
       >
         {/* SEZIONE 1: NOTIFICHE */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>🔔 NOTIFICHE PARTITE</Text>
+          <Text style={styles.sectionTitle}>🔔 {t.settings.notificationsSection}</Text>
         </View>
 
         <View style={styles.card}>
           {/* Master Switch */}
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Notifiche Live</Text>
-              <Text style={styles.settingDesc}>Ricevi aggiornamenti sulle partite del circuito</Text>
+              <Text style={styles.settingLabel}>{t.settings.liveNotifications}</Text>
+              <Text style={styles.settingDesc}>{t.settings.liveNotificationsDesc}</Text>
             </View>
             <Switch
               value={preferences.enabled}
@@ -71,9 +73,9 @@ export const SettingsScreen: React.FC = () => {
               {/* Only Favorites */}
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
-                  <Text style={styles.settingLabel}>⭐ Solo Giocatori Preferiti</Text>
+                  <Text style={styles.settingLabel}>⭐ {t.settings.onlyFavorites}</Text>
                   <Text style={styles.settingDesc}>
-                    Invia notifiche solo per i match dei tuoi giocatori salvati
+                    {t.settings.onlyFavoritesDesc}
                   </Text>
                 </View>
                 <Switch
@@ -89,8 +91,8 @@ export const SettingsScreen: React.FC = () => {
               {/* Inizio Match */}
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
-                  <Text style={styles.settingLabel}>Inizio Match</Text>
-                  <Text style={styles.settingDesc}>Alert quando la partita comincia</Text>
+                  <Text style={styles.settingLabel}>{t.settings.matchStart}</Text>
+                  <Text style={styles.settingDesc}>{t.settings.matchStartDesc}</Text>
                 </View>
                 <Switch
                   value={preferences.notifyMatchStart}
@@ -105,8 +107,8 @@ export const SettingsScreen: React.FC = () => {
               {/* Fine Set */}
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
-                  <Text style={styles.settingLabel}>Fine di ogni Set</Text>
-                  <Text style={styles.settingDesc}>Aggiornamento al termine di ciascun set</Text>
+                  <Text style={styles.settingLabel}>{t.settings.setEnd}</Text>
+                  <Text style={styles.settingDesc}>{t.settings.setEndDesc}</Text>
                 </View>
                 <Switch
                   value={preferences.notifySetEnd}
@@ -121,8 +123,8 @@ export const SettingsScreen: React.FC = () => {
               {/* Fine Match */}
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
-                  <Text style={styles.settingLabel}>Fine Match & Risultato</Text>
-                  <Text style={styles.settingDesc}>Risultato finale dettagliato e vincitori</Text>
+                  <Text style={styles.settingLabel}>{t.settings.matchEnd}</Text>
+                  <Text style={styles.settingDesc}>{t.settings.matchEndDesc}</Text>
                 </View>
                 <Switch
                   value={preferences.notifyMatchEnd}
@@ -136,10 +138,8 @@ export const SettingsScreen: React.FC = () => {
 
               {/* Promemoria Pre-Match */}
               <View style={styles.settingColumn}>
-                <Text style={styles.settingLabel}>⏰ Promemoria Pre-Match</Text>
-                <Text style={styles.settingDesc}>
-                  Avviso prima dell'orario di inizio programmato
-                </Text>
+                <Text style={styles.settingLabel}>⏰ {t.settings.reminder}</Text>
+                <Text style={styles.settingDesc}>{t.settings.reminderDesc}</Text>
                 <View style={styles.chipRow}>
                   {reminderOptions.map((mins) => {
                     const isSelected = preferences.reminderMinutes === mins;
@@ -150,7 +150,7 @@ export const SettingsScreen: React.FC = () => {
                         onPress={() => updatePreferences({ reminderMinutes: mins })}
                       >
                         <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>
-                          {mins === 0 ? 'Off' : `${mins} min`}
+                          {mins === 0 ? t.settings.reminderOff : `${mins} ${t.settings.reminderMins}`}
                         </Text>
                       </TouchableOpacity>
                     );
@@ -161,17 +161,50 @@ export const SettingsScreen: React.FC = () => {
           )}
         </View>
 
-        {/* SEZIONE: TEMA & ASPETTO */}
+        {/* SEZIONE 2: LINGUA */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>🎨 ASPETTO</Text>
+          <Text style={styles.sectionTitle}>🌐 {t.settings.languageSection}</Text>
+        </View>
+
+        <View style={styles.card}>
+          {SUPPORTED_LANGUAGES.map((lang, index) => {
+            const isSelected = language === lang.code;
+            return (
+              <React.Fragment key={lang.code}>
+                {index > 0 && <View style={styles.divider} />}
+                <TouchableOpacity
+                  style={styles.languageOption}
+                  onPress={() => setLanguage(lang.code)}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.languageOptionLeft}>
+                    <Text style={styles.flagIcon}>{lang.flag}</Text>
+                    <Text style={[styles.languageName, isSelected && styles.languageNameActive]}>
+                      {lang.name}
+                    </Text>
+                  </View>
+                  {isSelected && (
+                    <View style={styles.checkBadge}>
+                      <Text style={styles.checkText}>✓</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              </React.Fragment>
+            );
+          })}
+        </View>
+
+        {/* SEZIONE 3: TEMA & ASPETTO */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>🎨 {t.settings.appearanceSection}</Text>
         </View>
 
         <View style={styles.card}>
           <View style={styles.settingRow}>
             <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Tema Scuro</Text>
+              <Text style={styles.settingLabel}>{t.settings.darkMode}</Text>
               <Text style={styles.settingDesc}>
-                {isDark ? 'Attualmente in modalità scura' : 'Attualmente in modalità chiara'}
+                {isDark ? t.settings.darkModeActive : t.settings.lightModeActive}
               </Text>
             </View>
             <Switch
@@ -183,29 +216,10 @@ export const SettingsScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* SEZIONE 4: LINGUA (PREDISPOSIZIONE FUTURA) */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>🌐 LINGUA</Text>
-        </View>
-
-        <View style={styles.card}>
-          <View style={styles.settingRow}>
-            <View style={styles.settingInfo}>
-              <Text style={styles.settingLabel}>Lingua dell'applicazione</Text>
-              <Text style={styles.settingDesc}>Italiano (predefinita)</Text>
-            </View>
-            <View style={styles.comingSoonBadge}>
-              <Text style={styles.comingSoonText}>Prossimamente altre lingue</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* SEZIONE 5: INFORMAZIONI APP */}
+        {/* SEZIONE 4: INFORMAZIONI APP */}
         <View style={styles.aboutFooter}>
-          <Text style={styles.aboutTitle}>🎾 PadelPulse v2.0.0</Text>
-          <Text style={styles.aboutSub}>
-            Punteggi live, calendari e classifiche ufficiali FIP & Premier Padel.
-          </Text>
+          <Text style={styles.aboutTitle}>🎾 {t.settings.aboutTitle}</Text>
+          <Text style={styles.aboutSub}>{t.settings.aboutSub}</Text>
         </View>
       </ScrollView>
     </View>
@@ -313,16 +327,42 @@ const createStyles = (theme: AppTheme) =>
       color: theme.colors.white,
       fontWeight: '700',
     },
-    comingSoonBadge: {
-      backgroundColor: theme.colors.cardSecondary,
-      paddingHorizontal: 8,
-      paddingVertical: 4,
-      borderRadius: theme.borderRadius.sm,
+    languageOption: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: 8,
     },
-    comingSoonText: {
-      ...theme.typography.caption,
-      color: theme.colors.textMuted,
-      fontSize: 11,
+    languageOptionLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    flagIcon: {
+      fontSize: 22,
+    },
+    languageName: {
+      ...theme.typography.body,
+      color: theme.colors.textPrimary,
+      fontSize: 15,
+      fontWeight: '500',
+    },
+    languageNameActive: {
+      fontWeight: '700',
+      color: theme.colors.primary,
+    },
+    checkBadge: {
+      width: 22,
+      height: 22,
+      borderRadius: 11,
+      backgroundColor: theme.colors.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    checkText: {
+      color: theme.colors.white,
+      fontSize: 12,
+      fontWeight: '800',
     },
     aboutFooter: {
       alignItems: 'center',

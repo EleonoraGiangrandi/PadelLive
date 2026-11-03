@@ -18,6 +18,7 @@ import { useAppTheme, AppTheme } from '../utils/theme';
 import { Badge } from '../components/common/Badge';
 import { StatBar } from '../components/match/StatBar';
 import { decodeHtmlEntities } from '../utils/text';
+import { useTranslation } from '../i18n';
 
 type RouteProps = RouteProp<RootStackParamList, 'Match'>;
 
@@ -29,6 +30,7 @@ export const MatchScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { theme } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { t } = useTranslation();
   const { match, event, day } = route.params;
 
   const [activeTab, setActiveTab] = useState<TabKey>('match');
@@ -329,67 +331,65 @@ export const MatchScreen: React.FC = () => {
           <View style={styles.statsLoading}>
             <ActivityIndicator size="small" color={theme.colors.primary} />
             <Text style={styles.statsLoadingText}>
-              Caricamento statistiche...
+              {t.common?.loading || 'Loading...'}
             </Text>
           </View>
         ) : !hasStats ? (
           <View style={styles.statsEmpty}>
             <Text style={styles.statsEmptyIcon}>📊</Text>
-            <Text style={styles.statsEmptyTitle}>Statistiche non disponibili</Text>
-            <Text style={styles.statsEmptyDesc}>
-              I dati statistici dettagliati non sono ancora stati registrati per questo incontro.
-            </Text>
+            <Text style={styles.statsEmptyTitle}>{t.match.stats}</Text>
+            <Text style={styles.statsEmptyDesc}>{t.match.noStats}</Text>
           </View>
         ) : (
           <View style={styles.statsContainer}>
-            {/* SERVIZIO */}
-            <Text style={styles.statsSectionHeader}>SERVIZIO</Text>
+            {/* SERVE */}
+            <Text style={styles.statsSectionHeader}>{t.match.serve.toUpperCase()}</Text>
             <StatBar
               label="Aces"
               val1={activeStatsGroup1?.serve?.aces}
               val2={activeStatsGroup2?.serve?.aces}
             />
             <StatBar
-              label="Doppi Falli"
+              label="Double Faults"
               val1={activeStatsGroup1?.serve?.doubleFaults}
               val2={activeStatsGroup2?.serve?.doubleFaults}
             />
             <StatBar
-              label="Game di Servizio"
+              label="Service Games"
               val1={activeStatsGroup1?.serve?.serviceGames}
               val2={activeStatsGroup2?.serve?.serviceGames}
             />
             <StatBar
-              label="Vinti su 1ª di Servizio"
+              label="1st Serve Points Won"
               val1={activeStatsGroup1?.serve?.wonOnFirstServe}
               val2={activeStatsGroup2?.serve?.wonOnFirstServe}
             />
             <StatBar
-              label="Vinti su 2ª di Servizio"
+              label="2nd Serve Points Won"
               val1={activeStatsGroup1?.serve?.wonOnSecondServe}
               val2={activeStatsGroup2?.serve?.wonOnSecondServe}
             />
 
-            {/* RISPOSTA */}
-            <Text style={styles.statsSectionHeader}>RISPOSTA</Text>
+            {/* RETURN */}
+            <Text style={styles.statsSectionHeader}>{t.match.return.toUpperCase()}</Text>
             <StatBar
-              label="Game in Risposta"
+              label="Return Games"
               val1={activeStatsGroup1?.returnStats?.returnGames}
               val2={activeStatsGroup2?.returnStats?.returnGames}
             />
             <StatBar
-              label="Vinti su 1ª Risposta"
+              label="1st Return Points Won"
               val1={activeStatsGroup1?.returnStats?.wonOnFirstReturn}
               val2={activeStatsGroup2?.returnStats?.wonOnFirstReturn}
             />
             <StatBar
-              label="Vinti su 2ª Risposta"
+              label="2nd Return Points Won"
               val1={activeStatsGroup1?.returnStats?.wonOnSecondReturn}
               val2={activeStatsGroup2?.returnStats?.wonOnSecondReturn}
             />
 
-            {/* PUNTI CHIAVE */}
-            <Text style={styles.statsSectionHeader}>PUNTI CHIAVE & TOTALI</Text>
+            {/* POINTS */}
+            <Text style={styles.statsSectionHeader}>{t.match.points.toUpperCase()}</Text>
             <StatBar
               label="Break Points Convertiti"
               val1={activeStatsGroup1?.match?.breakingPointsConverted}

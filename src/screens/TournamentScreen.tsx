@@ -26,6 +26,7 @@ import { MatchCard } from '../components/tournament/MatchCard';
 import { getHdImageUrl } from '../components/tournament/TournamentCard';
 import { evaluateMatches, matchHasFavoritePlayer } from '../services/matchTrackerService';
 import { useNotificationStore } from '../store/useNotificationStore';
+import { useTranslation } from '../i18n';
 
 type RouteProps = RouteProp<RootStackParamList, 'Tournament'>;
 type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -36,14 +37,17 @@ export const TournamentScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { theme } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { t, language } = useTranslation();
   const { event } = route.params;
 
   const eventIdentifier = event.eventId || event.id;
 
+  const dateLocale = language === 'it' ? 'it-IT' : language === 'es' ? 'es-ES' : 'en-US';
+
   // Compute tabs for the tournament dates
   const dayTabs = useMemo(() => {
-    return getDatesBetween(event.startDate, event.endDate);
-  }, [event.startDate, event.endDate]);
+    return getDatesBetween(event.startDate, event.endDate, dateLocale, t.tournament.today);
+  }, [event.startDate, event.endDate, dateLocale, t.tournament.today]);
 
   // Find initial day (if "OGGI" exists, select it, otherwise day 1)
   const initialDay = useMemo(() => {
@@ -254,7 +258,12 @@ export const TournamentScreen: React.FC = () => {
         <View style={styles.genderRow}>
           {(['both', 'men', 'women'] as const).map((g) => {
             const isSelected = !onlyFavorites && selectedGender === g;
-            const label = g === 'both' ? 'TUTTI' : g === 'men' ? 'UOMINI' : 'DONNE';
+            const label =
+              g === 'both'
+                ? t.tournament.all
+                : g === 'men'
+                ? t.tournament.men
+                : t.tournament.women;
             return (
               <TouchableOpacity
                 key={g}
@@ -285,7 +294,7 @@ export const TournamentScreen: React.FC = () => {
                 onlyFavorites && styles.genderChipFavTextActive,
               ]}
             >
-              ⭐ PREFERITI
+              ⭐ {t.tournament.favorites}
             </Text>
           </TouchableOpacity>
         </View>
@@ -294,13 +303,13 @@ export const TournamentScreen: React.FC = () => {
         {isLoading ? (
           <View style={styles.centerContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={styles.loadingText}>Caricamento partite e risultati...</Text>
+            <Text style={styles.loadingText}>{t.tournament.loading}</Text>
           </View>
         ) : error ? (
           <View style={styles.centerContainer}>
-            <Text style={styles.errorText}>Errore nel caricamento delle partite</Text>
+            <Text style={styles.errorText}>{t.tournament.error}</Text>
             <TouchableOpacity style={styles.retryButton} onPress={() => { refetch(); }}>
-              <Text style={styles.retryButtonText}>Riprova</Text>
+              <Text style={styles.retryButtonText}>{t.tournament.retry}</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -326,10 +335,8 @@ export const TournamentScreen: React.FC = () => {
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
                 <Text style={styles.emptyIcon}>🎾</Text>
-                <Text style={styles.emptyTitle}>Nessuna partita per questa giornata</Text>
-                <Text style={styles.emptySubtitle}>
-                  Non ci sono partite in programma per questo giorno o torneo.
-                </Text>
+                <Text style={styles.emptyTitle}>{t.tournament.noMatches}</Text>
+                <Text style={styles.emptySubtitle}>{t.tournament.noMatchesSub}</Text>
               </View>
             }
           />

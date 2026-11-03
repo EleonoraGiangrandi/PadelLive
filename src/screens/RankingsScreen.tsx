@@ -19,6 +19,7 @@ import { RootStackParamList } from '../types/navigation';
 import { useAppTheme, AppTheme } from '../utils/theme';
 import { PlayerRow } from '../components/ranking/PlayerRow';
 import { useFavoritesStore } from '../store/useFavoritesStore';
+import { useTranslation } from '../i18n';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -27,6 +28,7 @@ export const RankingsScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { theme } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { t } = useTranslation();
 
   const [gender, setGender] = useState<'men' | 'women'>('men');
   const [viewMode, setViewMode] = useState<'all' | 'favorites'>('all');
@@ -101,8 +103,8 @@ export const RankingsScreen: React.FC = () => {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Giocatori & Classifiche</Text>
-        <Text style={styles.subtitle}>Ranking FIP, Premier Padel e i tuoi preferiti</Text>
+        <Text style={styles.title}>{t.rankings.title}</Text>
+        <Text style={styles.subtitle}>{t.rankings.subtitle}</Text>
 
         {/* Category & Favorites Toggle */}
         <View style={styles.toggleRow}>
@@ -122,7 +124,7 @@ export const RankingsScreen: React.FC = () => {
                 viewMode === 'all' && gender === 'men' && styles.toggleTextActive,
               ]}
             >
-              UOMINI
+              {t.rankings.men}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -141,7 +143,7 @@ export const RankingsScreen: React.FC = () => {
                 viewMode === 'all' && gender === 'women' && styles.toggleTextActive,
               ]}
             >
-              DONNE
+              {t.rankings.women}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -159,7 +161,7 @@ export const RankingsScreen: React.FC = () => {
                 viewMode === 'favorites' && styles.toggleTextFavActive,
               ]}
             >
-              ⭐ PREFERITI {favorites.length > 0 ? `(${favorites.length})` : ''}
+              ⭐ {t.rankings.favorites} {favorites.length > 0 ? `(${favorites.length})` : ''}
             </Text>
           </TouchableOpacity>
         </View>
@@ -170,8 +172,8 @@ export const RankingsScreen: React.FC = () => {
             style={styles.searchInput}
             placeholder={
               viewMode === 'favorites'
-                ? 'Cerca tra i tuoi preferiti...'
-                : 'Cerca giocatore o nazione...'
+                ? t.rankings.searchFavoritesPlaceholder
+                : t.rankings.searchPlaceholder
             }
             placeholderTextColor={theme.colors.textMuted}
             value={searchQuery}
@@ -199,13 +201,13 @@ export const RankingsScreen: React.FC = () => {
       {viewMode === 'all' && isLoading && playersList.length === 0 ? (
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={styles.loadingText}>Caricamento giocatori...</Text>
+          <Text style={styles.loadingText}>{t.rankings.loading}</Text>
         </View>
       ) : viewMode === 'all' && error && playersList.length === 0 ? (
         <View style={styles.centerContainer}>
-          <Text style={styles.errorText}>Errore durante il caricamento</Text>
+          <Text style={styles.errorText}>{t.rankings.error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={() => { refetch(); }}>
-            <Text style={styles.retryButtonText}>Riprova</Text>
+            <Text style={styles.retryButtonText}>{t.rankings.retry}</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -248,13 +250,13 @@ export const RankingsScreen: React.FC = () => {
               <Text style={styles.emptyIcon}>{viewMode === 'favorites' ? '⭐' : '🏆'}</Text>
               <Text style={styles.emptyTitle}>
                 {viewMode === 'favorites'
-                  ? 'Nessun preferito salvato'
-                  : 'Nessun giocatore trovato'}
+                  ? t.rankings.emptyFavTitle
+                  : t.rankings.emptyAllTitle}
               </Text>
               <Text style={styles.emptySubtitle}>
                 {viewMode === 'favorites'
-                  ? 'Tocca la stella ☆ su qualsiasi giocatore per aggiungerlo e ricevere le sue notifiche live!'
-                  : "Verifica il nome inserito o seleziona un'altra categoria"}
+                  ? t.rankings.emptyFavSub
+                  : t.rankings.emptyAllSub}
               </Text>
             </View>
           }

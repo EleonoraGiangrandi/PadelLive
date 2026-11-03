@@ -8,12 +8,14 @@ import { RankingsScreen } from '../screens/RankingsScreen';
 import { NewsScreen } from '../screens/NewsScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { useAppTheme } from '../utils/theme';
+import { useTranslation } from '../i18n';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 export const BottomTabNavigator: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { theme } = useAppTheme();
+  const { t } = useTranslation();
 
   return (
     <Tab.Navigator
@@ -36,7 +38,7 @@ export const BottomTabNavigator: React.FC = () => {
         name="HomeTab"
         component={HomeScreen}
         options={{
-          tabBarLabel: 'Tornei',
+          tabBarLabel: t.tabs.tournaments,
           tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>🎾</Text>,
         }}
       />
@@ -44,7 +46,7 @@ export const BottomTabNavigator: React.FC = () => {
         name="RankingsTab"
         component={RankingsScreen}
         options={{
-          tabBarLabel: 'Giocatori',
+          tabBarLabel: t.tabs.players,
           tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>🏆</Text>,
         }}
       />
@@ -52,7 +54,7 @@ export const BottomTabNavigator: React.FC = () => {
         name="NewsTab"
         component={NewsScreen}
         options={{
-          tabBarLabel: 'Notizie',
+          tabBarLabel: t.tabs.news,
           tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>📰</Text>,
         }}
       />
@@ -60,7 +62,7 @@ export const BottomTabNavigator: React.FC = () => {
         name="SettingsTab"
         component={SettingsScreen}
         options={{
-          tabBarLabel: 'Profilo',
+          tabBarLabel: t.tabs.settings,
           tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>⚙️</Text>,
         }}
       />

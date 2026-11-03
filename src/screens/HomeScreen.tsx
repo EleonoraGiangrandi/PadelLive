@@ -24,6 +24,7 @@ import { TournamentCard } from '../components/tournament/TournamentCard';
 import { FilterModal } from '../components/common/FilterModal';
 import { AboutModal } from '../components/common/AboutModal';
 import { usePreferencesStore, ALL_TOURNAMENT_CATEGORIES } from '../store/usePreferencesStore';
+import { useTranslation } from '../i18n';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type StatusTab = 'in_corso' | 'futuri' | 'recenti' | 'tutti';
@@ -33,6 +34,7 @@ export const HomeScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { theme, isDark } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { t } = useTranslation();
 
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [isAboutVisible, setIsAboutVisible] = useState(false);
@@ -182,7 +184,7 @@ export const HomeScreen: React.FC = () => {
             <View style={styles.searchBar}>
               <TextInput
                 style={styles.searchInput}
-                placeholder="Cerca torneo, città o circuito..."
+                placeholder={t.home.searchPlaceholder}
                 placeholderTextColor={theme.colors.textMuted}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -199,8 +201,8 @@ export const HomeScreen: React.FC = () => {
           ) : (
             <>
               <View>
-                <Text style={styles.appName}>🎾 PadelPulse</Text>
-                <Text style={styles.screenSubtitle}>Tornei & Punteggi Live</Text>
+                <Text style={styles.appName}>🎾 {t.home.appName}</Text>
+                <Text style={styles.screenSubtitle}>{t.home.subtitle}</Text>
               </View>
 
               <View style={styles.headerActions}>
@@ -232,10 +234,10 @@ export const HomeScreen: React.FC = () => {
             contentContainerStyle={styles.statusTabsContent}
           >
             {[
-              { id: 'in_corso', label: 'IN CORSO', count: tabCounts.in_corso, isLive: true },
-              { id: 'futuri', label: 'FUTURI', count: tabCounts.futuri },
-              { id: 'recenti', label: 'RECENTI', count: tabCounts.recenti },
-              { id: 'tutti', label: 'TUTTI', count: tabCounts.tutti },
+              { id: 'in_corso', label: t.home.ongoing.toUpperCase(), count: tabCounts.in_corso, isLive: true },
+              { id: 'futuri', label: t.home.upcoming.toUpperCase(), count: tabCounts.futuri },
+              { id: 'recenti', label: t.home.recent.toUpperCase(), count: tabCounts.recenti },
+              { id: 'tutti', label: t.home.all.toUpperCase(), count: tabCounts.tutti },
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -336,10 +338,8 @@ export const HomeScreen: React.FC = () => {
             {displayedEvents.length === 0 && (
               <View style={styles.emptyState}>
                 <Text style={styles.emptyIcon}>🎾</Text>
-                <Text style={styles.emptyTitle}>Nessun torneo in questa sezione</Text>
-                <Text style={styles.emptySubtitle}>
-                  Prova a selezionare un'altra scheda o a ripristinare i filtri categoria
-                </Text>
+                <Text style={styles.emptyTitle}>{t.home.noTournaments}</Text>
+                <Text style={styles.emptySubtitle}>{t.home.noTournamentsSub}</Text>
                 {selectedCategories.length < ALL_TOURNAMENT_CATEGORIES.length && (
                   <TouchableOpacity
                     style={styles.resetFiltersBtn}

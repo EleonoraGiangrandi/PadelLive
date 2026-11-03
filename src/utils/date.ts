@@ -12,17 +12,17 @@ export function parseDate(dateStr: string): Date | null {
   return new Date(year, month, day);
 }
 
-export function formatDateRange(startDate: string, endDate: string): string {
+export function formatDateRange(startDate: string, endDate: string, locale: string = 'en-US'): string {
   const start = parseDate(startDate);
   const end = parseDate(endDate);
   if (!start && !end) return startDate || endDate || '';
-  if (!start && end) return end.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
-  if (start && !end) return start.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+  if (!start && end) return end.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
+  if (start && !end) return start.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
 
   const startDay = start!.getDate();
   const endDay = end!.getDate();
-  const startMonth = start!.toLocaleDateString('it-IT', { month: 'short' });
-  const endMonth = end!.toLocaleDateString('it-IT', { month: 'short' });
+  const startMonth = start!.toLocaleDateString(locale, { month: 'short' });
+  const endMonth = end!.toLocaleDateString(locale, { month: 'short' });
   const year = end!.getFullYear();
 
   if (start!.getMonth() === end!.getMonth()) {
@@ -74,7 +74,12 @@ export interface DayTab {
   isToday: boolean;
 }
 
-export function getDatesBetween(startDate: string, endDate: string): DayTab[] {
+export function getDatesBetween(
+  startDate: string,
+  endDate: string,
+  locale: string = 'en-US',
+  todayLabel: string = 'TODAY'
+): DayTab[] {
   const start = parseDate(startDate);
   const end = parseDate(endDate);
   if (!start || !end) return [];
@@ -89,13 +94,13 @@ export function getDatesBetween(startDate: string, endDate: string): DayTab[] {
   while (current <= end) {
     const curDateStr = `${current.getFullYear()}-${current.getMonth()}-${current.getDate()}`;
     const isToday = curDateStr === todayStr;
-    const weekday = current.toLocaleDateString('it-IT', { weekday: 'short' }).toUpperCase();
+    const weekday = current.toLocaleDateString(locale, { weekday: 'short' }).toUpperCase();
     const dayOfMonth = current.getDate().toString().padStart(2, '0');
 
     tabs.push({
       dayNumber,
       date: new Date(current.getTime()),
-      label: isToday ? 'OGGI' : `${weekday} ${dayOfMonth}`,
+      label: isToday ? todayLabel : `${weekday} ${dayOfMonth}`,
       isToday,
     });
 

@@ -19,6 +19,7 @@ import { useAppTheme, AppTheme } from '../utils/theme';
 import { decodeHtmlEntities } from '../utils/text';
 import { FavoriteStar } from '../components/common/FavoriteStar';
 import { useFavoritesStore } from '../store/useFavoritesStore';
+import { useTranslation } from '../i18n';
 
 type RouteProps = RouteProp<RootStackParamList, 'Profile'>;
 type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -29,6 +30,7 @@ export const ProfileScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { theme } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { t } = useTranslation();
   const { player } = route.params;
 
   const handler =
@@ -67,7 +69,7 @@ export const ProfileScreen: React.FC = () => {
         >
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.topBarTitle}>Profilo Giocatore</Text>
+        <Text style={styles.topBarTitle}>{t.profile.title}</Text>
         <FavoriteStar player={player} size={24} style={styles.topBarStar} />
       </View>
 
@@ -102,7 +104,7 @@ export const ProfileScreen: React.FC = () => {
           {/* Quick Metrics */}
           <View style={styles.metricsRow}>
             <View style={styles.metricItem}>
-              <Text style={styles.metricLabel}>RANK FIP</Text>
+              <Text style={styles.metricLabel}>{t.profile.fipRank}</Text>
               <View style={styles.rankWithDelta}>
                 <Text style={styles.metricValue}>
                   #{profile?.rank || player.position || '-'}
@@ -115,7 +117,7 @@ export const ProfileScreen: React.FC = () => {
             <View style={styles.metricDivider} />
 
             <View style={styles.metricItem}>
-              <Text style={styles.metricLabel}>PUNTI</Text>
+              <Text style={styles.metricLabel}>{t.profile.points}</Text>
               <Text style={[styles.metricValue, { color: theme.colors.gold }]}>
                 {profile?.points || player.points || '-'}
               </Text>
@@ -124,7 +126,7 @@ export const ProfileScreen: React.FC = () => {
             <View style={styles.metricDivider} />
 
             <View style={styles.metricItem}>
-              <Text style={styles.metricLabel}>BEST RANK</Text>
+              <Text style={styles.metricLabel}>{t.profile.bestRank}</Text>
               <Text style={styles.metricValue}>
                 #{profile?.stats?.bestRank || '-'}
               </Text>
@@ -135,34 +137,34 @@ export const ProfileScreen: React.FC = () => {
         {isLoading ? (
           <View style={styles.loaderContainer}>
             <ActivityIndicator size="small" color={theme.colors.primary} />
-            <Text style={styles.loaderText}>Caricamento dettagli...</Text>
+            <Text style={styles.loaderText}>{t.profile.loading}</Text>
           </View>
         ) : (
           <>
             {/* Bio Details */}
             <View style={styles.cardSection}>
-              <Text style={styles.cardSectionTitle}>INFORMAZIONI PERSONALI</Text>
+              <Text style={styles.cardSectionTitle}>{t.profile.details.toUpperCase()}</Text>
               <View style={styles.bioGrid}>
                 <View style={styles.bioRow}>
-                  <Text style={styles.bioLabel}>Nato a</Text>
+                  <Text style={styles.bioLabel}>{t.profile.bornIn}</Text>
                   <Text style={styles.bioValue}>{decodeHtmlEntities(profile?.bornIn) || '-'}</Text>
                 </View>
                 <View style={styles.bioRow}>
-                  <Text style={styles.bioLabel}>Data di Nascita</Text>
+                  <Text style={styles.bioLabel}>{t.profile.dob}</Text>
                   <Text style={styles.bioValue}>{profile?.dob || '-'}</Text>
                 </View>
                 <View style={styles.bioRow}>
-                  <Text style={styles.bioLabel}>Altezza</Text>
+                  <Text style={styles.bioLabel}>{t.profile.height}</Text>
                   <Text style={styles.bioValue}>{profile?.height || '-'}</Text>
                 </View>
                 <View style={styles.bioRow}>
-                  <Text style={styles.bioLabel}>Posizione di Gioco</Text>
+                  <Text style={styles.bioLabel}>{t.profile.position}</Text>
                   <Text style={styles.bioValue}>
                     {decodeHtmlEntities(profile?.playingPosition) || '-'}
                   </Text>
                 </View>
                 <View style={styles.bioRow}>
-                  <Text style={styles.bioLabel}>Allenatore / Coach</Text>
+                  <Text style={styles.bioLabel}>{t.profile.coach}</Text>
                   <Text style={styles.bioValue}>{decodeHtmlEntities(profile?.coach) || '-'}</Text>
                 </View>
               </View>
@@ -171,7 +173,7 @@ export const ProfileScreen: React.FC = () => {
             {/* Partner */}
             {profile?.partner && (
               <View style={styles.cardSection}>
-                <Text style={styles.cardSectionTitle}>COMPAGNO DI SQUADRA</Text>
+                <Text style={styles.cardSectionTitle}>{t.profile.partner.toUpperCase()}</Text>
                 <TouchableOpacity
                   style={styles.partnerRow}
                   activeOpacity={0.7}
@@ -205,31 +207,31 @@ export const ProfileScreen: React.FC = () => {
             {/* Season Statistics */}
             {profile?.stats && (
               <View style={styles.cardSection}>
-                <Text style={styles.cardSectionTitle}>STATISTICHE STAGIONALI</Text>
+                <Text style={styles.cardSectionTitle}>{t.profile.stats.toUpperCase()}</Text>
                 <View style={styles.statsGrid}>
                   <View style={styles.statBox}>
                     <Text style={styles.statBoxValue}>
                       {profile.stats.matchesPlayed ?? '-'}
                     </Text>
-                    <Text style={styles.statBoxLabel}>Partite Giocate</Text>
+                    <Text style={styles.statBoxLabel}>{t.profile.matchesPlayed}</Text>
                   </View>
                   <View style={styles.statBox}>
                     <Text style={[styles.statBoxValue, { color: theme.colors.winner }]}>
                       {profile.stats.matchesWon ?? '-'}
                     </Text>
-                    <Text style={styles.statBoxLabel}>Vittorie</Text>
+                    <Text style={styles.statBoxLabel}>{t.profile.victories}</Text>
                   </View>
                   <View style={styles.statBox}>
                     <Text style={[styles.statBoxValue, { color: theme.colors.live }]}>
                       {profile.stats.matchesLost ?? '-'}
                     </Text>
-                    <Text style={styles.statBoxLabel}>Sconfitte</Text>
+                    <Text style={styles.statBoxLabel}>{t.profile.defeats}</Text>
                   </View>
                   <View style={styles.statBox}>
                     <Text style={[styles.statBoxValue, { color: theme.colors.gold }]}>
                       {profile.stats.effectiveness || '-'}
                     </Text>
-                    <Text style={styles.statBoxLabel}>% Efficacia</Text>
+                    <Text style={styles.statBoxLabel}>{t.profile.winRate}</Text>
                   </View>
                   <View style={styles.statBox}>
                     <Text style={styles.statBoxValue}>

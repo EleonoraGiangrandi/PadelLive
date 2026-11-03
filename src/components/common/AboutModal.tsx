@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { useAppTheme, AppTheme } from '../../utils/theme';
+import { useTranslation } from '../../i18n';
 
 interface AboutModalProps {
   visible: boolean;
@@ -17,6 +18,7 @@ interface AboutModalProps {
 export const AboutModal: React.FC<AboutModalProps> = ({ visible, onClose }) => {
   const { theme } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { t } = useTranslation();
 
   return (
     <Modal
@@ -33,30 +35,22 @@ export const AboutModal: React.FC<AboutModalProps> = ({ visible, onClose }) => {
         <TouchableWithoutFeedback>
           <View style={styles.dialog}>
             <Text style={styles.logo}>🎾 PadelPulse</Text>
-            <Text style={styles.title}>Live Scores & Circuiti</Text>
-            <Text style={styles.version}>Versione 2.0.0 (React Native)</Text>
+            <Text style={styles.title}>{t.aboutModal.title}</Text>
+            <Text style={styles.version}>{t.aboutModal.version}</Text>
 
             <View style={styles.statusPill}>
               <View style={styles.greenDot} />
-              <Text style={styles.statusText}>
-                Sorgente: 100% Ufficiale Diretta (FIP & MatchScorer)
-              </Text>
+              <Text style={styles.statusText}>{t.aboutModal.source}</Text>
             </View>
 
             <View style={styles.divider} />
 
-            <Text style={styles.desc}>
-              Applicazione mobile autonoma per il monitoraggio dei punteggi di padel in tempo reale,
-              classifiche ufficiali FIP, calendari tornei e notizie.
-            </Text>
+            <Text style={styles.desc}>{t.aboutModal.desc}</Text>
 
-            <Text style={styles.securityNote}>
-              🔒 Nessun dato personale o richiesta viene inviata a server intermediari di terze parti.
-              Tutte le comunicazioni avvengono direttamente con i fornitori ufficiali a costo zero.
-            </Text>
+            <Text style={styles.securityNote}>🔒 {t.aboutModal.privacy}</Text>
 
             <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-              <Text style={styles.closeBtnText}>Chiudi</Text>
+              <Text style={styles.closeBtnText}>{t.aboutModal.close}</Text>
             </TouchableOpacity>
           </View>
         </TouchableWithoutFeedback>

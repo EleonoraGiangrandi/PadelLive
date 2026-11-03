@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Gender } from '../types/models';
+import { AppLanguage } from '../i18n/types';
 
 export type ThemeMode = 'dark' | 'light';
 
@@ -32,6 +33,7 @@ interface PreferencesState {
   searchQuery: string;
   isFilterLoaded: boolean;
   themeMode: ThemeMode;
+  language: AppLanguage;
   setGenre: (genre: Gender) => void;
   toggleCategory: (category: string) => void;
   selectAllCategories: () => void;
@@ -39,12 +41,14 @@ interface PreferencesState {
   setSearchQuery: (query: string) => void;
   setThemeMode: (mode: ThemeMode) => void;
   toggleThemeMode: () => void;
+  setLanguage: (lang: AppLanguage) => void;
   loadPreferences: () => Promise<void>;
 }
 
 const PREF_GENRE_KEY = '@padely_genre';
 const PREF_FILTERS_KEY = '@padely_filters_v2';
 const PREF_THEME_KEY = '@padely_theme_mode';
+const PREF_LANGUAGE_KEY = '@padely_language_v1';
 
 export const usePreferencesStore = create<PreferencesState>((set, get) => ({
   genre: 'both',
@@ -52,6 +56,7 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
   searchQuery: '',
   isFilterLoaded: false,
   themeMode: 'dark',
+  language: 'en', // Default in inglese come richiesto
 
   setGenre: async (genre: Gender) => {
     set({ genre });
@@ -59,6 +64,15 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
       await AsyncStorage.setItem(PREF_GENRE_KEY, genre);
     } catch (e) {
       console.warn('Error saving genre:', e);
+    }
+  },
+
+  setLanguage: async (language: AppLanguage) => {
+    set({ language });
+    try {
+      await AsyncStorage.setItem(PREF_LANGUAGE_KEY, language);
+    } catch (e) {
+      console.warn('Error saving language:', e);
     }
   },
 
@@ -123,6 +137,9 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
       const savedGenre = await AsyncStorage.getItem(PREF_GENRE_KEY);
       const savedFilters = await AsyncStorage.getItem(PREF_FILTERS_KEY);
       const savedTheme = await AsyncStorage.getItem(PREF_THEME_KEY);
+      const savedLang = await AsyncStorage.getItem(PREF_LANGUAGE_KEY);
+
+      const validLang = savedLang === 'it' || savedLang === 'es' || savedLang === 'en' ? savedLang : 'en';
 
       set({
         genre: (savedGenre as Gender) || 'both',
@@ -130,6 +147,7 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
           ? JSON.parse(savedFilters)
           : ALL_TOURNAMENT_CATEGORIES.map((c) => c.id),
         themeMode: savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : 'dark',
+        language: validLang,
         isFilterLoaded: true,
       });
     } catch (e) {

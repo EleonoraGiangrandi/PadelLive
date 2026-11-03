@@ -13,6 +13,7 @@ import {
   usePreferencesStore,
   ALL_TOURNAMENT_CATEGORIES,
 } from '../../store/usePreferencesStore';
+import { useTranslation } from '../../i18n';
 
 interface FilterModalProps {
   visible: boolean;
@@ -22,6 +23,7 @@ interface FilterModalProps {
 export const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose }) => {
   const { theme, isDark } = useAppTheme();
   const styles = useMemo(() => createStyles(theme, isDark), [theme, isDark]);
+  const { t } = useTranslation();
 
   const {
     genre,
@@ -50,10 +52,8 @@ export const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose }) =>
 
             <View style={styles.header}>
               <View>
-                <Text style={styles.title}>Filtra Categorie Tornei</Text>
-                <Text style={styles.subtitle}>
-                  Seleziona quali circuiti mostrare
-                </Text>
+                <Text style={styles.title}>{t.filterModal.title}</Text>
+                <Text style={styles.subtitle}>{t.filterModal.subtitle}</Text>
               </View>
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                 <Text style={styles.closeText}>✕</Text>
@@ -67,11 +67,11 @@ export const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose }) =>
                 </Text>
                 <View style={styles.quickActions}>
                   <TouchableOpacity onPress={selectAllCategories}>
-                    <Text style={styles.actionText}>Seleziona Tutti</Text>
+                    <Text style={styles.actionText}>{t.filterModal.selectAll}</Text>
                   </TouchableOpacity>
                   <Text style={styles.actionDivider}>•</Text>
                   <TouchableOpacity onPress={clearCategories}>
-                    <Text style={styles.actionText}>Deseleziona</Text>
+                    <Text style={styles.actionText}>{t.filterModal.deselectAll}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -105,12 +105,12 @@ export const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose }) =>
                 })}
               </View>
 
-              <Text style={styles.sectionTitle}>Categoria Genere</Text>
+              <Text style={styles.sectionTitle}>{t.rankings.title}</Text>
               <View style={styles.genreRow}>
                 {[
-                  { id: 'both', label: 'TUTTI' },
-                  { id: 'men', label: 'UOMINI' },
-                  { id: 'women', label: 'DONNE' },
+                  { id: 'both', label: t.tournament.all },
+                  { id: 'men', label: t.tournament.men },
+                  { id: 'women', label: t.tournament.women },
                 ].map((g) => {
                   const isSelected = genre === g.id;
                   return (
@@ -136,7 +136,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose }) =>
               </View>
 
               <TouchableOpacity style={styles.applyButton} onPress={onClose}>
-                <Text style={styles.applyButtonText}>Applica Filtri</Text>
+                <Text style={styles.applyButtonText}>{t.filterModal.apply}</Text>
               </TouchableOpacity>
             </ScrollView>
           </View>
