@@ -154,3 +154,27 @@ export interface RssArticle {
   source: string;
   url: string;
 }
+
+export interface FavoritePlayer {
+  id: string;
+  name: string;
+  surname?: string;
+  country?: string;
+  flag?: string;
+  image?: string;
+  position?: number;
+  gender?: 'men' | 'women';
+  handler?: string;
+  addedAt: number;
+}
+
+export interface NotificationPreferences {
+  enabled: boolean;
+  onlyFavorites: boolean;
+  notifyMatchStart: boolean;
+  notifyMatchEnd: boolean;
+  notifySetEnd: boolean;
+  reminderMinutes: number; // 0 (off), 5, 10, 15, 30
+  sound: boolean;
+  vibration: boolean;
+}

@@ -3,62 +3,105 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { PlayerRanking } from '../../types/models';
 import { useAppTheme, AppTheme } from '../../utils/theme';
 import { decodeHtmlEntities } from '../../utils/text';
+import { FavoriteStar } from '../common/FavoriteStar';
+import { useFavoritesStore } from '../../store/useFavoritesStore';
 
 interface PlayerRowProps {
   player: PlayerRanking;
   onPress: () => void;
+  isFavoriteView?: boolean;
+  onRemove?: () => void;
 }
 
-export const PlayerRow: React.FC<PlayerRowProps> = ({ player, onPress }) => {
+export const PlayerRow: React.FC<PlayerRowProps> = ({
+  player,
+  onPress,
+  isFavoriteView = false,
+  onRemove,
+}) => {
   const { theme } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const removeFavorite = useFavoritesStore((s) => s.removeFavorite);
 
   const delta = player.rankDelta || 0;
   const decodedName = decodeHtmlEntities(player.name);
   const decodedCountry = decodeHtmlEntities(player.country);
 
-  return (
-    <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>
-      <View style={styles.rankCol}>
-        <Text style={styles.position}>{player.position}</Text>
-        {delta > 0 ? (
-          <Text style={styles.deltaUp}>+{delta}</Text>
-        ) : delta < 0 ? (
-          <Text style={styles.deltaDown}>-{Math.abs(delta)}</Text>
-        ) : (
-          <Text style={styles.deltaEqual}>=</Text>
-        )}
-      </View>
+  const handleRemovePress = () => {
+    if (onRemove) {
+      onRemove();
+    } else {
+      removeFavorite(player.id || (player as any).handler || player.name);
+    }
+  };
 
-      <View style={styles.avatarContainer}>
-        {player.image ? (
-          <Image source={{ uri: player.image }} style={styles.avatar} />
-        ) : (
-          <View style={[styles.avatar, styles.placeholderAvatar]}>
-            <Text style={styles.placeholderAvatarText}>
-              {decodedName.charAt(0)}
-            </Text>
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.mainTouchable}
+        onPress={onPress}
+        activeOpacity={0.7}
+      >
+        <View style={styles.rankCol}>
+          <Text style={styles.position}>{player.position || '-'}</Text>
+          {delta > 0 ? (
+            <Text style={styles.deltaUp}>+{delta}</Text>
+          ) : delta < 0 ? (
+            <Text style={styles.deltaDown}>-{Math.abs(delta)}</Text>
+          ) : (
+            <Text style={styles.deltaEqual}>=</Text>
+          )}
+        </View>
+
+        <View style={styles.avatarContainer}>
+          {player.image ? (
+            <Image source={{ uri: player.image }} style={styles.avatar} />
+          ) : (
+            <View style={[styles.avatar, styles.placeholderAvatar]}>
+              <Text style={styles.placeholderAvatarText}>
+                {decodedName.charAt(0)}
+              </Text>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.infoCol}>
+          <Text style={styles.name} numberOfLines={1}>
+            {decodedName}
+          </Text>
+          <View style={styles.countryRow}>
+            {player.flag ? (
+              <Image source={{ uri: player.flag }} style={styles.flag} />
+            ) : null}
+            <Text style={styles.countryName}>{decodedCountry || 'N/A'}</Text>
+          </View>
+        </View>
+
+        {/* Mostra i punti solo se NON siamo nella vista preferiti */}
+        {!isFavoriteView && (
+          <View style={styles.pointsCol}>
+            <Text style={styles.points}>{player.points}</Text>
+            <Text style={styles.pointsLabel}>PTS</Text>
           </View>
         )}
-      </View>
+      </TouchableOpacity>
 
-      <View style={styles.infoCol}>
-        <Text style={styles.name} numberOfLines={1}>
-          {decodedName}
-        </Text>
-        <View style={styles.countryRow}>
-          {player.flag ? (
-            <Image source={{ uri: player.flag }} style={styles.flag} />
-          ) : null}
-          <Text style={styles.countryName}>{decodedCountry || 'N/A'}</Text>
-        </View>
-      </View>
-
-      <View style={styles.pointsCol}>
-        <Text style={styles.points}>{player.points}</Text>
-        <Text style={styles.pointsLabel}>PTS</Text>
-      </View>
-    </TouchableOpacity>
+      {/* Azione rapida: Pulsante Rimuovi nei Preferiti, Stella nella Classifica */}
+      {isFavoriteView ? (
+        <TouchableOpacity
+          style={styles.removeBtn}
+          onPress={handleRemovePress}
+          activeOpacity={0.6}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
+          <View style={styles.removeBadge}>
+            <Text style={styles.removeText}>✕</Text>
+          </View>
+        </TouchableOpacity>
+      ) : (
+        <FavoriteStar player={player} size={22} style={styles.starWrap} />
+      )}
+    </View>
   );
 };
 
@@ -71,11 +114,17 @@ const createStyles = (theme: AppTheme) =>
       borderRadius: theme.borderRadius.md,
       borderWidth: 1,
       borderColor: theme.colors.cardBorder,
-      padding: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.md,
       marginBottom: theme.spacing.xs,
     },
+    mainTouchable: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
     rankCol: {
-      width: 38,
+      width: 36,
       alignItems: 'center',
     },
     position: {
@@ -153,5 +202,26 @@ const createStyles = (theme: AppTheme) =>
       fontSize: 10,
       color: theme.colors.textMuted,
       fontWeight: '600',
+    },
+    starWrap: {
+      marginLeft: theme.spacing.sm,
+      paddingHorizontal: 4,
+    },
+    removeBtn: {
+      marginLeft: theme.spacing.sm,
+      padding: 4,
+    },
+    removeBadge: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      backgroundColor: theme.colors.cardSecondary,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    removeText: {
+      color: theme.colors.live,
+      fontSize: 13,
+      fontWeight: '700',
     },
   });

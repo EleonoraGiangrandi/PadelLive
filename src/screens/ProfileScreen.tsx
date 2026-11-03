@@ -17,6 +17,8 @@ import { PlayerRanking, PlayerProfile } from '../types/models';
 import { RootStackParamList } from '../types/navigation';
 import { useAppTheme, AppTheme } from '../utils/theme';
 import { decodeHtmlEntities } from '../utils/text';
+import { FavoriteStar } from '../components/common/FavoriteStar';
+import { useFavoritesStore } from '../store/useFavoritesStore';
 
 type RouteProps = RouteProp<RootStackParamList, 'Profile'>;
 type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -66,7 +68,7 @@ export const ProfileScreen: React.FC = () => {
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
         <Text style={styles.topBarTitle}>Profilo Giocatore</Text>
-        <View style={styles.topBarSpacer} />
+        <FavoriteStar player={player} size={24} style={styles.topBarStar} />
       </View>
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -286,6 +288,12 @@ const createStyles = (theme: AppTheme) =>
   },
   topBarSpacer: {
     width: 36,
+  },
+  topBarStar: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scroll: {
     flex: 1,

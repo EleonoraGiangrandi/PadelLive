@@ -11,4 +11,5 @@ export type BottomTabParamList = {
   HomeTab: undefined;
   RankingsTab: undefined;
   NewsTab: undefined;
+  SettingsTab: undefined;
 };

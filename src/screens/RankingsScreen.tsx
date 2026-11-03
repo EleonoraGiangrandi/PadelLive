@@ -18,6 +18,7 @@ import { PlayerRanking } from '../types/models';
 import { RootStackParamList } from '../types/navigation';
 import { useAppTheme, AppTheme } from '../utils/theme';
 import { PlayerRow } from '../components/ranking/PlayerRow';
+import { useFavoritesStore } from '../store/useFavoritesStore';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -28,7 +29,9 @@ export const RankingsScreen: React.FC = () => {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [gender, setGender] = useState<'men' | 'women'>('men');
+  const [viewMode, setViewMode] = useState<'all' | 'favorites'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const favorites = useFavoritesStore((s) => s.favorites);
 
   // Infinite scroll query for rankings directly from FIP
   const {
@@ -48,23 +51,47 @@ export const RankingsScreen: React.FC = () => {
       if (!lastPage || lastPage.length < 20) return undefined;
       return allPages.length * 20;
     },
-    enabled: !searchQuery.trim(),
+    enabled: viewMode === 'all' && !searchQuery.trim(),
   });
 
   // Search query directly on FIP player search API
   const { data: searchResults = [], isFetching: isSearching } = useQuery({
     queryKey: ['searchPlayers', gender, searchQuery],
     queryFn: () => searchPlayers(gender, searchQuery),
-    enabled: !!searchQuery.trim(),
+    enabled: viewMode === 'all' && !!searchQuery.trim(),
   });
 
   // Flattened player list
   const playersList: PlayerRanking[] = useMemo(() => {
+    if (viewMode === 'favorites') {
+      let favList: PlayerRanking[] = favorites.map((f) => ({
+        id: f.id,
+        name: f.name,
+        surname: f.surname,
+        position: f.position || 0,
+        points: (f as any).points || '-',
+        country: f.country || '',
+        flag: f.flag || '',
+        image: f.image || '',
+        handler: f.handler,
+      }));
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        favList = favList.filter(
+          (p) =>
+            p.name.toLowerCase().includes(q) ||
+            p.country.toLowerCase().includes(q)
+        );
+      }
+      return favList;
+    }
+
     if (searchQuery.trim()) {
       return searchResults;
     }
     return data?.pages.flatMap((page) => page) || [];
-  }, [searchQuery, searchResults, data]);
+  }, [viewMode, favorites, searchQuery, searchResults, data]);
 
   const handleSelectPlayer = (player: PlayerRanking) => {
     navigation.navigate('Profile', { player });
@@ -74,22 +101,25 @@ export const RankingsScreen: React.FC = () => {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Classifiche Premier Padel / FIP</Text>
-        <Text style={styles.subtitle}>Ranking Mondiale Ufficiale Uomini & Donne</Text>
+        <Text style={styles.title}>Giocatori & Classifiche</Text>
+        <Text style={styles.subtitle}>Ranking FIP, Premier Padel e i tuoi preferiti</Text>
 
-        {/* Gender Toggle */}
+        {/* Category & Favorites Toggle */}
         <View style={styles.toggleRow}>
           <TouchableOpacity
             style={[
               styles.toggleBtn,
-              gender === 'men' && styles.toggleBtnMenActive,
+              viewMode === 'all' && gender === 'men' && styles.toggleBtnMenActive,
             ]}
-            onPress={() => setGender('men')}
+            onPress={() => {
+              setViewMode('all');
+              setGender('men');
+            }}
           >
             <Text
               style={[
                 styles.toggleText,
-                gender === 'men' && styles.toggleTextActive,
+                viewMode === 'all' && gender === 'men' && styles.toggleTextActive,
               ]}
             >
               UOMINI
@@ -98,17 +128,38 @@ export const RankingsScreen: React.FC = () => {
           <TouchableOpacity
             style={[
               styles.toggleBtn,
-              gender === 'women' && styles.toggleBtnWomenActive,
+              viewMode === 'all' && gender === 'women' && styles.toggleBtnWomenActive,
             ]}
-            onPress={() => setGender('women')}
+            onPress={() => {
+              setViewMode('all');
+              setGender('women');
+            }}
           >
             <Text
               style={[
                 styles.toggleText,
-                gender === 'women' && styles.toggleTextActive,
+                viewMode === 'all' && gender === 'women' && styles.toggleTextActive,
               ]}
             >
               DONNE
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.toggleBtn,
+              viewMode === 'favorites' && styles.toggleBtnFavActive,
+            ]}
+            onPress={() => {
+              setViewMode(viewMode === 'favorites' ? 'all' : 'favorites');
+            }}
+          >
+            <Text
+              style={[
+                styles.toggleText,
+                viewMode === 'favorites' && styles.toggleTextFavActive,
+              ]}
+            >
+              ⭐ PREFERITI {favorites.length > 0 ? `(${favorites.length})` : ''}
             </Text>
           </TouchableOpacity>
         </View>
@@ -117,11 +168,22 @@ export const RankingsScreen: React.FC = () => {
         <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchInput}
-            placeholder="Cerca giocatore o nazione..."
+            placeholder={
+              viewMode === 'favorites'
+                ? 'Cerca tra i tuoi preferiti...'
+                : 'Cerca giocatore o nazione...'
+            }
             placeholderTextColor={theme.colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
+          {isSearching && (
+            <ActivityIndicator
+              size="small"
+              color={theme.colors.primary}
+              style={{ position: 'absolute', right: searchQuery ? 38 : 12, top: 11 }}
+            />
+          )}
           {searchQuery.length > 0 && (
             <TouchableOpacity
               onPress={() => setSearchQuery('')}
@@ -134,12 +196,12 @@ export const RankingsScreen: React.FC = () => {
       </View>
 
       {/* Content */}
-      {isLoading ? (
+      {viewMode === 'all' && isLoading && playersList.length === 0 ? (
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={styles.loadingText}>Caricamento classifica...</Text>
+          <Text style={styles.loadingText}>Caricamento giocatori...</Text>
         </View>
-      ) : error ? (
+      ) : viewMode === 'all' && error && playersList.length === 0 ? (
         <View style={styles.centerContainer}>
           <Text style={styles.errorText}>Errore durante il caricamento</Text>
           <TouchableOpacity style={styles.retryButton} onPress={() => { refetch(); }}>
@@ -151,25 +213,31 @@ export const RankingsScreen: React.FC = () => {
           data={playersList}
           keyExtractor={(item) => `${item.id}-${item.position}`}
           renderItem={({ item }) => (
-            <PlayerRow player={item} onPress={() => handleSelectPlayer(item)} />
+            <PlayerRow
+              player={item}
+              onPress={() => handleSelectPlayer(item)}
+              isFavoriteView={viewMode === 'favorites'}
+            />
           )}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           onEndReached={() => {
-            if (hasNextPage && !isFetchingNextPage && !searchQuery.trim()) {
+            if (viewMode === 'all' && hasNextPage && !isFetchingNextPage && !searchQuery.trim()) {
               fetchNextPage();
             }
           }}
           onEndReachedThreshold={0.5}
           refreshControl={
-            <RefreshControl
-              refreshing={isRefetching}
-              onRefresh={() => { refetch(); }}
-              tintColor={theme.colors.primary}
-            />
+            viewMode === 'all' ? (
+              <RefreshControl
+                refreshing={isRefetching}
+                onRefresh={() => { refetch(); }}
+                tintColor={theme.colors.primary}
+              />
+            ) : undefined
           }
           ListFooterComponent={
-            isFetchingNextPage ? (
+            viewMode === 'all' && isFetchingNextPage ? (
               <View style={styles.footerLoader}>
                 <ActivityIndicator size="small" color={theme.colors.primary} />
               </View>
@@ -177,10 +245,16 @@ export const RankingsScreen: React.FC = () => {
           }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyIcon}>🏆</Text>
-              <Text style={styles.emptyTitle}>Nessun giocatore trovato</Text>
+              <Text style={styles.emptyIcon}>{viewMode === 'favorites' ? '⭐' : '🏆'}</Text>
+              <Text style={styles.emptyTitle}>
+                {viewMode === 'favorites'
+                  ? 'Nessun preferito salvato'
+                  : 'Nessun giocatore trovato'}
+              </Text>
               <Text style={styles.emptySubtitle}>
-                Verifica il nome inserito o seleziona l'altra categoria
+                {viewMode === 'favorites'
+                  ? 'Tocca la stella ☆ su qualsiasi giocatore per aggiungerlo e ricevere le sue notifiche live!'
+                  : "Verifica il nome inserito o seleziona un'altra categoria"}
               </Text>
             </View>
           }
@@ -233,6 +307,9 @@ const createStyles = (theme: AppTheme) =>
     toggleBtnWomenActive: {
       backgroundColor: theme.colors.women,
     },
+    toggleBtnFavActive: {
+      backgroundColor: '#f59e0b',
+    },
     toggleText: {
       ...theme.typography.badge,
       color: theme.colors.textMuted,
@@ -240,6 +317,10 @@ const createStyles = (theme: AppTheme) =>
     },
     toggleTextActive: {
       color: theme.colors.white,
+    },
+    toggleTextFavActive: {
+      color: '#000000',
+      fontWeight: '800',
     },
     searchContainer: {
       position: 'relative',

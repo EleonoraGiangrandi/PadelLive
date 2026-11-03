@@ -15,7 +15,7 @@ interface AboutModalProps {
 }
 
 export const AboutModal: React.FC<AboutModalProps> = ({ visible, onClose }) => {
-  const { theme, isDark, setThemeMode } = useAppTheme();
+  const { theme } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
@@ -41,30 +41,6 @@ export const AboutModal: React.FC<AboutModalProps> = ({ visible, onClose }) => {
               <Text style={styles.statusText}>
                 Sorgente: 100% Ufficiale Diretta (FIP & MatchScorer)
               </Text>
-            </View>
-
-            {/* Theme Selector */}
-            <View style={styles.themeSelectorSection}>
-              <Text style={styles.themeSectionLabel}>TEMA GRAFICO</Text>
-              <View style={styles.themeToggleRow}>
-                <TouchableOpacity
-                  style={[styles.themeOptionBtn, isDark && styles.themeOptionBtnActive]}
-                  onPress={() => setThemeMode('dark')}
-                >
-                  <Text style={[styles.themeOptionText, isDark && styles.themeOptionTextActive]}>
-                    🌙 Scuro
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[styles.themeOptionBtn, !isDark && styles.themeOptionBtnActive]}
-                  onPress={() => setThemeMode('light')}
-                >
-                  <Text style={[styles.themeOptionText, !isDark && styles.themeOptionTextActive]}>
-                    ☀️ Chiaro
-                  </Text>
-                </TouchableOpacity>
-              </View>
             </View>
 
             <View style={styles.divider} />
@@ -144,45 +120,6 @@ const createStyles = (theme: AppTheme) =>
       ...theme.typography.badge,
       fontSize: 10,
       color: theme.colors.winner,
-    },
-    themeSelectorSection: {
-      width: '100%',
-      alignItems: 'center',
-      marginVertical: theme.spacing.sm,
-    },
-    themeSectionLabel: {
-      ...theme.typography.caption,
-      color: theme.colors.textMuted,
-      fontSize: 10,
-      fontWeight: '700',
-      letterSpacing: 0.8,
-      marginBottom: 6,
-    },
-    themeToggleRow: {
-      flexDirection: 'row',
-      backgroundColor: theme.colors.cardSecondary,
-      borderRadius: theme.borderRadius.md,
-      padding: 4,
-      gap: 6,
-      width: '100%',
-    },
-    themeOptionBtn: {
-      flex: 1,
-      paddingVertical: 8,
-      alignItems: 'center',
-      borderRadius: theme.borderRadius.sm,
-    },
-    themeOptionBtnActive: {
-      backgroundColor: theme.colors.primary,
-    },
-    themeOptionText: {
-      ...theme.typography.caption,
-      color: theme.colors.textSecondary,
-      fontWeight: '600',
-    },
-    themeOptionTextActive: {
-      color: theme.colors.white,
-      fontWeight: '700',
     },
     divider: {
       width: '100%',

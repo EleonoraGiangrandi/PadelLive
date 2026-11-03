@@ -31,7 +31,7 @@ type StatusTab = 'in_corso' | 'futuri' | 'recenti' | 'tutti';
 export const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const insets = useSafeAreaInsets();
-  const { theme, isDark, toggleTheme } = useAppTheme();
+  const { theme, isDark } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -204,14 +204,6 @@ export const HomeScreen: React.FC = () => {
               </View>
 
               <View style={styles.headerActions}>
-                <TouchableOpacity
-                  onPress={toggleTheme}
-                  style={styles.iconButton}
-                  accessibilityLabel={isDark ? 'Attiva tema chiaro' : 'Attiva tema scuro'}
-                >
-                  <Text style={styles.actionIcon}>{isDark ? '☀️' : '🌙'}</Text>
-                </TouchableOpacity>
-
                 <TouchableOpacity
                   onPress={() => setIsSearching(true)}
                   style={styles.iconButton}

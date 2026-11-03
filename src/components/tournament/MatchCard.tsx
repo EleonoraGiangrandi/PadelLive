@@ -4,6 +4,8 @@ import { Match, Team } from '../../types/models';
 import { useAppTheme, AppTheme } from '../../utils/theme';
 import { Badge } from '../common/Badge';
 import { decodeHtmlEntities } from '../../utils/text';
+import { useFavoritesStore } from '../../store/useFavoritesStore';
+import { useNotificationStore } from '../../store/useNotificationStore';
 
 interface MatchCardProps {
   match: Match;
@@ -13,6 +15,16 @@ interface MatchCardProps {
 export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
   const { theme } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+
+  const isPlayerFavorite = useFavoritesStore((s) => s.isPlayerFavorite);
+  const isFollowed = useNotificationStore((s) => s.isMatchFollowed(match.matchId));
+  const toggleFollowMatch = useNotificationStore((s) => s.toggleFollowMatch);
+
+  const isP1Fav = isPlayerFavorite(match.team1?.player1);
+  const isP2Fav = isPlayerFavorite(match.team1?.player2);
+  const isP3Fav = isPlayerFavorite(match.team2?.player1);
+  const isP4Fav = isPlayerFavorite(match.team2?.player2);
+  const hasFavorite = isP1Fav || isP2Fav || isP3Fav || isP4Fav;
 
   const isWomen = match.roundName?.toLowerCase().includes('women');
   const isFinished = match.status === 'completed' || match.team1.isWinner || match.team2.isWinner;
@@ -57,7 +69,12 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
     );
   };
 
-  const renderTeamRow = (team: Team, isTeamWinner: boolean) => {
+  const renderTeamRow = (
+    team: Team,
+    isTeamWinner: boolean,
+    isFirstPlayerFav: boolean,
+    isSecondPlayerFav: boolean
+  ) => {
     const p1Name = decodeHtmlEntities(team.player1.name || 'TBD');
     const p2Name = decodeHtmlEntities(team.player2.name || 'TBD');
 
@@ -77,6 +94,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
             >
               {p1Name}
             </Text>
+            {isFirstPlayerFav && <Text style={styles.favStar}>★</Text>}
           </View>
           <View style={styles.playerItem}>
             {team.player2.flag ? (
@@ -91,6 +109,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
             >
               {p2Name}
             </Text>
+            {isSecondPlayerFav && <Text style={styles.favStar}>★</Text>}
           </View>
         </View>
 
@@ -120,7 +139,11 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
   const roundLabel = decodeHtmlEntities(match.roundName);
 
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.75}>
+    <TouchableOpacity
+      style={[styles.card, hasFavorite && styles.cardWithFav]}
+      onPress={onPress}
+      activeOpacity={0.75}
+    >
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Badge
@@ -133,6 +156,19 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
         </View>
 
         <View style={styles.headerRight}>
+          <TouchableOpacity
+            style={[styles.bellBtn, isFollowed && styles.bellBtnActive]}
+            onPress={(e) => {
+              e.stopPropagation();
+              toggleFollowMatch(match.matchId);
+            }}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Text style={[styles.bellText, isFollowed && styles.bellTextActive]}>
+              🔔
+            </Text>
+          </TouchableOpacity>
+
           {isOngoing ? (
             <Badge label="LIVE" type="live" />
           ) : isWalkover ? (
@@ -152,9 +188,9 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
       ) : null}
 
       <View style={styles.teamsContainer}>
-        {renderTeamRow(match.team1, match.team1.isWinner)}
+        {renderTeamRow(match.team1, match.team1.isWinner, isP1Fav, isP2Fav)}
         <View style={styles.divider} />
-        {renderTeamRow(match.team2, match.team2.isWinner)}
+        {renderTeamRow(match.team2, match.team2.isWinner, isP3Fav, isP4Fav)}
       </View>
     </TouchableOpacity>
   );
@@ -170,6 +206,31 @@ const createStyles = (theme: AppTheme) =>
       padding: theme.spacing.md,
       marginBottom: theme.spacing.sm,
     },
+    cardWithFav: {
+      borderColor: '#f59e0b55',
+      borderLeftWidth: 3,
+      borderLeftColor: '#f59e0b',
+    },
+    favStar: {
+      color: '#f59e0b',
+      fontSize: 12,
+      marginLeft: 4,
+    },
+    bellBtn: {
+      paddingHorizontal: 4,
+      paddingVertical: 2,
+      marginRight: 6,
+      opacity: 0.35,
+    },
+    bellBtnActive: {
+      opacity: 1,
+    },
+    bellText: {
+      fontSize: 14,
+    },
+    bellTextActive: {
+      transform: [{ scale: 1.1 }],
+    },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -183,7 +244,8 @@ const createStyles = (theme: AppTheme) =>
       flex: 1,
     },
     headerRight: {
-      alignItems: 'flex-end',
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     roundText: {
       ...theme.typography.caption,

@@ -6,6 +6,7 @@ import { BottomTabParamList } from '../types/navigation';
 import { HomeScreen } from '../screens/HomeScreen';
 import { RankingsScreen } from '../screens/RankingsScreen';
 import { NewsScreen } from '../screens/NewsScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
 import { useAppTheme } from '../utils/theme';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -43,7 +44,7 @@ export const BottomTabNavigator: React.FC = () => {
         name="RankingsTab"
         component={RankingsScreen}
         options={{
-          tabBarLabel: 'Classifiche',
+          tabBarLabel: 'Giocatori',
           tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>🏆</Text>,
         }}
       />
@@ -53,6 +54,14 @@ export const BottomTabNavigator: React.FC = () => {
         options={{
           tabBarLabel: 'Notizie',
           tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>📰</Text>,
+        }}
+      />
+      <Tab.Screen
+        name="SettingsTab"
+        component={SettingsScreen}
+        options={{
+          tabBarLabel: 'Profilo',
+          tabBarIcon: ({ color }) => <Text style={[styles.tabIcon, { color }]}>⚙️</Text>,
         }}
       />
     </Tab.Navigator>

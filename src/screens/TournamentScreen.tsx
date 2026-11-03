@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -24,6 +24,8 @@ import { getDatesBetween, formatDateRange } from '../utils/date';
 import { DayTabs } from '../components/tournament/DayTabs';
 import { MatchCard } from '../components/tournament/MatchCard';
 import { getHdImageUrl } from '../components/tournament/TournamentCard';
+import { evaluateMatches, matchHasFavoritePlayer } from '../services/matchTrackerService';
+import { useNotificationStore } from '../store/useNotificationStore';
 
 type RouteProps = RouteProp<RootStackParamList, 'Tournament'>;
 type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -51,8 +53,11 @@ export const TournamentScreen: React.FC = () => {
 
   const [selectedDay, setSelectedDay] = useState<number>(initialDay);
   const [selectedGender, setSelectedGender] = useState<Gender>('both');
+  const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+
+  const isMatchFollowed = useNotificationStore((s) => s.isMatchFollowed);
 
   // Fetch matches for the selected day directly from MatchScorerLive
   const {
@@ -67,9 +72,21 @@ export const TournamentScreen: React.FC = () => {
     refetchInterval: 20000, // Live auto-refresh polling every 20s
   });
 
+  // Valuta in background cambi di stato dei match per inviare notifiche tempestive
+  useEffect(() => {
+    if (matches && matches.length > 0) {
+      evaluateMatches(matches, event);
+    }
+  }, [matches, event]);
+
   // Filter & sort matches
   const filteredMatches = useMemo(() => {
     let result = matches;
+
+    // Filter by Favorites
+    if (onlyFavorites) {
+      result = result.filter((m) => matchHasFavoritePlayer(m) || isMatchFollowed(m.matchId));
+    }
 
     // Filter by Gender
     if (selectedGender !== 'both') {
@@ -233,16 +250,19 @@ export const TournamentScreen: React.FC = () => {
           />
         )}
 
-        {/* Gender Filter Row */}
+        {/* Filter Row: Gender & Favorites */}
         <View style={styles.genderRow}>
           {(['both', 'men', 'women'] as const).map((g) => {
-            const isSelected = selectedGender === g;
+            const isSelected = !onlyFavorites && selectedGender === g;
             const label = g === 'both' ? 'TUTTI' : g === 'men' ? 'UOMINI' : 'DONNE';
             return (
               <TouchableOpacity
                 key={g}
                 style={[styles.genderChip, isSelected && styles.genderChipActive]}
-                onPress={() => setSelectedGender(g)}
+                onPress={() => {
+                  setOnlyFavorites(false);
+                  setSelectedGender(g);
+                }}
               >
                 <Text
                   style={[
@@ -255,6 +275,19 @@ export const TournamentScreen: React.FC = () => {
               </TouchableOpacity>
             );
           })}
+          <TouchableOpacity
+            style={[styles.genderChip, onlyFavorites && styles.genderChipFavActive]}
+            onPress={() => setOnlyFavorites(!onlyFavorites)}
+          >
+            <Text
+              style={[
+                styles.genderChipText,
+                onlyFavorites && styles.genderChipFavTextActive,
+              ]}
+            >
+              ⭐ PREFERITI
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Match List */}
@@ -451,6 +484,9 @@ const createStyles = (theme: AppTheme) =>
     genderChipActive: {
       backgroundColor: theme.colors.primary,
     },
+    genderChipFavActive: {
+      backgroundColor: '#f59e0b',
+    },
     genderChipText: {
       ...theme.typography.badge,
       color: theme.colors.textMuted,
@@ -458,6 +494,10 @@ const createStyles = (theme: AppTheme) =>
     },
     genderChipTextActive: {
       color: theme.colors.white,
+    },
+    genderChipFavTextActive: {
+      color: '#000000',
+      fontWeight: '800',
     },
     listContent: {
       padding: theme.spacing.md,
