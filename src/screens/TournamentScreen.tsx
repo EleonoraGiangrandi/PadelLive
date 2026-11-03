@@ -29,6 +29,7 @@ import { useNotificationStore } from '../store/useNotificationStore';
 import { useFavoritesStore } from '../store/useFavoritesStore';
 import { useTranslation } from '../i18n';
 import { WhereToWatchModal } from '../components/common/WhereToWatchModal';
+import { TournamentDrawView } from '../components/tournament/TournamentDrawView';
 
 type RouteProps = RouteProp<RootStackParamList, 'Tournament'>;
 type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -63,6 +64,7 @@ export const TournamentScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [showWhereToWatch, setShowWhereToWatch] = useState(false);
+  const [viewMode, setViewMode] = useState<'matches' | 'draw'>('matches');
 
   const isMatchFollowed = useNotificationStore((s) => s.isMatchFollowed);
   const favorites = useFavoritesStore((s) => s.favorites);
@@ -269,117 +271,149 @@ export const TournamentScreen: React.FC = () => {
           </View>
         ) : null}
 
-        {/* Day Tabs with dedicated fixed-height wrapper */}
-        {dayTabs.length > 0 && (
-          <DayTabs
-            tabs={dayTabs}
-            selectedDay={selectedDay}
-            onSelectDay={setSelectedDay}
-          />
-        )}
-
-        {/* Filter Row: Gender & Favorites */}
-        <View style={styles.genderRow}>
-          {(['both', 'men', 'women'] as const).map((g) => {
-            const isSelected = !onlyFavorites && selectedGender === g;
-            const label =
-              g === 'both'
-                ? t.tournament.all
-                : g === 'men'
-                ? t.tournament.men
-                : t.tournament.women;
-            return (
-              <TouchableOpacity
-                key={g}
-                style={[styles.genderChip, isSelected && styles.genderChipActive]}
-                onPress={() => {
-                  setOnlyFavorites(false);
-                  setSelectedGender(g);
-                }}
-              >
-                <Text
-                  style={[
-                    styles.genderChipText,
-                    isSelected && styles.genderChipTextActive,
-                  ]}
-                >
-                  {label}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
+        {/* Switcher Vista: Partite (Schedule) / Tabellone (Draw) */}
+        <View style={styles.viewModeSwitcher}>
           <TouchableOpacity
-            style={[styles.genderChip, onlyFavorites && styles.genderChipFavActive]}
-            onPress={() => setOnlyFavorites(!onlyFavorites)}
+            style={[styles.viewModeBtn, viewMode === 'matches' && styles.viewModeBtnActive]}
+            onPress={() => setViewMode('matches')}
+            activeOpacity={0.8}
           >
-            <Text
-              style={[
-                styles.genderChipText,
-                onlyFavorites && styles.genderChipFavTextActive,
-              ]}
-            >
-              ⭐ {t.tournament.favorites}
+            <Text style={[styles.viewModeBtnText, viewMode === 'matches' && styles.viewModeBtnTextActive]}>
+              📅 {t.draw.matchesView}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.viewModeBtn, viewMode === 'draw' && styles.viewModeBtnActive]}
+            onPress={() => setViewMode('draw')}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.viewModeBtnText, viewMode === 'draw' && styles.viewModeBtnTextActive]}>
+              🏆 {t.draw.drawView}
             </Text>
           </TouchableOpacity>
         </View>
 
-        {/* Match List */}
-        {isLoading ? (
-          <View style={styles.centerContainer}>
-            <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={styles.loadingText}>{t.tournament.loading}</Text>
-          </View>
-        ) : error ? (
-          <View style={styles.centerContainer}>
-            <Text style={styles.errorText}>{t.tournament.error}</Text>
-            <TouchableOpacity style={styles.retryButton} onPress={() => { refetch(); }}>
-              <Text style={styles.retryButtonText}>{t.tournament.retry}</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <FlatList
-            data={filteredMatches}
-            keyExtractor={(item, index) => `${item.matchId || index}-${item.roundName}`}
-            renderItem={({ item }) => (
-              <MatchCard match={item} onPress={() => handleSelectMatch(item)} />
-            )}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-            keyboardDismissMode="on-drag"
-            onScrollBeginDrag={() => {
-              if (isSearching) handleCloseSearch();
-            }}
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefetching}
-                onRefresh={() => { refetch(); }}
-                tintColor={theme.colors.primary}
-              />
-            }
-            ListEmptyComponent={
-              <View style={styles.emptyContainer}>
-                <Text style={styles.emptyIcon}>🎾</Text>
-                <Text style={styles.emptyTitle}>
-                  {onlyFavorites
-                    ? (language === 'it'
-                        ? 'Nessuna partita dei tuoi preferiti'
-                        : language === 'es'
-                        ? 'Ningún partido de tus favoritos'
-                        : 'No favorite player matches')
-                    : t.tournament.noMatches}
-                </Text>
-                <Text style={styles.emptySubtitle}>
-                  {onlyFavorites
-                    ? (language === 'it'
-                        ? 'Nessun giocatore preferito in programma in questa giornata'
-                        : language === 'es'
-                        ? 'No hay jugadores favoritos programados en este día'
-                        : 'No favorite players scheduled for this day')
-                    : t.tournament.noMatchesSub}
-                </Text>
-              </View>
-            }
+        {viewMode === 'draw' ? (
+          <TournamentDrawView
+            event={event}
+            onSelectMatch={handleSelectMatch}
           />
+        ) : (
+          <>
+            {/* Day Tabs with dedicated fixed-height wrapper */}
+            {dayTabs.length > 0 && (
+              <DayTabs
+                tabs={dayTabs}
+                selectedDay={selectedDay}
+                onSelectDay={setSelectedDay}
+              />
+            )}
+
+            {/* Filter Row: Gender & Favorites */}
+            <View style={styles.genderRow}>
+              {(['both', 'men', 'women'] as const).map((g) => {
+                const isSelected = !onlyFavorites && selectedGender === g;
+                const label =
+                  g === 'both'
+                    ? t.tournament.all
+                    : g === 'men'
+                    ? t.tournament.men
+                    : t.tournament.women;
+                return (
+                  <TouchableOpacity
+                    key={g}
+                    style={[styles.genderChip, isSelected && styles.genderChipActive]}
+                    onPress={() => {
+                      setOnlyFavorites(false);
+                      setSelectedGender(g);
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.genderChipText,
+                        isSelected && styles.genderChipTextActive,
+                      ]}
+                    >
+                      {label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+              <TouchableOpacity
+                style={[styles.genderChip, onlyFavorites && styles.genderChipFavActive]}
+                onPress={() => setOnlyFavorites(!onlyFavorites)}
+              >
+                <Text
+                  style={[
+                    styles.genderChipText,
+                    onlyFavorites && styles.genderChipFavTextActive,
+                  ]}
+                >
+                  ⭐ {t.tournament.favorites}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Match List */}
+            {isLoading ? (
+              <View style={styles.centerContainer}>
+                <ActivityIndicator size="large" color={theme.colors.primary} />
+                <Text style={styles.loadingText}>{t.tournament.loading}</Text>
+              </View>
+            ) : error ? (
+              <View style={styles.centerContainer}>
+                <Text style={styles.errorText}>{t.tournament.error}</Text>
+                <TouchableOpacity style={styles.retryButton} onPress={() => { refetch(); }}>
+                  <Text style={styles.retryButtonText}>{t.tournament.retry}</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <FlatList
+                data={filteredMatches}
+                keyExtractor={(item, index) => `${item.matchId || index}-${item.roundName}`}
+                renderItem={({ item }) => (
+                  <MatchCard match={item} onPress={() => handleSelectMatch(item)} />
+                )}
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
+                keyboardDismissMode="on-drag"
+                onScrollBeginDrag={() => {
+                  if (isSearching) handleCloseSearch();
+                }}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={isRefetching}
+                    onRefresh={() => { refetch(); }}
+                    tintColor={theme.colors.primary}
+                  />
+                }
+                ListEmptyComponent={
+                  <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyIcon}>🎾</Text>
+                    <Text style={styles.emptyTitle}>
+                      {onlyFavorites
+                        ? (language === 'it'
+                            ? 'Nessuna partita dei tuoi preferiti'
+                            : language === 'es'
+                            ? 'Ningún partido de tus favoritos'
+                            : 'No favorite player matches')
+                        : t.tournament.noMatches}
+                    </Text>
+                    <Text style={styles.emptySubtitle}>
+                      {onlyFavorites
+                        ? (language === 'it'
+                            ? 'Nessun giocatore preferito in programma in questa giornata'
+                            : language === 'es'
+                            ? 'No hay jugadores favoritos programados en este día'
+                            : 'No favorite players scheduled for this day')
+                        : t.tournament.noMatchesSub}
+                    </Text>
+                  </View>
+                }
+              />
+            )}
+          </>
         )}
 
         <WhereToWatchModal
@@ -405,6 +439,36 @@ const createStyles = (theme: AppTheme) =>
       backgroundColor: theme.colors.card,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.cardBorder,
+    },
+    viewModeSwitcher: {
+      flexDirection: 'row',
+      backgroundColor: theme.colors.card,
+      paddingHorizontal: theme.spacing.md,
+      paddingVertical: 8,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.cardBorder,
+      gap: 8,
+    },
+    viewModeBtn: {
+      flex: 1,
+      paddingVertical: 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: theme.borderRadius.sm,
+      backgroundColor: theme.colors.cardSecondary,
+    },
+    viewModeBtnActive: {
+      backgroundColor: theme.colors.primary,
+    },
+    viewModeBtnText: {
+      ...theme.typography.caption,
+      color: theme.colors.textSecondary,
+      fontWeight: '600',
+      fontSize: 13,
+    },
+    viewModeBtnTextActive: {
+      color: '#FFFFFF',
+      fontWeight: '700',
     },
     backButton: {
       paddingRight: theme.spacing.md,
