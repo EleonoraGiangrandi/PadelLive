@@ -26,6 +26,7 @@ import { MatchCard } from '../components/tournament/MatchCard';
 import { getHdImageUrl } from '../components/tournament/TournamentCard';
 import { evaluateMatches, matchHasFavoritePlayer } from '../services/matchTrackerService';
 import { useNotificationStore } from '../store/useNotificationStore';
+import { useFavoritesStore } from '../store/useFavoritesStore';
 import { useTranslation } from '../i18n';
 import { WhereToWatchModal } from '../components/common/WhereToWatchModal';
 
@@ -64,6 +65,7 @@ export const TournamentScreen: React.FC = () => {
   const [showWhereToWatch, setShowWhereToWatch] = useState(false);
 
   const isMatchFollowed = useNotificationStore((s) => s.isMatchFollowed);
+  const favorites = useFavoritesStore((s) => s.favorites);
 
   // Fetch matches for the selected day directly from MatchScorerLive
   const {
@@ -142,7 +144,7 @@ export const TournamentScreen: React.FC = () => {
 
       return (a.startDate || '').localeCompare(b.startDate || '');
     });
-  }, [matches, selectedGender, searchQuery]);
+  }, [matches, selectedGender, onlyFavorites, searchQuery, favorites, isMatchFollowed]);
 
   const handleSelectMatch = (match: Match) => {
     if (isSearching) {
@@ -357,8 +359,24 @@ export const TournamentScreen: React.FC = () => {
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
                 <Text style={styles.emptyIcon}>🎾</Text>
-                <Text style={styles.emptyTitle}>{t.tournament.noMatches}</Text>
-                <Text style={styles.emptySubtitle}>{t.tournament.noMatchesSub}</Text>
+                <Text style={styles.emptyTitle}>
+                  {onlyFavorites
+                    ? (language === 'it'
+                        ? 'Nessuna partita dei tuoi preferiti'
+                        : language === 'es'
+                        ? 'Ningún partido de tus favoritos'
+                        : 'No favorite player matches')
+                    : t.tournament.noMatches}
+                </Text>
+                <Text style={styles.emptySubtitle}>
+                  {onlyFavorites
+                    ? (language === 'it'
+                        ? 'Nessun giocatore preferito in programma in questa giornata'
+                        : language === 'es'
+                        ? 'No hay jugadores favoritos programados en este día'
+                        : 'No favorite players scheduled for this day')
+                    : t.tournament.noMatchesSub}
+                </Text>
               </View>
             }
           />

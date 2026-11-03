@@ -19,7 +19,7 @@ export function normalizePlayerName(str: string = ''): string {
 
 /**
  * Verifica se il nome di un giocatore presente in una partita (es. "A. Coello" o "Arturo Coello")
- * corrisponde a un giocatore preferito.
+ * corrisponde a un giocatore preferito (es. "Arturo Coello Manso").
  */
 export function matchesPlayerName(matchPlayerName: string = '', favoriteName: string = ''): boolean {
   if (!matchPlayerName || !favoriteName) return false;
@@ -29,15 +29,58 @@ export function matchesPlayerName(matchPlayerName: string = '', favoriteName: st
 
   if (normMatch === normFav) return true;
 
-  const matchTokens = normMatch.split(' ').filter((t) => t.length > 1);
-  const favTokens = normFav.split(' ').filter((t) => t.length > 1);
+  const matchTokens = normMatch.split(' ').filter((t) => t.length > 0);
+  const favTokens = normFav.split(' ').filter((t) => t.length > 0);
 
   if (favTokens.length === 0 || matchTokens.length === 0) return false;
 
-  const significantFavTokens = favTokens.filter((t) => t.length >= 3);
-  const significantMatchTokens = matchTokens.filter((t) => t.length >= 3);
+  // Stop words nei nomi spagnoli / italiani
+  const stopWords = new Set(['de', 'del', 'la', 'las', 'los', 'san', 'di', 'da', 'y']);
 
-  return significantMatchTokens.some((mt) => significantFavTokens.includes(mt));
+  const cleanFav = favTokens.filter((t) => !stopWords.has(t));
+  const cleanMatch = matchTokens.filter((t) => !stopWords.has(t));
+
+  if (cleanFav.length === 0 || cleanMatch.length === 0) return false;
+
+  const favFirstName = cleanFav[0];
+  const favSurnames = cleanFav.length > 1 ? cleanFav.slice(1) : [favFirstName];
+
+  // Verifica se il primo token del match è un'iniziale (lunghezza 1, es. "A" in "A. Coello")
+  const matchFirst = cleanMatch[0];
+  const isInitial = matchFirst.length === 1;
+
+  const matchSurnames = isInitial
+    ? cleanMatch.slice(1)
+    : cleanMatch.length > 1
+    ? cleanMatch.slice(1)
+    : [matchFirst];
+
+  // Almeno uno dei cognomi significativi del preferito (lunghezza >= 3) deve corrispondere a un cognome del match
+  const hasMatchingSurname = favSurnames.some(
+    (fs) => fs.length >= 3 && matchSurnames.some((ms) => ms.length >= 3 && (fs === ms || fs.startsWith(ms) || ms.startsWith(fs)))
+  );
+
+  if (!hasMatchingSurname) {
+    return false;
+  }
+
+  // Se un cognome corrisponde:
+  // Se il match ha un'iniziale (es. "A." per "Arturo"), deve combaciare con l'iniziale del nome del preferito
+  if (isInitial) {
+    return favFirstName.startsWith(matchFirst);
+  }
+
+  // Se il match ha un nome per esteso (es. "Arturo" in "Arturo Coello")
+  if (cleanMatch.length > 1) {
+    return (
+      favFirstName === matchFirst ||
+      favFirstName.startsWith(matchFirst.charAt(0)) ||
+      cleanFav.includes(matchFirst)
+    );
+  }
+
+  // Se è presente solo il cognome (es. "Coello") ed è univoco rispetto al preferito
+  return true;
 }
 
 interface FavoritesState {
@@ -155,13 +198,16 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
     if (!idOrName) return false;
     const { favorites } = get();
     const clean = normalizePlayerName(idOrName);
-    return favorites.some(
-      (f) =>
+    return favorites.some((f) => {
+      const fullFavName = f.surname ? `${f.name} ${f.surname}` : f.name;
+      return (
         f.id === idOrName ||
         f.handler === idOrName ||
         normalizePlayerName(f.name) === clean ||
-        matchesPlayerName(idOrName, f.name)
-    );
+        normalizePlayerName(fullFavName) === clean ||
+        matchesPlayerName(idOrName, fullFavName)
+      );
+    });
   },
 
   isPlayerFavorite: (player?: Player | { name?: string; handler?: string; id?: string }) => {
@@ -173,8 +219,9 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
     return favorites.some((f) => {
       if (id && f.id === id) return true;
       if (f.handler && (player as any).handler && f.handler === (player as any).handler) return true;
-      if (clean && normalizePlayerName(f.name) === clean) return true;
-      if (player.name && f.name && matchesPlayerName(player.name, f.name)) return true;
+      const fullFavName = f.surname ? `${f.name} ${f.surname}` : f.name;
+      if (clean && (normalizePlayerName(f.name) === clean || normalizePlayerName(fullFavName) === clean)) return true;
+      if (player.name && matchesPlayerName(player.name, fullFavName)) return true;
       return false;
     });
   },

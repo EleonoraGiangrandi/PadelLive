@@ -16,11 +16,13 @@ import { getNewsArticles } from '../api/news';
 import { RssArticle } from '../types/models';
 import { useAppTheme, AppTheme } from '../utils/theme';
 import { decodeHtmlEntities } from '../utils/text';
+import { useTranslation } from '../i18n';
 
 export const NewsScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { theme } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
+  const { t, language } = useTranslation();
 
   const {
     data: articles = [],
@@ -47,7 +49,8 @@ export const NewsScreen: React.FC = () => {
   const formatDate = (dateStr: string) => {
     try {
       const d = new Date(dateStr);
-      return d.toLocaleDateString('it-IT', {
+      const locale = language === 'it' ? 'it-IT' : language === 'es' ? 'es-ES' : 'en-US';
+      return d.toLocaleDateString(locale, {
         day: '2-digit',
         month: 'short',
         year: 'numeric',
@@ -61,21 +64,21 @@ export const NewsScreen: React.FC = () => {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Notizie Padel</Text>
-        <Text style={styles.subtitle}>Ultime news ufficiali dai circuiti internazionali</Text>
+        <Text style={styles.title}>{t.news.title}</Text>
+        <Text style={styles.subtitle}>{t.news.subtitle}</Text>
       </View>
 
       {/* Content */}
       {isLoading ? (
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={styles.loadingText}>Caricamento notizie...</Text>
+          <Text style={styles.loadingText}>{t.news.loading}</Text>
         </View>
       ) : error ? (
         <View style={styles.centerContainer}>
-          <Text style={styles.errorText}>Errore nel caricamento delle news</Text>
+          <Text style={styles.errorText}>{t.news.error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={() => { refetch(); }}>
-            <Text style={styles.retryButtonText}>Riprova</Text>
+            <Text style={styles.retryButtonText}>{t.news.retry}</Text>
           </TouchableOpacity>
         </View>
       ) : (

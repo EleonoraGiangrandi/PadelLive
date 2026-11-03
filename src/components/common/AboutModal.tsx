@@ -27,34 +27,34 @@ export const AboutModal: React.FC<AboutModalProps> = ({ visible, onClose }) => {
       animationType="fade"
       onRequestClose={onClose}
     >
-      <TouchableOpacity
-        style={styles.overlay}
-        activeOpacity={1}
-        onPress={onClose}
-      >
-        <TouchableWithoutFeedback>
-          <View style={styles.dialog}>
-            <Text style={styles.logo}>🎾 PadelPulse</Text>
-            <Text style={styles.title}>{t.aboutModal.title}</Text>
-            <Text style={styles.version}>{t.aboutModal.version}</Text>
+      <View style={styles.overlay}>
+        <TouchableOpacity
+          style={styles.backdrop}
+          activeOpacity={1}
+          onPress={onClose}
+        />
 
-            <View style={styles.statusPill}>
-              <View style={styles.greenDot} />
-              <Text style={styles.statusText}>{t.aboutModal.source}</Text>
-            </View>
+        <View style={styles.dialog}>
+          <Text style={styles.logo}>🎾 PadelPulse</Text>
+          <Text style={styles.title}>{t.aboutModal.title}</Text>
+          <Text style={styles.version}>{t.aboutModal.version}</Text>
 
-            <View style={styles.divider} />
-
-            <Text style={styles.desc}>{t.aboutModal.desc}</Text>
-
-            <Text style={styles.securityNote}>🔒 {t.aboutModal.privacy}</Text>
-
-            <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-              <Text style={styles.closeBtnText}>{t.aboutModal.close}</Text>
-            </TouchableOpacity>
+          <View style={styles.statusPill}>
+            <View style={styles.greenDot} />
+            <Text style={styles.statusText}>{t.aboutModal.source}</Text>
           </View>
-        </TouchableWithoutFeedback>
-      </TouchableOpacity>
+
+          <View style={styles.divider} />
+
+          <Text style={styles.desc}>{t.aboutModal.desc}</Text>
+
+          <Text style={styles.securityNote}>🔒 {t.aboutModal.privacy}</Text>
+
+          <TouchableOpacity style={styles.closeBtn} onPress={onClose} activeOpacity={0.8}>
+            <Text style={styles.closeBtnText}>{t.aboutModal.close}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </Modal>
   );
 };
@@ -68,6 +68,13 @@ const createStyles = (theme: AppTheme) =>
       alignItems: 'center',
       padding: theme.spacing.lg,
     },
+    backdrop: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+    },
     dialog: {
       width: '100%',
       backgroundColor: theme.colors.card,
@@ -78,7 +85,10 @@ const createStyles = (theme: AppTheme) =>
       alignItems: 'center',
     },
     logo: {
-      fontSize: 32,
+      ...theme.typography.title,
+      color: theme.colors.textPrimary,
+      fontSize: 26,
+      fontWeight: '800',
       marginBottom: 8,
     },
     title: {

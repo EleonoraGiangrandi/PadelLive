@@ -140,6 +140,13 @@ export const translations = {
       officialStream: 'Official Live Stream',
       liveBadge: 'LIVE STREAM',
     },
+    news: {
+      title: 'Padel News',
+      subtitle: 'Latest official news from international circuits',
+      loading: 'Loading news...',
+      error: 'Error loading news',
+      retry: 'Retry',
+    },
     common: {
       loading: 'Loading...',
       error: 'Error',
@@ -287,6 +294,13 @@ export const translations = {
       officialStream: 'Diretta Streaming Ufficiale',
       liveBadge: 'DIRETTA',
     },
+    news: {
+      title: 'Notizie Padel',
+      subtitle: 'Ultime notizie ufficiali dai circuiti internazionali',
+      loading: 'Caricamento notizie...',
+      error: 'Errore nel caricamento delle notizie',
+      retry: 'Riprova',
+    },
     common: {
       loading: 'Caricamento...',
       error: 'Errore',
@@ -433,6 +447,13 @@ export const translations = {
       whereToWatchTitle: 'Dónde ver el Pádel',
       officialStream: 'Emisión Oficial en Directo',
       liveBadge: 'EN DIRECTO',
+    },
+    news: {
+      title: 'Noticias de Pádel',
+      subtitle: 'Últimas noticias oficiales de los circuitos internacionales',
+      loading: 'Cargando noticias...',
+      error: 'Error al cargar las noticias',
+      retry: 'Reintentar',
     },
     common: {
       loading: 'Cargando...',

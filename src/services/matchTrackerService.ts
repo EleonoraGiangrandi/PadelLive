@@ -17,7 +17,7 @@ const trackedStateMap = new Map<string, TrackedMatchState>();
  * Verifica se un match coinvolge almeno un giocatore presente tra i preferiti
  */
 export function matchHasFavoritePlayer(match: Match): boolean {
-  const favorites = useFavoritesStore.getState().favorites;
+  const { isPlayerFavorite, favorites } = useFavoritesStore.getState();
   if (!favorites || favorites.length === 0) return false;
 
   const players: (Player | undefined)[] = [
@@ -27,13 +27,7 @@ export function matchHasFavoritePlayer(match: Match): boolean {
     match.team2?.player2,
   ];
 
-  for (const p of players) {
-    if (!p?.name) continue;
-    const isFav = favorites.some((fav) => matchesPlayerName(p.name, fav.name));
-    if (isFav) return true;
-  }
-
-  return false;
+  return players.some((p) => !!p && isPlayerFavorite(p));
 }
 
 /**

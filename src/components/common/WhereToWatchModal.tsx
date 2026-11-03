@@ -5,7 +5,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   ScrollView,
 } from 'react-native';
 import { useAppTheme, AppTheme } from '../../utils/theme';
@@ -20,7 +19,7 @@ interface WhereToWatchModalProps {
 export const WhereToWatchModal: React.FC<WhereToWatchModalProps> = ({ visible, onClose }) => {
   const { theme } = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
-  const { t, language } = useTranslation();
+  const { language } = useTranslation();
 
   const langKey = language === 'it' ? 'it' : language === 'es' ? 'es' : 'en';
 
@@ -31,68 +30,76 @@ export const WhereToWatchModal: React.FC<WhereToWatchModalProps> = ({ visible, o
       animationType="slide"
       onRequestClose={onClose}
     >
-      <TouchableOpacity
-        style={styles.overlay}
-        activeOpacity={1}
-        onPress={onClose}
-      >
-        <TouchableWithoutFeedback>
-          <View style={styles.sheet}>
-            <View style={styles.dragHandle} />
+      <View style={styles.overlay}>
+        {/* Sfondo cliccabile per chiudere la modale */}
+        <TouchableOpacity
+          style={styles.backdrop}
+          activeOpacity={1}
+          onPress={onClose}
+        />
 
-            <View style={styles.header}>
-              <View>
-                <Text style={styles.title}>
-                  {language === 'it' ? '📺 Dove Vedere i Match' : language === 'es' ? '📺 Dónde Ver los Partidos' : '📺 Where to Watch Matches'}
-                </Text>
-                <Text style={styles.subtitle}>
-                  {language === 'it'
-                    ? 'Canali TV e streaming ufficiali per paese'
-                    : language === 'es'
-                    ? 'Canales de TV y emisiones oficiales por país'
-                    : 'Official TV channels & streaming by country'}
-                </Text>
-              </View>
-              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <Text style={styles.closeText}>✕</Text>
-              </TouchableOpacity>
+        {/* Pannello modale inferiore */}
+        <View style={styles.sheet}>
+          <View style={styles.dragHandle} />
+
+          <View style={styles.header}>
+            <View style={styles.headerTitles}>
+              <Text style={styles.title}>
+                {language === 'it' ? '📺 Dove Vedere i Match' : language === 'es' ? '📺 Dónde Ver los Partidos' : '📺 Where to Watch Matches'}
+              </Text>
+              <Text style={styles.subtitle}>
+                {language === 'it'
+                  ? 'Canali TV e streaming ufficiali per paese'
+                  : language === 'es'
+                  ? 'Canales de TV y emisiones oficiales por país'
+                  : 'Official TV channels & streaming by country'}
+              </Text>
             </View>
-
-            <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
-              {BROADCASTERS_BY_COUNTRY.map((b, index) => (
-                <View key={b.countryCode} style={styles.countryCard}>
-                  <View style={styles.countryHeader}>
-                    <Text style={styles.countryFlag}>{b.flag}</Text>
-                    <Text style={styles.countryName}>{b.countryName[langKey]}</Text>
-                  </View>
-
-                  <View style={styles.channelsWrap}>
-                    {b.channels.map((ch, idx) => (
-                      <View key={idx} style={styles.channelChip}>
-                        <Text style={styles.channelText}>{ch}</Text>
-                      </View>
-                    ))}
-                  </View>
-
-                  {b.notes && (
-                    <Text style={styles.noteText}>{b.notes[langKey]}</Text>
-                  )}
-                </View>
-              ))}
-
-              <View style={styles.footerNote}>
-                <Text style={styles.footerNoteText}>
-                  {language === 'it'
-                    ? 'ℹ️ Le prime fasi sono sempre trasmesse su YouTube. Dai quarti Premier Padel le partite sono su Red Bull TV e broadcaster TV autorizzati.'
-                    : language === 'es'
-                    ? 'ℹ️ Las primeras fases se emiten siempre en YouTube. A partir de cuartos de Premier Padel se transmiten en Red Bull TV y canales autorizados.'
-                    : 'ℹ️ Early rounds always stream on YouTube. From Premier Padel quarterfinals onwards, matches are on Red Bull TV & licensed broadcasters.'}
-                </Text>
-              </View>
-            </ScrollView>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <Text style={styles.closeText}>✕</Text>
+            </TouchableOpacity>
           </View>
-        </TouchableWithoutFeedback>
-      </TouchableOpacity>
+
+          <ScrollView
+            style={styles.body}
+            contentContainerStyle={styles.bodyContent}
+            showsVerticalScrollIndicator={false}
+            bounces={true}
+            nestedScrollEnabled={true}
+          >
+            {BROADCASTERS_BY_COUNTRY.map((b) => (
+              <View key={b.countryCode} style={styles.countryCard}>
+                <View style={styles.countryHeader}>
+                  <Text style={styles.countryFlag}>{b.flag}</Text>
+                  <Text style={styles.countryName}>{b.countryName[langKey]}</Text>
+                </View>
+
+                <View style={styles.channelsWrap}>
+                  {b.channels.map((ch, idx) => (
+                    <View key={idx} style={styles.channelChip}>
+                      <Text style={styles.channelText}>{ch}</Text>
+                    </View>
+                  ))}
+                </View>
+
+                {b.notes && (
+                  <Text style={styles.noteText}>{b.notes[langKey]}</Text>
+                )}
+              </View>
+            ))}
+
+            <View style={styles.footerNote}>
+              <Text style={styles.footerNoteText}>
+                {language === 'it'
+                  ? 'ℹ️ Le prime fasi sono sempre trasmesse su YouTube. Dai quarti Premier Padel le partite sono su Red Bull TV e broadcaster TV autorizzati.'
+                  : language === 'es'
+                  ? 'ℹ️ Las primeras fases se emiten siempre en YouTube. A partir de cuartos de Premier Padel se transmiten en Red Bull TV y canales autorizados.'
+                  : 'ℹ️ Early rounds always stream on YouTube. From Premier Padel quarterfinals onwards, matches are on Red Bull TV & licensed broadcasters.'}
+              </Text>
+            </View>
+          </ScrollView>
+        </View>
+      </View>
     </Modal>
   );
 };
@@ -104,12 +111,19 @@ const createStyles = (theme: AppTheme) =>
       backgroundColor: 'rgba(0, 0, 0, 0.65)',
       justifyContent: 'flex-end',
     },
+    backdrop: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+    },
     sheet: {
       backgroundColor: theme.colors.card,
       borderTopLeftRadius: theme.borderRadius.lg,
       borderTopRightRadius: theme.borderRadius.lg,
-      maxHeight: '80%',
-      paddingBottom: 24,
+      maxHeight: '82%',
+      paddingBottom: 20,
     },
     dragHandle: {
       width: 40,
@@ -128,6 +142,10 @@ const createStyles = (theme: AppTheme) =>
       paddingVertical: theme.spacing.md,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.cardBorder,
+    },
+    headerTitles: {
+      flex: 1,
+      marginRight: 10,
     },
     title: {
       ...theme.typography.title,
@@ -153,8 +171,12 @@ const createStyles = (theme: AppTheme) =>
       fontWeight: '700',
     },
     body: {
+      flexGrow: 0,
+    },
+    bodyContent: {
       paddingHorizontal: theme.spacing.lg,
       paddingTop: theme.spacing.md,
+      paddingBottom: theme.spacing.xl,
     },
     countryCard: {
       backgroundColor: theme.colors.cardSecondary,
@@ -209,7 +231,7 @@ const createStyles = (theme: AppTheme) =>
     footerNote: {
       paddingVertical: theme.spacing.md,
       paddingHorizontal: theme.spacing.sm,
-      marginBottom: theme.spacing.lg,
+      marginTop: theme.spacing.xs,
     },
     footerNoteText: {
       ...theme.typography.caption,
