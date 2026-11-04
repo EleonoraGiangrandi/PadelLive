@@ -29,18 +29,18 @@ function MainApp() {
   const navigationRef = useRef<NavigationContainerRef<RootStackParamList>>(null);
 
   useEffect(() => {
-    // Carica tutte le preferenze utente persistenti e imposta le notifiche
+    // Load all persistent user preferences and set up notifications
     loadPreferences();
     loadNotificationPrefs();
     loadFavorites();
     setupNotifications();
 
-    // Listener per quando l'utente tocca una notifica ricevuta
+    // Listener for when user taps a received notification
     const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
       const data = response.notification.request.content.data;
       if (data && data.screen === 'Match' && data.eventId) {
-        // Se disponibile, potremmo navigare verso il torneo/match
-        console.log('Notifica premuta per il match:', data.matchId);
+        // If available, navigate to tournament/match
+        console.log('Notification tapped for match:', data.matchId);
       }
     });
 

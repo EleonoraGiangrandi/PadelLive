@@ -109,19 +109,19 @@ export const HomeScreen: React.FC = () => {
     [filteredEvents]
   );
 
-  // If liveNow is empty and user hasn't selected a tab yet, default to futuri
+  // If liveNow is empty and user hasn't selected a tab yet, default to upcoming
   useEffect(() => {
-    if (activeTab === 'in_corso' && liveNow.length === 0 && upNext.length > 0) {
-      setActiveTab('futuri');
+    if (activeTab === 'ongoing' && liveNow.length === 0 && upNext.length > 0) {
+      setActiveTab('upcoming');
     }
   }, [liveNow.length, upNext.length]);
 
   // Tab counts
   const tabCounts = useMemo(() => ({
-    in_corso: liveNow.length,
-    futuri: upNext.length,
-    recenti: past.length,
-    tutti: filteredEvents.length,
+    ongoing: liveNow.length,
+    upcoming: upNext.length,
+    recent: past.length,
+    all: filteredEvents.length,
   }), [liveNow.length, upNext.length, past.length, filteredEvents.length]);
 
   // Current tab items sorted by date proximity
@@ -129,33 +129,33 @@ export const HomeScreen: React.FC = () => {
     const now = new Date().getTime();
 
     let list: FipEvent[] = [];
-    if (activeTab === 'in_corso') {
+    if (activeTab === 'ongoing') {
       list = [...liveNow];
-    } else if (activeTab === 'futuri') {
+    } else if (activeTab === 'upcoming') {
       list = [...upNext];
-    } else if (activeTab === 'recenti') {
+    } else if (activeTab === 'recent') {
       list = [...past];
     } else {
       list = [...filteredEvents];
     }
 
     return list.sort((a, b) => {
-      const dateA = (activeTab === 'recenti' ? parseDate(a.endDate) : parseDate(a.startDate))?.getTime() || 0;
-      const dateB = (activeTab === 'recenti' ? parseDate(b.endDate) : parseDate(b.startDate))?.getTime() || 0;
+      const dateA = (activeTab === 'recent' ? parseDate(a.endDate) : parseDate(a.startDate))?.getTime() || 0;
+      const dateB = (activeTab === 'recent' ? parseDate(b.endDate) : parseDate(b.startDate))?.getTime() || 0;
 
-      if (activeTab === 'futuri') {
-        // Futuri: più vicini = data più bassa (oggi/domani prima di dicembre)
+      if (activeTab === 'upcoming') {
+        // Upcoming: closest = lowest date
         const diff = dateA - dateB;
         return sortAsc ? diff : -diff;
-      } else if (activeTab === 'recenti') {
-        // Recenti: più vicini ad oggi = data più recente (ieri prima di gennaio)
+      } else if (activeTab === 'recent') {
+        // Recent: closest to today = highest/most recent date
         const diff = dateB - dateA;
         return sortAsc ? diff : -diff;
-      } else if (activeTab === 'in_corso') {
+      } else if (activeTab === 'ongoing') {
         const diff = dateA - dateB;
         return sortAsc ? diff : -diff;
       } else {
-        // Tutti: distanza assoluta da oggi
+        // All: absolute distance from today
         const distA = Math.abs(dateA - now);
         const distB = Math.abs(dateB - now);
         const diff = distA - distB;
@@ -222,7 +222,7 @@ export const HomeScreen: React.FC = () => {
                 <TouchableOpacity
                   onPress={() => setIsSearching(true)}
                   style={styles.iconButton}
-                  accessibilityLabel="Cerca torneo"
+                  accessibilityLabel="Search tournament"
                 >
                   <Search size={19} color={theme.colors.textPrimary} />
                 </TouchableOpacity>
@@ -230,7 +230,7 @@ export const HomeScreen: React.FC = () => {
                 <TouchableOpacity
                   onPress={() => setIsAboutVisible(true)}
                   style={styles.iconButton}
-                  accessibilityLabel="Info app"
+                  accessibilityLabel="App info"
                 >
                   <Info size={19} color={theme.colors.textPrimary} />
                 </TouchableOpacity>
@@ -239,7 +239,7 @@ export const HomeScreen: React.FC = () => {
           )}
         </View>
 
-        {/* Status Navigation Tabs (In Corso / Futuri / Recenti / Tutti) */}
+        {/* Status Navigation Tabs (Ongoing / Upcoming / Recent / All) */}
         <View style={styles.statusTabsWrapper}>
           <ScrollView
             horizontal
@@ -247,10 +247,10 @@ export const HomeScreen: React.FC = () => {
             contentContainerStyle={styles.statusTabsContent}
           >
             {[
-              { id: 'in_corso', label: t.home.ongoing.toUpperCase(), count: tabCounts.in_corso, isLive: true },
-              { id: 'futuri', label: t.home.upcoming.toUpperCase(), count: tabCounts.futuri },
-              { id: 'recenti', label: t.home.recent.toUpperCase(), count: tabCounts.recenti },
-              { id: 'tutti', label: t.home.all.toUpperCase(), count: tabCounts.tutti },
+              { id: 'ongoing', label: t.home.ongoing.toUpperCase(), count: tabCounts.ongoing, isLive: true },
+              { id: 'upcoming', label: t.home.upcoming.toUpperCase(), count: tabCounts.upcoming },
+              { id: 'recent', label: t.home.recent.toUpperCase(), count: tabCounts.recent },
+              { id: 'all', label: t.home.all.toUpperCase(), count: tabCounts.all },
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -281,7 +281,7 @@ export const HomeScreen: React.FC = () => {
           </ScrollView>
         </View>
 
-        {/* Sub-toolbar: Categorie Button + Sort Direction Toggle */}
+        {/* Sub-toolbar: Categories Button + Sort Direction Toggle */}
         <View style={styles.toolbarRow}>
           <TouchableOpacity
             style={styles.categoryMenuBtn}
@@ -293,7 +293,7 @@ export const HomeScreen: React.FC = () => {
           >
             <SlidersHorizontal size={14} color={theme.colors.primary} />
             <Text style={styles.categoryMenuText}>
-              Categorie ({selectedCategories.length}/{ALL_TOURNAMENT_CATEGORIES.length})
+              Categories ({selectedCategories.length}/{ALL_TOURNAMENT_CATEGORIES.length})
             </Text>
             <ChevronDown size={14} color={theme.colors.textMuted} />
           </TouchableOpacity>
@@ -305,7 +305,7 @@ export const HomeScreen: React.FC = () => {
           >
             <ArrowUpDown size={14} color={theme.colors.textSecondary} />
             <Text style={styles.sortToggleLabel}>
-              {sortAsc ? 'Più vicini' : 'Più lontani'}
+              {sortAsc ? 'Closest' : 'Furthest'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -314,13 +314,13 @@ export const HomeScreen: React.FC = () => {
         {isLoading ? (
           <View style={styles.centerContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={styles.loadingText}>Caricamento tornei 2026...</Text>
+            <Text style={styles.loadingText}>Loading 2026 tournaments...</Text>
           </View>
         ) : error ? (
           <View style={styles.centerContainer}>
-            <Text style={styles.errorText}>Errore durante il caricamento dei tornei</Text>
+            <Text style={styles.errorText}>Error loading tournaments</Text>
             <TouchableOpacity style={styles.retryButton} onPress={() => { refetch(); }}>
-              <Text style={styles.retryButtonText}>Riprova</Text>
+              <Text style={styles.retryButtonText}>{t.common.retry}</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -358,7 +358,7 @@ export const HomeScreen: React.FC = () => {
                     style={styles.resetFiltersBtn}
                     onPress={() => usePreferencesStore.getState().selectAllCategories()}
                   >
-                    <Text style={styles.resetFiltersText}>Reimposta tutte le categorie</Text>
+                    <Text style={styles.resetFiltersText}>Reset all categories</Text>
                   </TouchableOpacity>
                 )}
               </View>

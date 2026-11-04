@@ -3,8 +3,8 @@ import { Match, StatsResponse, Team } from '../types/models';
 const MATCHSCORER_BASE = 'https://widget.matchscorerlive.com';
 
 /**
- * Recupera direttamente le partite del torneo e della giornata selezionata
- * interrogando il motore ufficiale FIP MatchScorerLive senza server terzi.
+ * Directly retrieves matches for the selected tournament and day
+ * by querying the official FIP MatchScorerLive engine without third-party servers.
  */
 export async function getMatchesDirect(
   eventId: string,
@@ -14,7 +14,7 @@ export async function getMatchesDirect(
   try {
     const cleanId = eventId.replace(/^FIP-\d{4}-/, '');
 
-    // 1. Prova prima oopbyday (Order of Play / Live in corso)
+    // 1. Try oopbyday first (Order of Play / Live in progress)
     const oopUrl = `${MATCHSCORER_BASE}/screen/oopbyday/FIP-${year}-${cleanId}/${day}?t=tol`;
     const oopRes = await fetch(oopUrl, {
       headers: {
@@ -28,7 +28,7 @@ export async function getMatchesDirect(
       matches = parseMatchScorerLiveHtml(oopHtml, day);
     }
 
-    // 2. Se non ci sono partite in oopbyday (o sono tutte concluse/in archivio), interroga resultsbyday
+    // 2. If no matches in oopbyday (or all completed/archived), query resultsbyday
     if (matches.length === 0) {
       const resUrl = `${MATCHSCORER_BASE}/screen/resultsbyday/FIP-${year}-${cleanId}/${day}?t=tol`;
       const resResponse = await fetch(resUrl, {
@@ -51,17 +51,17 @@ export async function getMatchesDirect(
 }
 
 /**
- * Parser per estrarre le partite dal widget HTML di MatchScorerLive.
+ * Parser to extract matches from the MatchScorerLive HTML widget.
  */
 export function parseMatchScorerLiveHtml(html: string, dayNumber?: number): Match[] {
   const matches: Match[] = [];
 
-  // Suddivide per sezioni campo (schedule-header o court-header)
+  // Split by court sections (schedule-header or court-header)
   const courtSections = html.split(/<div class=\"(?:schedule-header|court-header|court-title)[^>]*>/i);
   const sections = courtSections.length > 1 ? courtSections.slice(1) : [html];
 
   for (const section of sections) {
-    // Estrae nome del campo se disponibile
+    // Extract court name if available
     const courtNameMatch = section.match(
       /<(?:div|span|h\d)[^>]*class=\"(?:oop-court|court-name|header-court)[^>]*>([\s\S]*?)<\/(?:div|span|h\d)>/i
     );
@@ -69,7 +69,7 @@ export function parseMatchScorerLiveHtml(html: string, dayNumber?: number): Matc
       ? courtNameMatch[1].replace(/<[^>]+>/g, '').trim()
       : '';
 
-    // Estrae le tabelle incontro all'interno della sezione (cattura sia gli attributi che il contenuto)
+    // Extract match tables within the section (captures both attributes and content)
     const tableRegex = /<table([^>]*)>([\s\S]*?)<\/table>/gi;
     let tableMatch;
 
@@ -79,14 +79,14 @@ export function parseMatchScorerLiveHtml(html: string, dayNumber?: number): Matc
       if (!tableContent.includes('player-names')) continue;
 
       try {
-        // matchId (su tag table, a.open data-id="..." o showMatchStat('...'))
+        // matchId (on table tag, a.open data-id="..." or showMatchStat('...'))
         const fullBlock = tableAttrs + ' ' + tableContent;
         const idMatch =
           fullBlock.match(/data-id=["']([^'"]+)["']/i) ||
           fullBlock.match(/showMatchStat\(['"]([^'"]+)['"]\)/i);
         const matchId = idMatch ? idMatch[1] : '';
 
-        // Orario di inizio o indicatore LIVE
+        // Start time or LIVE indicator
         const timeMatch = tableContent.match(
           /class=\"(?:court-name|scheduled-time)\">([\s\S]*?)<\/(?:span|th)>/i
         );
@@ -94,21 +94,21 @@ export function parseMatchScorerLiveHtml(html: string, dayNumber?: number): Matc
           ? timeMatch[1].replace(/<[^>]+>/g, '').trim()
           : '';
 
-        // Round (es. "Men Q1", "Round of 32", "Final")
+        // Round (e.g. "Men Q1", "Round of 32", "Final")
         const roundMatch = tableContent.match(/<div class=\"round-name[^>]*>([\s\S]*?)<\/div>/i);
         let roundName = '';
         if (roundMatch) {
           roundName = roundMatch[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
         }
 
-        // Indicatori partita in corso / live dal widget
+        // In-progress / live match indicators from widget
         const isLiveTable =
           tableContent.includes('scorebox-header-live') ||
           tableContent.includes('live-point') ||
           /In Progress/i.test(tableContent) ||
           /LIVE/i.test(startDate);
 
-        // Righe dei due team
+        // Rows for both teams
         const teamRows = [...tableContent.matchAll(/<tr[^>]*>([\s\S]*?player-names[\s\S]*?)<\/tr>/gi)];
 
         if (teamRows.length >= 2 && teamRows[0] && teamRows[1]) {
@@ -135,7 +135,7 @@ export function parseMatchScorerLiveHtml(html: string, dayNumber?: number): Matc
 
           matches.push({
             matchId,
-            courtName: sectionCourtName || 'Campo',
+            courtName: sectionCourtName || 'Court',
             startDate,
             roundName,
             team1,
@@ -157,13 +157,13 @@ export function parseMatchScorerLiveHtml(html: string, dayNumber?: number): Matc
 function parseTeamRow(trContent: string): Team {
   const players: { name: string; flag?: string }[] = [];
 
-  // Trova ogni blocco giocatore: <div class="d-flex align-items-center">
+  // Find each player block: <div class="d-flex align-items-center">
   const playerBlocks = [...trContent.matchAll(/<div class=\"d-flex align-items-center\">([\s\S]*?)<\/div>\s*<\/div>/gi)];
 
   for (const block of playerBlocks) {
     const pContent = block[1];
 
-    // Bandiera
+    // Flag
     const flagMatch =
       pContent.match(/<img[^>]*class=\"flags\"[^>]*src=\"([^\"]+)\"/i) ||
       pContent.match(/<img[^>]*src=\"([^\"]*flags[^\"]*)\"/i);
@@ -172,7 +172,7 @@ function parseTeamRow(trContent: string): Team {
       flag = `${MATCHSCORER_BASE}${flag}`;
     }
 
-    // Nome: unione degli span di testo (es. "R." + "Coello Manso")
+    // Name: join text spans (e.g. "R." + "Coello Manso")
     const spans = [...pContent.matchAll(/<span[^>]*>([\s\S]*?)<\/span>/gi)]
       .map((s) => s[1].replace(/<[^>]+>/g, '').trim())
       .filter((s) => s.length > 0 && !s.includes('class'));
@@ -183,7 +183,7 @@ function parseTeamRow(trContent: string): Team {
     }
   }
 
-  // Fallback se la struttura è leggermente diversa
+  // Fallback if structure differs slightly
   if (players.length === 0) {
     const genericNames = [...trContent.matchAll(/<span class=\"(?:name|player-name)\">([\s\S]*?)<\/span>/gi)];
     for (const gm of genericNames) {
@@ -191,7 +191,7 @@ function parseTeamRow(trContent: string): Team {
     }
   }
 
-  // Punteggi Set 1, Set 2, Set 3
+  // Scores for Set 1, Set 2, Set 3
   const setCells = [...trContent.matchAll(/<td[^>]*class=\"[^\"]*set[^\"]*\"[^>]*>([\s\S]*?)<\/td>/gi)].map((c) => {
     const val = c[1]
       .replace(/<sup>(.*?)<\/sup>/i, '($1)')
@@ -204,17 +204,17 @@ function parseTeamRow(trContent: string): Team {
   const set2 = setCells[1] || '';
   const set3 = setCells[2] || '';
 
-  // Punti live del game in corso (15, 30, 40, AD, 0)
+  // Live points of current game (15, 30, 40, AD, 0)
   const pointCell = trContent.match(/<td[^>]*class=\"[^\"]*(?:point|live-point)[^\"]*\"[^>]*>([\s\S]*?)<\/td>/i);
   const points = pointCell ? pointCell[1].replace(/<[^>]+>/g, '').trim() : '';
 
-  // Indicatore vincitore
+  // Winner indicator
   const isWinner =
     trContent.includes('check-primary') ||
     trContent.includes('winner') ||
     trContent.includes('fa-check');
 
-  // Indicatore battuta / servizio
+  // Serving indicator
   const isServing =
     trContent.includes('ball_green.png') ||
     trContent.includes('ballg') ||
@@ -234,7 +234,7 @@ function parseTeamRow(trContent: string): Team {
 }
 
 /**
- * Recupera le statistiche dettagliate di un match interrogando direttamente MatchScorerLive.
+ * Retrieves detailed match statistics directly querying MatchScorerLive.
  */
 export async function getMatchStatsDirect(
   matchId: string,
@@ -274,15 +274,15 @@ export async function getMatchStatsDirect(
 }
 
 /**
- * Parser per estrarre le statistiche dalla risposta HTML del modal MatchScorerLive.
+ * Parser to extract statistics from the MatchScorerLive modal HTML response.
  */
 export function parseMatchStatsHtml(html: string): StatsResponse {
   try {
-    // Durata
+    // Duration
     const durationMatch = html.match(/class=\"stats-matchtime\">([\s\S]*?)<\/div>/i);
     const duration = durationMatch ? durationMatch[1].replace(/<[^>]+>/g, '').trim() : '';
 
-    // Funzione helper per parsare ciascun tab periodo (period-0 = Match, period-1 = Set 1, etc.)
+    // Helper function to parse each period tab (period-0 = Match, period-1 = Set 1, etc.)
     const parsePeriod = (periodId: string) => {
       const paneRegex = new RegExp(
         `<div[^>]*id="${periodId}"[^>]*>([\\s\\S]*?)(?=<div[^>]*class="[^"]*tab-pane|$)`,

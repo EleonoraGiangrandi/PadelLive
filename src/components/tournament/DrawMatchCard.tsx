@@ -5,6 +5,7 @@ import { DrawMatch, DrawTeam } from '../../services/drawService';
 import { useAppTheme, AppTheme } from '../../utils/theme';
 import { decodeHtmlEntities } from '../../utils/text';
 import { useFavoritesStore } from '../../store/useFavoritesStore';
+import { useTranslation } from '../../i18n';
 
 interface DrawMatchCardProps {
   match: DrawMatch;
@@ -13,6 +14,7 @@ interface DrawMatchCardProps {
 
 export const DrawMatchCard: React.FC<DrawMatchCardProps> = ({ match, onPress }) => {
   const { theme } = useAppTheme();
+  const { t } = useTranslation();
   const styles = useMemo(() => createStyles(theme), [theme]);
   const isPlayerFavorite = useFavoritesStore((s) => s.isPlayerFavorite);
 
@@ -32,7 +34,7 @@ export const DrawMatchCard: React.FC<DrawMatchCardProps> = ({ match, onPress }) 
     return (
       <View style={[styles.teamRow, isWinner && styles.winnerTeamRow]}>
         <View style={styles.teamNamesCol}>
-          {/* Giocatore 1 */}
+          {/* Player 1 */}
           <View style={styles.playerItem}>
             {team.player1.flag ? (
               <Image source={{ uri: team.player1.flag }} style={styles.flag} />
@@ -52,7 +54,7 @@ export const DrawMatchCard: React.FC<DrawMatchCardProps> = ({ match, onPress }) 
             )}
           </View>
 
-          {/* Giocatore 2 */}
+          {/* Player 2 */}
           {p2Name && p2Name !== 'TBD' ? (
             <View style={styles.playerItem}>
               {team.player2.flag ? (
@@ -75,14 +77,14 @@ export const DrawMatchCard: React.FC<DrawMatchCardProps> = ({ match, onPress }) 
           ) : null}
         </View>
 
-        {/* Testa di serie se presente */}
+        {/* Seed if present */}
         {team.seed ? (
           <View style={styles.seedBadge}>
             <Text style={styles.seedText}>{team.seed}</Text>
           </View>
         ) : null}
 
-        {/* Punteggi dei set */}
+        {/* Set scores */}
         <View style={styles.setsContainer}>
           {team.sets.length > 0 ? (
             team.sets.map((score, sIdx) => (
@@ -124,7 +126,7 @@ export const DrawMatchCard: React.FC<DrawMatchCardProps> = ({ match, onPress }) 
         {hasFav && (
           <View style={styles.favBadge}>
             <Star size={10} color="#f59e0b" fill="#f59e0b" style={{ marginRight: 3 }} />
-            <Text style={styles.favBadgeText}>PREFERITI</Text>
+            <Text style={styles.favBadgeText}>{t.tournament.favorites}</Text>
           </View>
         )}
       </View>

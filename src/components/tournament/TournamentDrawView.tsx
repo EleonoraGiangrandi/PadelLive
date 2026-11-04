@@ -51,14 +51,14 @@ export const TournamentDrawView: React.FC<TournamentDrawViewProps> = ({
 
   const rounds = draw?.rounds || [];
 
-  // Seleziona il turno iniziale: preferisci l'ultimo turno attivo o la finale se concluso
+  // Select initial round: prefer the last active round or the final if completed
   const activeRound = useMemo(() => {
     if (rounds.length === 0) return null;
     if (selectedRoundId) {
       const found = rounds.find((r) => r.roundId === selectedRoundId);
       if (found) return found;
     }
-    // Default al primo turno disponibile
+    // Default to first available round
     return rounds[0];
   }, [rounds, selectedRoundId]);
 
@@ -159,7 +159,7 @@ export const TournamentDrawView: React.FC<TournamentDrawViewProps> = ({
         ) : null}
       </View>
 
-      {/* Carosello orizzontale dei turni */}
+      {/* Horizontal rounds carousel */}
       {rounds.length > 0 && (
         <View style={styles.roundsNavWrapper}>
           <ScrollView
@@ -210,7 +210,7 @@ export const TournamentDrawView: React.FC<TournamentDrawViewProps> = ({
         </View>
       )}
 
-      {/* Lista partite del turno selezionato */}
+      {/* Matches list for selected round */}
       {isLoading ? (
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
@@ -239,10 +239,10 @@ export const TournamentDrawView: React.FC<TournamentDrawViewProps> = ({
               match={item}
               onPress={() => {
                 if (onSelectMatch) {
-                  // Converte in formato Match minimo per la navigazione
+                  // Convert to minimal Match format for navigation
                   onSelectMatch({
                     matchId: item.matchId,
-                    courtName: 'Campo',
+                    courtName: 'Court',
                     roundName: activeRound ? getLocalizedRoundTitle(activeRound) : item.roundId,
                     startDate: '',
                     team1: {

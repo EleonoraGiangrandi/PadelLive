@@ -38,7 +38,7 @@ export interface TournamentDraw {
 }
 
 /**
- * Traduce un ID turno (es. "16", "8", "4", "2", "1") o stringa nella chiave standard i18n
+ * Translates a round ID (e.g. "16", "8", "4", "2", "1") or string into standard i18n key
  */
 export function getRoundKey(roundId: string): {
   titleKey: DrawRound['titleKey'];
@@ -46,25 +46,25 @@ export function getRoundKey(roundId: string): {
 } {
   const clean = roundId.toLowerCase().trim();
   if (clean === '1' || clean.includes('final') && !clean.includes('semi') && !clean.includes('quarter')) {
-    return { titleKey: 'final', titleFallback: 'Finale' };
+    return { titleKey: 'final', titleFallback: 'Final' };
   }
   if (clean === '2' || clean.includes('semi')) {
-    return { titleKey: 'semiFinals', titleFallback: 'Semifinali' };
+    return { titleKey: 'semiFinals', titleFallback: 'Semifinals' };
   }
   if (clean === '4' || clean.includes('quarter') || clean.includes('quarti')) {
-    return { titleKey: 'quarterFinals', titleFallback: 'Quarti di Finale' };
+    return { titleKey: 'quarterFinals', titleFallback: 'Quarterfinals' };
   }
   if (clean === '8' || clean.includes('16') && (clean.includes('round of') || clean.includes('ottav'))) {
-    return { titleKey: 'round16', titleFallback: 'Ottavi di Finale' };
+    return { titleKey: 'round16', titleFallback: 'Round of 16' };
   }
   if (clean === '16' || clean.includes('32') || clean.includes('sedicesim')) {
-    return { titleKey: 'round32', titleFallback: 'Sedicesimi di Finale' };
+    return { titleKey: 'round32', titleFallback: 'Round of 32' };
   }
-  return { titleKey: 'roundOther', titleFallback: roundId || 'Turno' };
+  return { titleKey: 'roundOther', titleFallback: roundId || 'Round' };
 }
 
 /**
- * Parsing delle due squadre di un match dal frammento HTML
+ * Parse the two teams of a match from HTML snippet
  */
 function parseMatchTeams(matchHtml: string): DrawTeam[] {
   const teamSplits = matchHtml.split(/<div class=["']singleMatch__team[\s"'][^>]*>/i);
@@ -73,12 +73,12 @@ function parseMatchTeams(matchHtml: string): DrawTeam[] {
   for (let i = 1; i < teamSplits.length; i++) {
     const teamContent = teamSplits[i];
 
-    // Nomi dei giocatori
+    // Player names
     const names = [...teamContent.matchAll(/class=["']singleMatch__team--itemName["'][^>]*>([\s\S]*?)<\/p>/gi)]
       .map((m) => m[1].replace(/<[^>]+>/g, '').trim())
       .filter(Boolean);
 
-    // Bandiere
+    // Flags
     const flags = [...teamContent.matchAll(/class=["']singleMatch__team--itemFlag["'][^>]*src=["']([^"']+)["']/gi)]
       .map((m) => m[1]);
     if (flags.length === 0) {
@@ -86,17 +86,17 @@ function parseMatchTeams(matchHtml: string): DrawTeam[] {
       flags.push(...fallbackFlags);
     }
 
-    // Vincitore
+    // Winner
     const isWinner =
       teamContent.includes('winner') ||
       teamContent.includes('&#10003;') ||
       teamContent.includes('✓');
 
-    // Testa di serie (es. "(1)")
+    // Seed (e.g. "(1)")
     const seedMatch = teamContent.match(/<small>([\s\S]*?)<\/small>/i);
     const seed = seedMatch ? seedMatch[1].replace(/&nbsp;/g, '').trim() : '';
 
-    // Punteggi dei set
+    // Set scores
     const sets = [...teamContent.matchAll(/class=["']singleMatch__tableSet[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi)]
       .map((m) => m[1].replace(/<[^>]+>/g, '').trim())
       .filter(Boolean);
@@ -114,7 +114,7 @@ function parseMatchTeams(matchHtml: string): DrawTeam[] {
 }
 
 /**
- * Parsing della struttura completa del tabellone (colonne e turni)
+ * Parse full draw bracket structure (columns and rounds)
  */
 export function parseDrawHtml(html: string): DrawRound[] {
   const colParts = html.split(/<div class=["']colDraw\s+([^"']*)["']\s+data-round=["']([^"']*)["'][^>]*>/i);
@@ -157,32 +157,32 @@ export function parseDrawHtml(html: string): DrawRound[] {
     }
   }
 
-  // Ordina i turni dai sedicesimi (più partite) alla finale (1 partita)
+  // Sort rounds from Round of 32 (most matches) to Final (1 match)
   rounds.sort((a, b) => b.matches.length - a.matches.length);
 
   return rounds;
 }
 
 /**
- * Costruisce una struttura tabellone di riserva aggregando le partite giornaliere di MatchScorerLive per turno
+ * Builds a fallback draw structure aggregating MatchScorerLive daily matches by round
  */
 async function buildDrawFromMatches(event: FipEvent, gender: 'men' | 'women'): Promise<TournamentDraw> {
   try {
     const eventIdentifier = event.eventId || event.id;
-    // Raccoglie partite dai primi giorni
+    // Collects matches from tournament days
     const daysToQuery = [1, 2, 3, 4, 5, 6, 7];
     const matchPromises = daysToQuery.map((d) => getMatches(eventIdentifier, d).catch(() => []));
     const allDaysMatches = await Promise.all(matchPromises);
     const flatMatches = allDaysMatches.flat();
 
-    // Filtra per genere
+    // Filter by gender
     const isWomenTarget = gender === 'women';
     const genderMatches = flatMatches.filter((m) => {
       const isWomen = m.roundName?.toLowerCase().includes('women');
       return isWomenTarget ? isWomen : !isWomen;
     });
 
-    // Raggruppa per nome turno
+    // Group by round name
     const roundMap = new Map<string, Match[]>();
     for (const m of genderMatches) {
       const rName = m.roundName || 'Round';
@@ -236,7 +236,7 @@ async function buildDrawFromMatches(event: FipEvent, gender: 'men' | 'women'): P
 }
 
 /**
- * Recupera il tabellone ufficiale (Maschile o Femminile) direttamente dalla FIP
+ * Retrieves official tournament draw (Men or Women) directly from FIP
  */
 export async function fetchTournamentDraw(
   event: FipEvent,
@@ -251,7 +251,7 @@ export async function fetchTournamentDraw(
   }
 
   try {
-    // 1. Scarica la pagina principale dell'evento da padelfip.com
+    // 1. Download event page from padelfip.com
     const pageRes = await fetch(event.href, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -264,14 +264,14 @@ export async function fetchTournamentDraw(
 
     const pageHtml = await pageRes.text();
 
-    // Estrae postId e nonce per la chiamata AJAX
+    // Extract postId and nonce for AJAX call
     const postMatch = pageHtml.match(/post_id["']?\s*:\s*["']?(\d+)/i);
     const postId = postMatch ? postMatch[1] : '';
 
     const nonceMatch = pageHtml.match(/["']nonce["']?\s*:\s*["']([a-f0-9]+)["']/i);
     const nonce = nonceMatch ? nonceMatch[1] : '';
 
-    // Estrae eventuale link PDF
+    // Extract potential PDF link
     let pdfUrl = '';
     const pdfRegex = isFemale
       ? /href=["']([^"']*(?:WD|women|fem)[^"']*\.pdf)["']/i
@@ -286,12 +286,12 @@ export async function fetchTournamentDraw(
 
     let drawHtmlToParse = '';
 
-    // Se maschio, il tabellone MD potrebbe già essere incorporato direttamente in section#mainDraw
+    // If men, MD draw may already be directly embedded in section#mainDraw
     if (!isFemale && pageHtml.includes('class="colDraw')) {
       drawHtmlToParse = pageHtml;
     }
 
-    // Se femmina o se non presente in pagina, chiama admin-ajax.php con il nonce
+    // If women or not present on page, invoke admin-ajax.php with nonce
     if (!drawHtmlToParse && postId && nonce) {
       const postBody = new URLSearchParams({
         action: 'handle_ajax_request',
@@ -323,7 +323,7 @@ export async function fetchTournamentDraw(
       }
     }
 
-    // Se abbiamo HTML valido, facciamo il parsing
+    // If valid HTML is available, parse it
     if (drawHtmlToParse) {
       const rounds = parseDrawHtml(drawHtmlToParse);
       if (rounds.length > 0) {
@@ -336,10 +336,10 @@ export async function fetchTournamentDraw(
       }
     }
 
-    // Se non troviamo tabelloni FIP, ricadiamo sull'aggregazione partite
+    // If no FIP bracket found, fallback to match aggregation
     return buildDrawFromMatches(event, gender);
   } catch (err) {
-    console.warn('Errore recupero tabellone FIP:', err);
+    console.warn('Error fetching FIP draw:', err);
     return buildDrawFromMatches(event, gender);
   }
 }

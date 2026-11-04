@@ -4,7 +4,7 @@ import { Gender } from '../types/models';
 import { AppLanguage } from '../i18n/types';
 
 export type ThemeMode = 'dark' | 'light';
-export type HomeTab = 'in_corso' | 'futuri' | 'recenti' | 'tutti';
+export type HomeTab = 'ongoing' | 'upcoming' | 'recent' | 'all';
 export type RankingsGender = 'men' | 'women';
 export type RankingsViewMode = 'all' | 'favorites';
 export type TournamentViewMode = 'matches' | 'draw';
@@ -26,7 +26,7 @@ export const ALL_TOURNAMENT_CATEGORIES: CategoryDefinition[] = [
   { id: 'fip-bronze', label: 'FIP Bronze', types: ['fip-tour-bronze', 'fip-bronze'] },
   {
     id: 'fip-other',
-    label: 'Altri Tornei FIP',
+    label: 'Other FIP Tournaments',
     types: ['fip-beyond-b1', 'fip-beyond-b2', 'fip-beyond-b3', 'hexagon-world-series', 'olympic-path-events'],
   },
 ];
@@ -81,8 +81,8 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
   searchQuery: '',
   isFilterLoaded: false,
   themeMode: 'dark',
-  language: 'en', // Default in inglese come richiesto
-  homeTab: 'in_corso',
+  language: 'en',
+  homeTab: 'ongoing',
   rankingsGender: 'men',
   rankingsViewMode: 'all',
   tournamentViewMode: 'matches',
@@ -230,6 +230,11 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
 
       const validLang = savedLang === 'it' || savedLang === 'es' || savedLang === 'en' ? savedLang : 'en';
 
+      let normalizedHomeTab: HomeTab = 'ongoing';
+      if (savedHomeTab === 'upcoming' || savedHomeTab === 'futuri') normalizedHomeTab = 'upcoming';
+      else if (savedHomeTab === 'recent' || savedHomeTab === 'recenti') normalizedHomeTab = 'recent';
+      else if (savedHomeTab === 'all' || savedHomeTab === 'tutti') normalizedHomeTab = 'all';
+
       set({
         genre: (savedGenre as Gender) || 'both',
         selectedCategories: savedFilters
@@ -237,7 +242,7 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
           : ALL_TOURNAMENT_CATEGORIES.map((c) => c.id),
         themeMode: savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : 'dark',
         language: validLang,
-        homeTab: (savedHomeTab as HomeTab) || 'in_corso',
+        homeTab: normalizedHomeTab,
         rankingsGender: (savedRankingsGender as RankingsGender) || 'men',
         rankingsViewMode: (savedRankingsView as RankingsViewMode) || 'all',
         tournamentViewMode: (savedTournamentView as TournamentViewMode) || 'matches',

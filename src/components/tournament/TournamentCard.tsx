@@ -14,7 +14,7 @@ interface TournamentCardProps {
 }
 
 /**
- * Ottiene l'URL ad alta definizione dell'immagine rimuovendo il suffisso thumbnail di WordPress (-212x300, -225x300)
+ * Gets high-definition image URL by removing WordPress thumbnail suffix (-212x300, -225x300)
  */
 export function getHdImageUrl(url?: string): string {
   if (!url) return '';
@@ -69,7 +69,7 @@ export const TournamentCard: React.FC<TournamentCardProps> = ({
   const eventName = decodeHtmlEntities(event.name);
   const eventLocation = decodeHtmlEntities(event.location);
 
-  // Layout orizzontale (es. carosello In Corso Ora)
+  // Horizontal layout (e.g. carousel)
   if (horizontal) {
     return (
       <TouchableOpacity
@@ -121,7 +121,7 @@ export const TournamentCard: React.FC<TournamentCardProps> = ({
     );
   }
 
-  // Layout verticale lista principale
+  // Main vertical list layout
   return (
     <TouchableOpacity
       style={styles.cardVertical}

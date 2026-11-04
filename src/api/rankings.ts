@@ -15,8 +15,8 @@ interface FipPlayerItem {
 }
 
 /**
- * Recupera le classifiche mondiali ufficiali FIP / Premier Padel (Uomini / Donne).
- * Utilizza la REST API ufficiale FIP in tempo reale senza server terzi.
+ * Retrieves official FIP / Premier Padel world rankings (Men / Women).
+ * Uses the official FIP REST API in real time without third-party servers.
  */
 export async function getRankings(
   gender: 'men' | 'women',
@@ -69,7 +69,7 @@ export async function getRankings(
 }
 
 /**
- * Cerca un giocatore per nome direttamente sull'API ufficiale FIP.
+ * Searches for a player by name directly via the official FIP API.
  */
 export async function searchPlayers(
   gender: 'men' | 'women',
@@ -122,7 +122,7 @@ export async function searchPlayers(
 }
 
 /**
- * Recupera la scheda profilo dettagliata di un giocatore direttamente dal sito ufficiale FIP.
+ * Retrieves a detailed player profile directly from the official FIP website.
  */
 export async function getPlayerProfile(handler: string): Promise<PlayerProfile> {
   const cleanHandler = handler.replace(/^\/+|\/+$/g, '').split('/').pop() || handler;
@@ -192,7 +192,7 @@ export async function getPlayerProfile(handler: string): Promise<PlayerProfile> 
     console.warn('FIP direct player error, checking fallback:', err);
   }
 
-  // Fallback a fornitore dati secondario
+  // Fallback to secondary data provider
   try {
     const fallbackRes = await fetch(`http://fredericosilva.net:8081/padely/player?handler=${cleanHandler}`, {
       headers: { 'User-Agent': 'okhttp/4.12.0' },

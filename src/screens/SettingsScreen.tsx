@@ -34,7 +34,7 @@ export const SettingsScreen: React.FC = () => {
     if (val) {
       const granted = await requestNotificationPermission();
       if (!granted) {
-        // Se non concessi
+        // If not granted
       }
     }
     updatePreferences({ enabled: val });
@@ -55,7 +55,7 @@ export const SettingsScreen: React.FC = () => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* SEZIONE 1: NOTIFICHE */}
+        {/* SECTION 1: NOTIFICATIONS */}
         <View style={styles.sectionHeader}>
           <Bell size={16} color={theme.colors.primary} />
           <Text style={styles.sectionTitle}>{t.settings.notificationsSection}</Text>
@@ -101,7 +101,7 @@ export const SettingsScreen: React.FC = () => {
 
               <View style={styles.divider} />
 
-              {/* Inizio Match */}
+              {/* Match Start */}
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
                   <Text style={styles.settingLabel}>{t.settings.matchStart}</Text>
@@ -117,7 +117,7 @@ export const SettingsScreen: React.FC = () => {
 
               <View style={styles.divider} />
 
-              {/* Fine Set */}
+              {/* Set End */}
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
                   <Text style={styles.settingLabel}>{t.settings.setEnd}</Text>
@@ -133,7 +133,7 @@ export const SettingsScreen: React.FC = () => {
 
               <View style={styles.divider} />
 
-              {/* Fine Match */}
+              {/* Match End */}
               <View style={styles.settingRow}>
                 <View style={styles.settingInfo}>
                   <Text style={styles.settingLabel}>{t.settings.matchEnd}</Text>
@@ -149,7 +149,7 @@ export const SettingsScreen: React.FC = () => {
 
               <View style={styles.divider} />
 
-              {/* Promemoria Pre-Match */}
+              {/* Pre-Match Reminder */}
               <View style={styles.settingColumn}>
                 <View style={styles.labelWithIcon}>
                   <Clock size={14} color={theme.colors.primary} />
@@ -177,7 +177,7 @@ export const SettingsScreen: React.FC = () => {
           )}
         </View>
 
-        {/* SEZIONE 2: LINGUA */}
+        {/* SECTION 2: LANGUAGE */}
         <View style={styles.sectionHeader}>
           <Globe size={16} color={theme.colors.primary} />
           <Text style={styles.sectionTitle}>{t.settings.languageSection}</Text>
@@ -211,7 +211,7 @@ export const SettingsScreen: React.FC = () => {
           })}
         </View>
 
-        {/* SEZIONE 3: TEMA & ASPETTO */}
+        {/* SECTION 3: THEME & APPEARANCE */}
         <View style={styles.sectionHeader}>
           <Moon size={16} color={theme.colors.primary} />
           <Text style={styles.sectionTitle}>{t.settings.appearanceSection}</Text>
@@ -234,7 +234,7 @@ export const SettingsScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* SEZIONE 4: INFORMAZIONI APP */}
+        {/* SECTION 4: APP INFO */}
         <View style={styles.aboutFooter}>
           <View style={styles.aboutTitleRow}>
             <Trophy size={15} color={theme.colors.primary} />

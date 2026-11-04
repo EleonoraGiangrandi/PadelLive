@@ -2,15 +2,16 @@ import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import { AndroidImportance } from 'expo-notifications';
 import { Match, FipEvent } from '../types/models';
+import { usePreferencesStore } from '../store/usePreferencesStore';
 
 const CHANNEL_ID = 'padel_live_matches';
 
 /**
- * Inizializza il gestore delle notifiche e il canale Android
+ * Initializes notification handler and Android notification channel
  */
 export async function setupNotifications(): Promise<void> {
   try {
-    // Configura il comportamento quando l'app è in primo piano
+    // Configure behavior when app is in foreground
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
         shouldShowAlert: true,
@@ -23,7 +24,7 @@ export async function setupNotifications(): Promise<void> {
 
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
-        name: 'Partite Live PadelLive',
+        name: 'PadelLive Live Matches',
         importance: AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#00e676',
@@ -32,12 +33,12 @@ export async function setupNotifications(): Promise<void> {
       });
     }
   } catch (error) {
-    console.warn('Errore setup notifiche:', error);
+    console.warn('Error setting up notifications:', error);
   }
 }
 
 /**
- * Richiede i permessi per mostrare notifiche
+ * Requests permissions to display notifications
  */
 export async function requestNotificationPermission(): Promise<boolean> {
   try {
@@ -57,13 +58,13 @@ export async function requestNotificationPermission(): Promise<boolean> {
 
     return finalStatus === 'granted';
   } catch (e) {
-    console.warn('Errore richiesta permessi notifiche:', e);
+    console.warn('Error requesting notification permissions:', e);
     return false;
   }
 }
 
 /**
- * Costruisce una stringa leggibile per una coppia di giocatori
+ * Formats a pair of player names into a readable string
  */
 export function formatTeamNames(p1?: string, p2?: string): string {
   if (p1 && p2) return `${p1} / ${p2}`;
@@ -71,7 +72,7 @@ export function formatTeamNames(p1?: string, p2?: string): string {
 }
 
 /**
- * Invia una notifica locale immediata
+ * Sends an immediate local notification
  */
 export async function sendLocalNotification(
   title: string,
@@ -87,26 +88,35 @@ export async function sendLocalNotification(
         sound: true,
         ...(Platform.OS === 'android' ? { channelId: CHANNEL_ID } : {}),
       },
-      trigger: null, // trigger null = invio immediato
+      trigger: null, // trigger null = immediate delivery
     });
     return id;
   } catch (error) {
-    console.warn('Errore invio notifica locale:', error);
+    console.warn('Error sending local notification:', error);
     return null;
   }
 }
 
 /**
- * Notifica per l'inizio di una partita
+ * Notification for match start
  */
 export async function notifyMatchStart(match: Match, event?: FipEvent): Promise<string | null> {
+  const lang = usePreferencesStore.getState().language;
   const team1 = formatTeamNames(match.team1?.player1?.name, match.team1?.player2?.name);
   const team2 = formatTeamNames(match.team2?.player1?.name, match.team2?.player2?.name);
-  const court = match.courtName ? ` su ${match.courtName}` : '';
+  const courtPrep = lang === 'it' ? ' su ' : lang === 'es' ? ' en ' : ' on ';
+  const court = match.courtName ? `${courtPrep}${match.courtName}` : '';
   const round = match.roundName ? ` (${match.roundName})` : '';
 
+  const title =
+    lang === 'it'
+      ? '🎾 Match Iniziato!'
+      : lang === 'es'
+      ? '🎾 ¡Partido Comenzado!'
+      : '🎾 Match Started!';
+
   return sendLocalNotification(
-    '🎾 Match Iniziato!',
+    title,
     `${team1} vs ${team2}${court}${round}`,
     {
       matchId: match.matchId,
@@ -117,7 +127,7 @@ export async function notifyMatchStart(match: Match, event?: FipEvent): Promise<
 }
 
 /**
- * Notifica per la fine di un set
+ * Notification for end of a set
  */
 export async function notifySetEnd(
   match: Match,
@@ -125,11 +135,19 @@ export async function notifySetEnd(
   scoreStr: string,
   event?: FipEvent
 ): Promise<string | null> {
+  const lang = usePreferencesStore.getState().language;
   const team1 = formatTeamNames(match.team1?.player1?.name, match.team1?.player2?.name);
   const team2 = formatTeamNames(match.team2?.player1?.name, match.team2?.player2?.name);
 
+  const title =
+    lang === 'it'
+      ? `🎾 Fine ${setNumber}° Set (${scoreStr})`
+      : lang === 'es'
+      ? `🎾 Fin del Set ${setNumber} (${scoreStr})`
+      : `🎾 End of Set ${setNumber} (${scoreStr})`;
+
   return sendLocalNotification(
-    `🎾 Fine ${setNumber}° Set (${scoreStr})`,
+    title,
     `${team1} vs ${team2}`,
     {
       matchId: match.matchId,
@@ -140,9 +158,10 @@ export async function notifySetEnd(
 }
 
 /**
- * Notifica per la conclusione del match con punteggio
+ * Notification for match conclusion with score
  */
 export async function notifyMatchEnd(match: Match, event?: FipEvent): Promise<string | null> {
+  const lang = usePreferencesStore.getState().language;
   const team1 = formatTeamNames(match.team1?.player1?.name, match.team1?.player2?.name);
   const team2 = formatTeamNames(match.team2?.player1?.name, match.team2?.player2?.name);
 
@@ -150,7 +169,7 @@ export async function notifyMatchEnd(match: Match, event?: FipEvent): Promise<st
   const t2Winner = match.team2?.isWinner;
   const winner = t1Winner ? team1 : t2Winner ? team2 : null;
 
-  // Costruisci il punteggio dei set: es. "6-4 3-6 7-6"
+  // Build sets score string: e.g. "6-4 3-6 7-6"
   const sets = [
     match.team1?.set1 && match.team2?.set1 ? `${match.team1.set1}-${match.team2.set1}` : null,
     match.team1?.set2 && match.team2?.set2 ? `${match.team1.set2}-${match.team2.set2}` : null,
@@ -159,8 +178,31 @@ export async function notifyMatchEnd(match: Match, event?: FipEvent): Promise<st
     .filter(Boolean)
     .join(' ');
 
-  const title = winner ? `🏆 Vince ${winner}!` : '🏆 Match Concluso!';
-  const body = sets ? `Risultato finale: ${sets} (${team1} vs ${team2})` : `${team1} vs ${team2}`;
+  let title = '';
+  if (winner) {
+    title =
+      lang === 'it'
+        ? `🏆 Vince ${winner}!`
+        : lang === 'es'
+        ? `🏆 ¡Gana ${winner}!`
+        : `🏆 ${winner} wins!`;
+  } else {
+    title =
+      lang === 'it'
+        ? '🏆 Match Concluso!'
+        : lang === 'es'
+        ? '🏆 ¡Partido Concluido!'
+        : '🏆 Match Completed!';
+  }
+
+  const resultPrefix =
+    lang === 'it'
+      ? 'Risultato finale'
+      : lang === 'es'
+      ? 'Resultado final'
+      : 'Final score';
+
+  const body = sets ? `${resultPrefix}: ${sets} (${team1} vs ${team2})` : `${team1} vs ${team2}`;
 
   return sendLocalNotification(title, body, {
     matchId: match.matchId,
@@ -170,7 +212,7 @@ export async function notifyMatchEnd(match: Match, event?: FipEvent): Promise<st
 }
 
 /**
- * Programma un promemoria prima dell'inizio del match
+ * Schedules a reminder before match starts
  */
 export async function scheduleMatchReminder(
   match: Match,
@@ -181,16 +223,27 @@ export async function scheduleMatchReminder(
   try {
     const triggerTime = new Date(targetDate.getTime() - minutesBefore * 60 * 1000);
     if (triggerTime <= new Date()) {
-      return null; // Già passato
+      return null; // Already past
     }
 
+    const lang = usePreferencesStore.getState().language;
     const team1 = formatTeamNames(match.team1?.player1?.name, match.team1?.player2?.name);
     const team2 = formatTeamNames(match.team2?.player1?.name, match.team2?.player2?.name);
 
+    const title =
+      lang === 'it'
+        ? `⏰ Match in arrivo tra ${minutesBefore} minuti`
+        : lang === 'es'
+        ? `⏰ Partido en ${minutesBefore} minutos`
+        : `⏰ Match starting in ${minutesBefore} minutes`;
+
+    const courtPrep = lang === 'it' ? ' su ' : lang === 'es' ? ' en ' : ' on ';
+    const court = match.courtName ? `${courtPrep}${match.courtName}` : '';
+
     const id = await Notifications.scheduleNotificationAsync({
       content: {
-        title: `⏰ Match in arrivo tra ${minutesBefore} minuti`,
-        body: `${team1} vs ${team2}${match.courtName ? ` su ${match.courtName}` : ''}`,
+        title,
+        body: `${team1} vs ${team2}${court}`,
         data: {
           matchId: match.matchId,
           eventId: event?.eventId || event?.id,
@@ -207,18 +260,18 @@ export async function scheduleMatchReminder(
 
     return id;
   } catch (e) {
-    console.warn('Errore scheduling promemoria match:', e);
+    console.warn('Error scheduling match reminder:', e);
     return null;
   }
 }
 
 /**
- * Cancella una notifica programmata tramite il suo ID
+ * Cancels a scheduled notification by its ID
  */
 export async function cancelNotification(notificationId: string): Promise<void> {
   try {
     await Notifications.cancelScheduledNotificationAsync(notificationId);
   } catch (e) {
-    console.warn('Errore cancellazione notifica:', e);
+    console.warn('Error canceling notification:', e);
   }
 }

@@ -6,7 +6,7 @@ const FAVORITES_STORAGE_KEY = '@padellive_favorite_players_v1';
 const LEGACY_STORAGE_KEY = '@padely_favorite_players_v1';
 
 /**
- * Normalizza una stringa rimuovendo accenti, punteggiatura e convertendo in minuscolo
+ * Normalizes a string by stripping accents, punctuation and converting to lowercase.
  */
 export function normalizePlayerName(str: string = ''): string {
   return str
@@ -19,8 +19,8 @@ export function normalizePlayerName(str: string = ''): string {
 }
 
 /**
- * Verifica se il nome di un giocatore presente in una partita (es. "A. Coello" o "Arturo Coello")
- * corrisponde a un giocatore preferito (es. "Arturo Coello Manso").
+ * Checks whether a player's name in a match (e.g. "A. Coello" or "Arturo Coello")
+ * corresponds to a favorite player (e.g. "Arturo Coello Manso").
  */
 export function matchesPlayerName(matchPlayerName: string = '', favoriteName: string = ''): boolean {
   if (!matchPlayerName || !favoriteName) return false;
@@ -35,7 +35,7 @@ export function matchesPlayerName(matchPlayerName: string = '', favoriteName: st
 
   if (favTokens.length === 0 || matchTokens.length === 0) return false;
 
-  // Stop words nei nomi spagnoli / italiani
+  // Stop words in Spanish / Italian names
   const stopWords = new Set(['de', 'del', 'la', 'las', 'los', 'san', 'di', 'da', 'y']);
 
   const cleanFav = favTokens.filter((t) => !stopWords.has(t));
@@ -46,7 +46,7 @@ export function matchesPlayerName(matchPlayerName: string = '', favoriteName: st
   const favFirstName = cleanFav[0];
   const favSurnames = cleanFav.length > 1 ? cleanFav.slice(1) : [favFirstName];
 
-  // Verifica se il primo token del match è un'iniziale (lunghezza 1, es. "A" in "A. Coello")
+  // Check if first token of match is an initial (length 1, e.g. "A" in "A. Coello")
   const matchFirst = cleanMatch[0];
   const isInitial = matchFirst.length === 1;
 
@@ -56,7 +56,7 @@ export function matchesPlayerName(matchPlayerName: string = '', favoriteName: st
     ? cleanMatch.slice(1)
     : [matchFirst];
 
-  // Almeno uno dei cognomi significativi del preferito (lunghezza >= 3) deve corrispondere a un cognome del match
+  // At least one meaningful surname of the favorite (length >= 3) must match a match surname
   const hasMatchingSurname = favSurnames.some(
     (fs) => fs.length >= 3 && matchSurnames.some((ms) => ms.length >= 3 && (fs === ms || fs.startsWith(ms) || ms.startsWith(fs)))
   );
@@ -65,13 +65,13 @@ export function matchesPlayerName(matchPlayerName: string = '', favoriteName: st
     return false;
   }
 
-  // Se un cognome corrisponde:
-  // Se il match ha un'iniziale (es. "A." per "Arturo"), deve combaciare con l'iniziale del nome del preferito
+  // If a surname matches:
+  // If the match has an initial (e.g. "A." for "Arturo"), it must match the favorite's first name initial
   if (isInitial) {
     return favFirstName.startsWith(matchFirst);
   }
 
-  // Se il match ha un nome per esteso (es. "Arturo" in "Arturo Coello")
+  // If the match has a full name (e.g. "Arturo" in "Arturo Coello")
   if (cleanMatch.length > 1) {
     return (
       favFirstName === matchFirst ||
@@ -80,7 +80,7 @@ export function matchesPlayerName(matchPlayerName: string = '', favoriteName: st
     );
   }
 
-  // Se è presente solo il cognome (es. "Coello") ed è univoco rispetto al preferito
+  // If only the surname is present (e.g. "Coello") and matches uniquely
   return true;
 }
 
@@ -112,7 +112,7 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
         set({ favorites: [], isFavoritesLoaded: true });
       }
     } catch (e) {
-      console.warn('Errore nel caricamento dei preferiti:', e);
+      console.warn('Error loading favorites:', e);
       set({ isFavoritesLoaded: true });
     }
   },
@@ -149,7 +149,7 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
     try {
       await AsyncStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(nextFavorites));
     } catch (e) {
-      console.warn('Errore nel salvataggio preferiti:', e);
+      console.warn('Error saving favorites:', e);
     }
   },
 
@@ -170,7 +170,7 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
     try {
       await AsyncStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(nextFavorites));
     } catch (e) {
-      console.warn('Errore nella rimozione del preferito:', e);
+      console.warn('Error removing favorite:', e);
     }
   },
 

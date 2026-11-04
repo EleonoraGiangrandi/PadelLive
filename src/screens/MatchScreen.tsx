@@ -44,7 +44,7 @@ export const MatchScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabKey>('match');
   const [showWhereToWatch, setShowWhereToWatch] = useState(false);
 
-  // Recupera gli aggiornamenti live del tabellone partite ogni 10 secondi
+  // Fetch live updates for the match schedule every 10 seconds
   const { data: dayMatches } = useQuery<Match[]>({
     queryKey: ['matches', event.eventId || event.id, day],
     queryFn: () => getMatches(event.eventId || event.id, day || 1),
@@ -172,7 +172,7 @@ export const MatchScreen: React.FC = () => {
           <View style={styles.scoreboardTable}>
             {/* Header Columns */}
             <View style={styles.tableHeaderRow}>
-              <Text style={styles.teamHeaderCell}>SQUADRE</Text>
+              <Text style={styles.teamHeaderCell}>TEAMS</Text>
               <Text style={styles.setColHeader}>S1</Text>
               <Text style={styles.setColHeader}>S2</Text>
               <Text style={styles.setColHeader}>S3</Text>
@@ -309,7 +309,7 @@ export const MatchScreen: React.FC = () => {
           {stats?.duration ? (
             <View style={styles.durationRow}>
               <Clock size={12} color={theme.colors.textSecondary} style={{ marginRight: 4 }} />
-              <Text style={styles.durationText}>Durata: {stats.duration}</Text>
+              <Text style={styles.durationText}>{t.match.duration}: {stats.duration}</Text>
             </View>
           ) : null}
         </View>
@@ -411,27 +411,27 @@ export const MatchScreen: React.FC = () => {
             {/* POINTS */}
             <Text style={styles.statsSectionHeader}>{t.match.points.toUpperCase()}</Text>
             <StatBar
-              label="Break Points Convertiti"
+              label="Break Points Converted"
               val1={activeStatsGroup1?.match?.breakingPointsConverted}
               val2={activeStatsGroup2?.match?.breakingPointsConverted}
             />
             <StatBar
-              label="Serie più Lunga di Punti"
+              label="Longest Point Streak"
               val1={activeStatsGroup1?.match?.longestStreak}
               val2={activeStatsGroup2?.match?.longestStreak}
             />
             <StatBar
-              label="Totale Punti Vinti"
+              label="Total Points Won"
               val1={activeStatsGroup1?.match?.totalPointsWon}
               val2={activeStatsGroup2?.match?.totalPointsWon}
             />
             <StatBar
-              label="Totale Vinti al Servizio"
+              label="Total Won on Serve"
               val1={activeStatsGroup1?.totalPoints?.totalWonOnServe}
               val2={activeStatsGroup2?.totalPoints?.totalWonOnServe}
             />
             <StatBar
-              label="Totale Vinti in Risposta"
+              label="Total Won on Return"
               val1={activeStatsGroup1?.totalPoints?.totalWonOnReturn}
               val2={activeStatsGroup2?.totalPoints?.totalWonOnReturn}
             />

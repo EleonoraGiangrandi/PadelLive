@@ -70,7 +70,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({ visible, onClose }) =>
           >
             <View style={styles.categoryHeader}>
               <Text style={styles.sectionTitle}>
-                Circuiti ({selectedCategories.length}/{ALL_TOURNAMENT_CATEGORIES.length})
+                {t.filterModal.circuits} ({selectedCategories.length}/{ALL_TOURNAMENT_CATEGORIES.length})
               </Text>
               <View style={styles.quickActions}>
                 <TouchableOpacity onPress={selectAllCategories}>

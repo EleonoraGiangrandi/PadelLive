@@ -59,7 +59,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         isPreferencesLoaded: true,
       });
     } catch (e) {
-      console.warn('Errore nel caricamento preferenze notifiche:', e);
+      console.warn('Error loading notification preferences:', e);
       set({ isPreferencesLoaded: true });
     }
   },
@@ -71,7 +71,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     try {
       await AsyncStorage.setItem(NOTIF_PREFS_KEY, JSON.stringify(next));
     } catch (e) {
-      console.warn('Errore nel salvataggio preferenze notifiche:', e);
+      console.warn('Error saving notification preferences:', e);
     }
   },
 
@@ -87,7 +87,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     try {
       await AsyncStorage.setItem(FOLLOWED_MATCHES_KEY, JSON.stringify(next));
     } catch (e) {
-      console.warn('Errore nel salvataggio match seguiti:', e);
+      console.warn('Error saving followed matches:', e);
     }
     return !isFollowing;
   },

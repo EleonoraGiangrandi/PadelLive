@@ -10,11 +10,11 @@ interface TrackedMatchState {
   scheduledReminderId?: string | null;
 }
 
-// Mappa in-memory dello stato dei match per evitare notifiche duplicate durante la sessione
+// In-memory match state map to avoid duplicate notifications during session
 const trackedStateMap = new Map<string, TrackedMatchState>();
 
 /**
- * Verifica se un match coinvolge almeno un giocatore presente tra i preferiti
+ * Checks whether a match involves at least one favorite player
  */
 export function matchHasFavoritePlayer(match: Match): boolean {
   const { isPlayerFavorite, favorites } = useFavoritesStore.getState();
@@ -31,29 +31,29 @@ export function matchHasFavoritePlayer(match: Match): boolean {
 }
 
 /**
- * Determina se un match deve generare notifiche secondo le preferenze dell'utente
+ * Determines whether a match should trigger notifications according to user preferences
  */
 export function shouldNotifyForMatch(match: Match): boolean {
   const { preferences, followedMatchIds } = useNotificationStore.getState();
 
   if (!preferences.enabled) return false;
 
-  // Se l'utente ha cliccato esplicitamente la campanella su questo incontro
+  // If user explicitly tapped the bell for this match
   if (followedMatchIds.includes(match.matchId)) {
     return true;
   }
 
-  // Se l'utente vuole notifiche SOLO per i suoi preferiti
+  // If user wants notifications ONLY for favorites
   if (preferences.onlyFavorites) {
     return matchHasFavoritePlayer(match);
   }
 
-  // Altrimenti, notifiche attive per tutte le partite
+  // Otherwise, notifications active for all matches
   return true;
 }
 
 /**
- * Calcola quanti set sono stati completati in questo momento
+ * Calculates how many sets have been completed so far
  */
 function getCompletedSetsCount(match: Match, isFinished: boolean): number {
   let count = 0;
@@ -64,15 +64,15 @@ function getCompletedSetsCount(match: Match, isFinished: boolean): number {
   const s3_1 = match.team1?.set3;
   const s3_2 = match.team2?.set3;
 
-  // Set 1 completato se c'è un punteggio nel set 2 o se il match è finito
+  // Set 1 completed if there is a score in set 2 or if the match has finished
   if (s1_1 && s1_2 && s1_1 !== '-' && (s2_1 || isFinished)) {
     count++;
   }
-  // Set 2 completato se c'è un punteggio nel set 3 o se il match è finito con 2 set
+  // Set 2 completed if there is a score in set 3 or if the match finished in 2 sets
   if (s2_1 && s2_2 && s2_1 !== '-' && (s3_1 || isFinished)) {
     count++;
   }
-  // Set 3 completato se il match è finito
+  // Set 3 completed if the match finished
   if (s3_1 && s3_2 && s3_1 !== '-' && isFinished) {
     count++;
   }
@@ -81,7 +81,7 @@ function getCompletedSetsCount(match: Match, isFinished: boolean): number {
 }
 
 /**
- * Elabora la lista dei match ricevuta dall'API / polling e invia le notifiche pertinenti
+ * Processes the match list from the API / polling and dispatches relevant notifications
  */
 export async function evaluateMatches(matches: Match[], event?: FipEvent): Promise<void> {
   const { preferences } = useNotificationStore.getState();
@@ -104,7 +104,7 @@ export async function evaluateMatches(matches: Match[], event?: FipEvent): Promi
           match.team1?.isServing ||
           match.team2?.isServing));
 
-    // Recupera o inizializza lo stato tracciato
+    // Retrieve or initialize tracked state
     let state = trackedStateMap.get(match.matchId);
     if (!state) {
       state = {
@@ -113,11 +113,11 @@ export async function evaluateMatches(matches: Match[], event?: FipEvent): Promi
         completedSetsCount: getCompletedSetsCount(match, isFinished),
       };
       trackedStateMap.set(match.matchId, state);
-      // Se è la primissima volta che lo vediamo, non spammiamo notifiche per match già iniziati o già finiti in precedenza
+      // If this is the first time we see it, do not spam notifications for matches already in progress or completed
       continue;
     }
 
-    // Se l'incontro non rientra nei criteri di notifica dell'utente, aggiorniamo lo stato senza notificare
+    // If match does not meet user criteria, update state without sending notification
     if (!shouldNotifyForMatch(match)) {
       state.hasStarted = state.hasStarted || isOngoing || isFinished;
       state.hasCompleted = state.hasCompleted || isFinished;
@@ -125,7 +125,7 @@ export async function evaluateMatches(matches: Match[], event?: FipEvent): Promi
       continue;
     }
 
-    // 1. Controllo Inizio Match
+    // 1. Match Start Check
     if (isOngoing && !state.hasStarted && !isFinished) {
       state.hasStarted = true;
       if (preferences.notifyMatchStart) {
@@ -133,7 +133,7 @@ export async function evaluateMatches(matches: Match[], event?: FipEvent): Promi
       }
     }
 
-    // 2. Controllo Fine Set
+    // 2. Set End Check
     const currentCompletedSets = getCompletedSetsCount(match, isFinished);
     if (currentCompletedSets > state.completedSetsCount && !isFinished) {
       if (preferences.notifySetEnd) {
@@ -146,7 +146,7 @@ export async function evaluateMatches(matches: Match[], event?: FipEvent): Promi
       state.completedSetsCount = currentCompletedSets;
     }
 
-    // 3. Controllo Fine Match
+    // 3. Match End Check
     if (isFinished && !state.hasCompleted) {
       state.hasCompleted = true;
       state.hasStarted = true;

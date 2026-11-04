@@ -32,14 +32,14 @@ export const WhereToWatchModal: React.FC<WhereToWatchModalProps> = ({ visible, o
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        {/* Sfondo cliccabile per chiudere la modale */}
+        {/* Clickable backdrop to close modal */}
         <TouchableOpacity
           style={styles.backdrop}
           activeOpacity={1}
           onPress={onClose}
         />
 
-        {/* Pannello modale inferiore */}
+        {/* Bottom sheet modal */}
         <View style={styles.sheet}>
           <View style={styles.dragHandle} />
 

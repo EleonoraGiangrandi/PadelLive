@@ -33,8 +33,8 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
   const isOngoing = match.isLive || match.status === 'live' || (!isFinished && (!!match.team1.points || !!match.team2.points || match.team1.isServing || match.team2.isServing));
 
   /**
-   * Renderizza il punteggio di un set gestendo elegantemente il tie-break (es. "7(5)" o "6(0)")
-   * senza rompere l'allineamento delle colonne della tabella.
+   * Renders the score of a set gracefully handling tie-breaks (e.g. "7(5)" or "6(0)")
+   * without breaking the table column alignment.
    */
   const renderSetCell = (scoreStr?: string, isWinner?: boolean) => {
     if (!scoreStr || scoreStr === '-') {
@@ -168,7 +168,7 @@ export const MatchCard: React.FC<MatchCardProps> = ({ match, onPress }) => {
               toggleFollowMatch(match.matchId);
             }}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            accessibilityLabel="Segui match"
+            accessibilityLabel="Follow match"
           >
             <Bell
               size={15}

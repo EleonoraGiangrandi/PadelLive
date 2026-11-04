@@ -12,9 +12,9 @@ const DEFAULT_NEWS_FEEDS = [
 ];
 
 /**
- * Recupera e aggrega gli articoli di notizie dai feed RSS ufficiali FIP.
+ * Retrieves and aggregates news articles from official FIP RSS feeds.
  */
-export async function getNewsArticles(_locale: string = 'it'): Promise<RssArticle[]> {
+export async function getNewsArticles(_locale: string = 'en'): Promise<RssArticle[]> {
   try {
     const urls = DEFAULT_NEWS_FEEDS;
     const articles: RssArticle[] = [];
@@ -55,7 +55,7 @@ export async function getNewsArticles(_locale: string = 'it'): Promise<RssArticl
               .trim();
 
             articles.push({
-              title: item.title || 'Senza titolo',
+              title: item.title || 'Untitled',
               description: cleanDesc,
               date: item.pubDate || new Date().toISOString(),
               image,

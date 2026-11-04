@@ -112,13 +112,13 @@ export const BROADCASTERS_BY_COUNTRY: CountryBroadcaster[] = [
 ];
 
 /**
- * Determina se un turno corrisponde ai Quarti di finale o successivi
+ * Determines whether a round corresponds to Quarterfinals or later
  */
 export function isQuarterFinalOrLater(roundName?: string): boolean {
   if (!roundName) return false;
   const lower = roundName.toLowerCase();
   
-  // Esclude "Round of 32", "Round of 16"
+  // Exclude "Round of 32", "Round of 16"
   if (lower.includes('round of')) return false;
 
   return (
@@ -131,7 +131,7 @@ export function isQuarterFinalOrLater(roundName?: string): boolean {
 }
 
 /**
- * Restituisce i dettagli dello streaming live per un match o per il torneo
+ * Returns live streaming details for a match or tournament
  */
 export function getStreamInfo(event: FipEvent, match?: Match): StreamInfo {
   const eventType = (event.type || '').toLowerCase();
@@ -144,7 +144,7 @@ export function getStreamInfo(event: FipEvent, match?: Match): StreamInfo {
   const courtName = match?.courtName || '';
   const isFinalStage = isQuarterFinalOrLater(roundName);
 
-  // 1. Premier Padel dai Quarti in poi o Premier Finals -> Red Bull TV
+  // 1. Premier Padel from Quarterfinals onward or Premier Finals -> Red Bull TV
   if (isPremierPadel && (isFinalStage || eventType.includes('finals') || eventType.includes('master'))) {
     return {
       isAvailable: true,
@@ -159,7 +159,7 @@ export function getStreamInfo(event: FipEvent, match?: Match): StreamInfo {
     };
   }
 
-  // 2. Premier Padel fasi iniziali -> Canale YouTube Premier Padel
+  // 2. Premier Padel early rounds -> Premier Padel YouTube Channel
   if (isPremierPadel) {
     const query = courtName ? `${event.name} ${courtName} live` : `${event.name} live`;
     const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
@@ -177,7 +177,7 @@ export function getStreamInfo(event: FipEvent, match?: Match): StreamInfo {
     };
   }
 
-  // 3. FIP Tour (Platinum, Gold, Silver, Bronze, Rise, Promotion) -> Canale YouTube FIP
+  // 3. FIP Tour (Platinum, Gold, Silver, Bronze, Rise, Promotion) -> FIP YouTube Channel
   const fipQuery = courtName ? `${event.name} ${courtName} live` : `${event.name} live`;
   const fipSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(fipQuery)}`;
 
@@ -195,12 +195,12 @@ export function getStreamInfo(event: FipEvent, match?: Match): StreamInfo {
 }
 
 /**
- * Apre il link allo streaming live aprendo l'app nativa con fallback su browser
+ * Opens the live stream link in the native app with browser fallback
  */
 export async function openLiveStream(streamInfo: StreamInfo): Promise<void> {
   try {
     if (streamInfo.platform === 'youtube') {
-      // Prova ad aprire la ricerca mirata su YouTube
+      // Try to open targeted search on YouTube
       const targetUrl = streamInfo.appUrl || streamInfo.url;
       const canOpen = await Linking.canOpenURL(targetUrl);
       if (canOpen) {
@@ -223,8 +223,8 @@ export async function openLiveStream(streamInfo: StreamInfo): Promise<void> {
 
     await Linking.openURL(streamInfo.url);
   } catch (error) {
-    console.warn('Errore apertura stream live:', error);
-    // Fallback sicuro su URL base
+    console.warn('Error opening live stream:', error);
+    // Safe fallback to base URL
     try {
       await Linking.openURL(streamInfo.url);
     } catch {}

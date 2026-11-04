@@ -1,179 +1,250 @@
 # PadelLive
 
-Applicazione mobile open source per il monitoraggio in tempo reale dei tornei di padel mondiali, risultati live, tabelloni, statistiche di gioco, classifiche ufficiali FIP e notizie.
+[![GitHub Release](https://img.shields.io/github/v/release/EleonoraGiangrandi/PadelLive?include_prereleases&color=00e676)](https://github.com/EleonoraGiangrandi/PadelLive/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Expo SDK](https://img.shields.io/badge/Expo-SDK_58-black.svg)](https://expo.dev/)
+[![React Native](https://img.shields.io/badge/React_Native-0.88-61dafb.svg)](https://reactnative.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue.svg)](https://www.typescriptlang.org/)
+[![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](https://github.com/EleonoraGiangrandi/PadelLive/releases/latest)
 
-Sviluppata con React Native ed Expo in TypeScript, PadelLive e' progettata con un'architettura client-side che interagisce direttamente con i dati ufficiali di tornei e circuiti internazionali (Premier Padel e FIP Tour), senza intermediari proprietari e nel pieno rispetto della privacy degli utenti.
+An open-source mobile application for real-time tracking of international padel tournaments, live point-by-point scores, bracket draws, match statistics, official FIP world rankings, and news.
 
----
-
-## Download e Installazione Android (APK)
-
-L'applicazione e' distribuita direttamente tramite pacchetto APK standalone, scaricabile gratuitamente dalla sezione Releases di GitHub, senza necessita' di passare dal Google Play Store.
-
-### Requisiti di Sistema
-- Dispositivo Android con versione 8.0 (Oreo) o successiva.
-- Circa 40 MB di spazio libero in memoria.
-
-### 1. Download del file di installazione
-1. Apri la pagina delle Release su GitHub dal browser del tuo smartphone:
-   `https://github.com/<TUO-USERNAME>/<TUO-REPOSITORY>/releases/latest`
-2. Nella sezione **Assets**, tocca il file **`PadelLive.apk`** per avviare il download.
-
-### 2. Abilitazione delle Origini Sconosciute (Installa app sconosciute)
-A partire da Android 8.0, Google gestisce i permessi di installazione per singola applicazione (ad esempio Google Chrome, Firefox, Samsung Internet o l'app File/Gestione File). Al primo tentativo di apertura dell'APK scaricato:
-
-1. Quando il download e' completato, tocca la notifica di download oppure apri l'app **File / Download** e tocca il file `PadelLive.apk`.
-2. Se il sistema mostra il messaggio di avviso:
-   > "Per motivi di sicurezza, il telefono non e' autorizzato a installare app sconosciute da questa fonte"
-3. Tocca **Impostazioni** (o **Dettagli**).
-4. Attiva l'interruttore su **Consenti da questa fonte** (o **Consenti installazione di app sconosciute**).
-5. Premi il tasto Indietro del telefono e tocca **Installa**.
-
-### 3. Gestione avviso Google Play Protect
-Poiche' l'applicazione e' distribuita in formato open source direttamente dalla community e non tramite i server commerciali di Google, durante l'installazione Google Play Protect potrebbe mostrare una schermata informativa ("App bloccata da Play Protect" o "Sviluppatore non riconosciuto"):
-
-1. Nella finestra di avviso, tocca la voce **Ulteriori dettagli** (oppure **Maggiori informazioni**).
-2. Tocca il pulsante **Installa comunque**.
-3. Al termine dell'installazione tocca **Apri** per avviare PadelLive.
+Built with React Native and Expo in TypeScript, PadelLive is architected as a decentralized, client-only application. It queries live data directly from official circuit sources (Premier Padel and FIP Tour) without middleman servers, tracking scripts, or user account requirements.
 
 ---
 
-## Funzionalita
+## Table of Contents
 
-- **Monitoraggio Tornei**:
-  - Visualizzazione tornei In Corso, Prossimi e Conclusi dei circuiti Premier Padel e FIP.
-  - Filtro dinamico per categoria (Major, P1, P2, Platinum, Gold, Star, Rise, Promotion).
-  - Ricerca rapida per nome torneo o localita.
-- **Risultati e Partite Live**:
-  - Scoreboard in tempo reale con punteggio dei set e game in corso (15, 30, 40, AD).
-  - Indicatore visivo del turno di servizio.
-  - Statistiche dettagliate della partita (break point convertiti, aces, doppi falli, efficacia servizio/risposta).
-  - Aggiornamento automatico e polling intelligente durante gli incontri attivi.
-- **Tabelloni Torneo (Draws)**:
-  - Tabellone completo maschile e femminile suddiviso per turni (Trentaduesimi, Sedicesimi, Ottavi, Quarti, Semifinali, Finale).
-  - Consultazione tabellone interattivo o download del PDF ufficiale.
-- **Dirette Streaming e Info Canali**:
-  - Link diretto alle dirette ufficiali (canali YouTube ufficiali e piattaforme broadcaster autorizzate).
-  - Scheda informativa integrata sui diritti di trasmissione per nazione.
-- **Giocatori Preferiti e Notifiche**:
-  - Salvataggio dei giocatori preferiti con un tocco.
-  - Notifiche locali per inizio partita, fine set e fine match dei tuoi atleti preferiti.
-  - Filtro istantaneo per vedere unicamente le partite dei tuoi atleti preferiti nei tornei.
-- **Classifiche Mondiali FIP**:
-  - Ranking ufficiale maschile e femminile aggiornato.
-  - Delta posizioni rispetto all'aggiornamento precedente.
-  - Ricerca per nome atleta o nazione.
-  - Scheda dettagliata del giocatore con statistiche di rendimento, partner abituale e dati anagrafici.
-- **Notizie e Aggiornamenti**:
-  - Feed notizie sincronizzato con fonti giornalistiche ufficiali di padel.
-  - Traduzione e supporto multilingua (Italiano, Spagnolo, Inglese).
-- **Personalizzazione**:
-  - Supporto completo Tema Scuro (Dark Mode) e Tema Chiaro (Light Mode).
-  - Persistenza automatica di filtri, tab selezionati e preferenze di notifica.
+- [Features](#features)
+- [Download and Installation](#download-and-installation)
+  - [System Requirements](#system-requirements)
+  - [Installation Steps](#installation-steps)
+  - [Troubleshooting Play Protect](#troubleshooting-play-protect)
+- [Architecture and Privacy](#architecture-and-privacy)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Local Development](#local-development)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Development Server](#development-server)
+  - [Code Quality](#code-quality)
+- [Building the Production APK](#building-the-production-apk)
+  - [Cloud Build with EAS](#cloud-build-with-eas)
+  - [Local Build with Android SDK](#local-build-with-android-sdk)
+- [Alternative Distribution](#alternative-distribution)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## Architettura e Privacy
+## Features
 
-L'applicazione e' concepita secondo il principio della decentralizzazione:
-- **Nessun account obbligatorio**: l'app e' immediatamente pronta all'uso senza registrazione.
-- **Zero profilazione**: le preferenze, i giocatori seguiti e le impostazioni restano confinati nella memoria locale del dispositivo tramite AsyncStorage.
-- **Connessione diretta alle fonti**: i dati delle partite e le classifiche vengono interrogati direttamente dai feed e provider dei circuiti sportivi ufficiali.
+- **Tournament Tracking**:
+  - Browse live, upcoming, and completed tournaments across the Premier Padel and FIP Tour circuits.
+  - Filter tournaments dynamically by category (Major, P1, P2, Platinum, Gold, Star, Rise, Promotion).
+  - Search competitions by name, host city, or country.
+
+- **Live Scores and Match Statistics**:
+  - Real-time point-by-point scoreboard with game state progression (15, 30, 40, Advantage).
+  - Visual service indicator and tie-break tracking.
+  - Detailed match metrics (break points converted, aces, double faults, service and return efficiency).
+  - Adaptive polling intervals for active matches to balance real-time updates and battery usage.
+
+- **Interactive Tournament Draws**:
+  - Complete men's and women's brackets organized by rounds (Round of 64 through Finals).
+  - Visual bracket exploration with match status, player pairings, and seed information.
+  - Direct access to official tournament draw documents.
+
+- **Broadcast Schedules and Live Streams**:
+  - Direct links to official broadcast streams, YouTube channels, and rights holders.
+  - Regional broadcasting rights reference guide.
+
+- **Favorite Players and Push Notifications**:
+  - Bookmark players to monitor upcoming and active matches.
+  - Filter active tournament schedules to show matches involving followed players.
+  - Local device notifications for match starts, set completions, and final results.
+
+- **Official FIP World Rankings**:
+  - Up-to-date official men's and women's rankings.
+  - Rank movement indicators reflecting weekly position changes.
+  - Search by player name or nationality.
+  - Dedicated athlete profiles with biographical data, partner history, and career highlights.
+
+- **News Feed and Multilingual Support**:
+  - Curated news feed covering tournament reports, player interviews, and circuit updates.
+  - Fully localized in English, Spanish, and Italian.
+  - System-aware Dark Mode and Light Mode interface.
+
+---
+
+## Download and Installation
+
+PadelLive is distributed as a standalone Android APK directly through GitHub Releases. No Google Play Store account is required.
+
+### System Requirements
+
+- **Operating System**: Android 8.0 (API Level 26) or higher.
+- **Storage**: Minimum 40 MB of free storage space.
+- **Network**: Active internet connection for live score updates.
+
+### Installation Steps
+
+1. **Download the APK**:
+   Visit the [latest release page](https://github.com/EleonoraGiangrandi/PadelLive/releases/latest) on your mobile device and download `PadelLive.apk` under the **Assets** section.
+
+2. **Allow Installation from Unknown Sources**:
+   Android restricts installations from outside the Play Store by default on a per-application basis (e.g., Chrome, Firefox, or Files app):
+   - Open your device **Downloads** or tap the completed download notification.
+   - If prompted with *"For your security, your phone is not allowed to install unknown apps from this source"*, tap **Settings**.
+   - Enable **Allow from this source**.
+   - Return to the previous screen and select **Install**.
+
+### Troubleshooting Play Protect
+
+Because PadelLive is distributed directly from its open-source repository without a proprietary Google commercial certificate, Google Play Protect may display a warning dialog (*"Blocked by Play Protect"* or *"Unrecognized Developer"*):
+
+1. On the Play Protect dialog, tap **More details** (or **More info**).
+2. Tap **Install anyway**.
+3. Once the installation completes, tap **Open** to launch the application.
+
+---
+
+## Architecture and Privacy
+
+PadelLive is designed around privacy and decentralization principles:
+
+- **No User Account Required**: The app is fully functional upon installation with no registration, sign-in, or telemetry collection.
+- **Local-Only Storage**: All user preferences, followed players, and cache are stored exclusively on your device using local storage (`AsyncStorage`). No data is sent to external proprietary backends.
+- **Direct Circuit Connectivity**: Match data, tournament schedules, and ranking tables are requested directly from official sporting data feeds.
+
+---
+
+## Tech Stack
+
+- **Framework**: [React Native](https://reactnative.dev/) (v0.88) with [Expo](https://expo.dev/) (SDK 58)
+- **Language**: [TypeScript](https://www.typescriptlang.org/) (Strict mode)
+- **Navigation**: [React Navigation](https://reactnavigation.org/) (Native Stack and Bottom Tabs v7)
+- **State Management**: [Zustand](https://github.com/pmndrs/zustand) with persistent local storage
+- **Data Fetching**: [TanStack Query](https://tanstack.com/query/latest) (React Query v5)
+- **UI & Icons**: [Lucide React Native](https://lucide.dev/), `react-native-safe-area-context`, `react-native-screens`
+- **Notifications**: `expo-notifications`
+- **Build System**: Expo Application Services (EAS Build)
+
+---
+
+## Project Structure
 
 ```
-src/
- |-- api/             # Client HTTP e connettori verso le sorgenti dati
- |-- components/      # Componenti modulari (tornei, partite, classifiche, modali)
- |-- i18n/            # Internazionalizzazione (IT, ES, EN)
- |-- navigation/      # Navigazione nativa a schede e stack
- |-- screens/         # Schermate principali dell'applicazione
- |-- services/        # Gestori notifiche, tracker punteggi e tabelloni
- |-- store/           # Gestione stato globale persistente (Zustand + AsyncStorage)
- |-- types/           # Modelli di dati TypeScript
- |-- utils/           # Funzioni di utilita data, testo e temi
+padel-score/
+|-- assets/              # Application icons, splash screens, and images
+|-- src/
+|   |-- api/             # HTTP clients, parsers, and official circuit endpoints
+|   |-- components/      # Reusable UI components (draws, match cards, rankings)
+|   |-- constants/       # Color palettes, theme definitions, and layout constants
+|   |-- hooks/           # Custom React hooks for queries, storage, and filters
+|   |-- i18n/            # Internationalization dictionaries (EN, ES, IT)
+|   |-- navigation/      # Stack and bottom-tab navigation definitions
+|   |-- screens/         # Top-level screen components
+|   |-- services/        # Background polling, local notifications, and match trackers
+|   |-- store/           # Zustand state slices and storage persistence
+|   |-- types/           # TypeScript interfaces and data models
+|   |-- utils/           # Helper functions for dates, formatting, and calculations
+|-- app.json             # Expo application configuration
+|-- eas.json             # EAS build profiles and configuration
+|-- package.json         # Project metadata and dependencies
+|-- tsconfig.json        # TypeScript configuration
 ```
 
 ---
 
-## Sviluppo Locale
+## Local Development
 
-### Prerequisiti
-- Node.js (versione 18.x o successiva)
-- npm oppure bun
-- Dispositivo Android con debug USB attivo o emulatore Android Studio (opzionale per sviluppo con client nativo)
-- App **Expo Go** per test rapidi
+### Prerequisites
 
-### Installazione ed Esecuzione
-1. Clonare il repository:
+- [Node.js](https://nodejs.org/) (v18.x or later)
+- Package manager: `npm` or `bun`
+- [Expo Go](https://expo.dev/go) on a physical mobile device, or an Android Studio emulator / iOS Simulator
+
+### Installation
+
+1. Clone the repository:
    ```bash
-   git clone https://github.com/<TUO-USERNAME>/<TUO-REPOSITORY>.git
-   cd <TUO-REPOSITORY>
+   git clone https://github.com/EleonoraGiangrandi/PadelLive.git
+   cd PadelLive
    ```
 
-2. Installare le dipendenze:
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-3. Avviare il server di sviluppo:
-   ```bash
-   npx expo start
-   ```
+### Development Server
 
-4. Controlli di qualita del codice:
-   ```bash
-   # Verifica dei tipi TypeScript
-   npx tsc --noEmit
-
-   # Analisi statica con linter
-   npx expo lint
-   ```
-
----
-
-## Compilazione APK di Produzione
-
-Il progetto e' gia predisposto con Expo Application Services (EAS) per generare direttamente pacchetti APK standalone (senza necessita del formato AAB di Google Play).
-
-### Compilazione via EAS Cloud
-1. Installare la CLI di EAS se non presente:
-   ```bash
-   npm install -g eas-cli
-   ```
-
-2. Effettuare l'accesso con un account Expo (gratuito):
-   ```bash
-   eas login
-   ```
-
-3. Lanciare la compilazione del pacchetto APK:
-   ```bash
-   eas build -p android --profile production
-   ```
-   Al termine del processo verra fornito il link diretto per scaricare il file APK compilato.
-
-### Compilazione Locale (senza cloud)
-Se disponi di Android SDK e Java (JDK 17+) configurati localmente:
+Start the Metro bundler:
 ```bash
-eas build -p android --profile production --local
+npx expo start
+```
+
+Press:
+- `a` to open in an Android emulator or connected device.
+- `i` to open in an iOS simulator (macOS required).
+- Scan the printed QR code using the Expo Go application on Android.
+
+### Code Quality
+
+Run static analysis and type checks:
+```bash
+# TypeScript type check
+npx tsc --noEmit
+
+# ESLint code analysis
+npx expo lint
 ```
 
 ---
 
-## Distribuzione Alternativa Consigliata
+## Building the Production APK
 
-Oltre alla pubblicazione diretta nelle **GitHub Releases**, il progetto puo essere inserito nei repository aperti della comunita Android per consentire agli utenti di ricevere aggiornamenti automatici:
+PadelLive is pre-configured with Expo Application Services (EAS) to build standalone Android APK files directly.
 
-1. **IzzyOnDroid (F-Droid Community)**:
-   - E' il piu grande repository curato compatibile con i client F-Droid, Neo Store e Droid-ify.
-   - Non richiede di ricompilare il codice: monitora automaticamente le Releases del tuo repository GitHub e rende disponibile l'APK agli utenti.
-   - Per richiedere l'inserimento e' sufficiente aprire una richiesta su GitLab all'indirizzo `https://gitlab.com/IzzyOnDroid/repo/-/issues` indicando il link del repository GitHub.
+### Cloud Build with EAS
 
-2. **GitHub Releases Badge**:
-   - E' possibile aggiungere un badge di download diretto per consentire agli utenti di ottenere sempre l'ultima versione stabile con un solo click.
+1. Install EAS CLI globally:
+   ```bash
+   npm install -g eas-cli
+   ```
+
+2. Authenticate with your Expo account:
+   ```bash
+   eas login
+   ```
+
+3. Trigger the production APK build on EAS servers:
+   ```bash
+   eas build -p android --profile production
+   ```
+   Upon completion, EAS provides a direct link to download the compiled `.apk` file.
+
+### Local Build with Android SDK
+
+To compile the APK locally without using cloud build resources, ensure the Android SDK and JDK 17+ are installed and configured:
+```bash
+eas build -p android --profile production --local
+```
+
+The resulting `.apk` file will be generated in your project root.
 
 ---
 
-## Licenza
+## Alternative Distribution
 
-Questo progetto e' rilasciato sotto licenza **MIT**. Consulta il file [LICENSE](LICENSE) per i termini completi.
+Beyond manual installation via [GitHub Releases](https://github.com/EleonoraGiangrandi/PadelLive/releases), PadelLive can be integrated into community-driven Android repositories:
+
+- **IzzyOnDroid (F-Droid Community Repository)**:
+  IzzyOnDroid is an open-source Android app repository compatible with F-Droid and Neo Store clients. It tracks GitHub Releases automatically and serves APKs to users without rebuilding code. Inclusion requests can be submitted via the [IzzyOnDroid repository tracker](https://gitlab.com/IzzyOnDroid/repo/-/issues).
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

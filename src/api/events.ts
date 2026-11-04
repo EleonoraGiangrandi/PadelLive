@@ -4,9 +4,9 @@ import { getLocalUtcOffsetMinutes } from '../utils/date';
 import calendarData from '../assets/data/calendar_2026.json';
 
 /**
- * Recupera l'elenco dei tornei.
- * Utilizza il dataset ufficiale incorporato completo di tutti i tornei
- * Premier Padel e FIP 2026 con copertine ufficiali e eventId.
+ * Retrieves the list of tournaments.
+ * Uses the complete embedded official dataset of all
+ * Premier Padel and FIP 2026 tournaments with official covers and eventIds.
  */
 export async function getEvents(): Promise<FipEvent[]> {
   try {
@@ -20,8 +20,8 @@ export async function getEvents(): Promise<FipEvent[]> {
 }
 
 /**
- * Recupera le partite di un torneo per una giornata.
- * Priorità: Interrogazione diretta ufficiale di MatchScorerLive.
+ * Retrieves matches of a tournament for a given day.
+ * Priority: Official direct query to MatchScorerLive.
  */
 export async function getMatches(
   tournamentIdOrEventId: string,
@@ -38,7 +38,7 @@ export async function getMatches(
 }
 
 /**
- * Recupera le statistiche avanzate di una singola partita direttamente da MatchScorerLive.
+ * Retrieves advanced statistics for a single match directly from MatchScorerLive.
  */
 export async function getMatchStats(
   matchId: string,

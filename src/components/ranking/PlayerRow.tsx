@@ -78,7 +78,7 @@ export const PlayerRow: React.FC<PlayerRowProps> = ({
           </View>
         </View>
 
-        {/* Mostra i punti solo se NON siamo nella vista preferiti */}
+        {/* Only show points when not in favorites view */}
         {!isFavoriteView && (
           <View style={styles.pointsCol}>
             <Text style={styles.points}>{player.points}</Text>
@@ -87,7 +87,7 @@ export const PlayerRow: React.FC<PlayerRowProps> = ({
         )}
       </TouchableOpacity>
 
-      {/* Azione rapida: Pulsante Rimuovi nei Preferiti, Stella nella Classifica */}
+      {/* Quick action: Remove button in favorites, Star in rankings */}
       {isFavoriteView ? (
         <TouchableOpacity
           style={styles.removeBtn}

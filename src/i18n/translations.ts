@@ -47,6 +47,8 @@ export const translations = {
       searchPlaceholder: 'Search match or player...',
       noMatches: 'No matches scheduled for this day',
       noMatchesSub: 'Try selecting another day or category',
+      noFavoritesTitle: 'No favorite player matches',
+      noFavoritesSub: 'No favorite players scheduled for this day',
       court: 'Court',
       round: 'Round',
       loading: 'Loading matches and live scores...',
@@ -84,6 +86,9 @@ export const translations = {
       coach: 'Coach',
       partner: 'Regular Partner',
       loading: 'Loading profile...',
+      viewProfile: 'Tap to view profile →',
+      consecutiveWins: 'Consecutive Wins',
+      racePosition: 'Race Position',
     },
     settings: {
       title: 'Preferences & Profile',
@@ -128,6 +133,7 @@ export const translations = {
       selectAll: 'Select All',
       deselectAll: 'Clear All',
       apply: 'Apply Filters',
+      circuits: 'Circuits',
     },
     streaming: {
       watchLive: 'Watch Live',
@@ -144,6 +150,8 @@ export const translations = {
       loading: 'Loading news...',
       error: 'Error loading news',
       retry: 'Retry',
+      emptyTitle: 'No news available',
+      emptySubtitle: 'Pull down to refresh the latest news',
     },
     draw: {
       title: 'Tournament Draw',
@@ -218,6 +226,8 @@ export const translations = {
       searchPlaceholder: 'Cerca partita o giocatore...',
       noMatches: 'Nessuna partita in programma per questo giorno',
       noMatchesSub: 'Prova a selezionare un\'altra giornata o categoria',
+      noFavoritesTitle: 'Nessuna partita dei tuoi preferiti',
+      noFavoritesSub: 'Nessun giocatore preferito in programma in questa giornata',
       court: 'Campo',
       round: 'Turno',
       loading: 'Caricamento partite e risultati...',
@@ -255,6 +265,9 @@ export const translations = {
       coach: 'Allenatore',
       partner: 'Compagno abituale',
       loading: 'Caricamento profilo...',
+      viewProfile: 'Tocca per visualizzare il profilo →',
+      consecutiveWins: 'Vittorie Consecutive',
+      racePosition: 'Posizione Race',
     },
     settings: {
       title: 'Preferenze & Profilo',
@@ -299,6 +312,7 @@ export const translations = {
       selectAll: 'Seleziona Tutti',
       deselectAll: 'Deseleziona Tutti',
       apply: 'Applica Filtri',
+      circuits: 'Circuiti',
     },
     streaming: {
       watchLive: 'Guarda Live',
@@ -315,6 +329,8 @@ export const translations = {
       loading: 'Caricamento notizie...',
       error: 'Errore nel caricamento delle notizie',
       retry: 'Riprova',
+      emptyTitle: 'Nessuna notizia disponibile',
+      emptySubtitle: 'Trascina verso il basso per ricaricare le notizie più recenti',
     },
     draw: {
       title: 'Tabellone Torneo',
@@ -389,6 +405,8 @@ export const translations = {
       searchPlaceholder: 'Buscar partido o jugador...',
       noMatches: 'No hay partidos programados para este día',
       noMatchesSub: 'Prueba a seleccionar otro día o categoría',
+      noFavoritesTitle: 'Ningún partido de tus favoritos',
+      noFavoritesSub: 'No hay jugadores favoritos programados en este día',
       court: 'Pista',
       round: 'Ronda',
       loading: 'Cargando partidos y marcadores...',
@@ -426,6 +444,9 @@ export const translations = {
       coach: 'Entrenador',
       partner: 'Pareja habitual',
       loading: 'Cargando perfil...',
+      viewProfile: 'Toca para ver el perfil →',
+      consecutiveWins: 'Victorias Consecutivas',
+      racePosition: 'Posición Race',
     },
     settings: {
       title: 'Preferencias y Perfil',
@@ -470,6 +491,7 @@ export const translations = {
       selectAll: 'Seleccionar Todos',
       deselectAll: 'Deseleccionar Todos',
       apply: 'Aplicar Filtros',
+      circuits: 'Circuitos',
     },
     streaming: {
       watchLive: 'Ver en Directo',
@@ -486,6 +508,8 @@ export const translations = {
       loading: 'Cargando noticias...',
       error: 'Error al cargar las noticias',
       retry: 'Reintentar',
+      emptyTitle: 'No hay noticias disponibles',
+      emptySubtitle: 'Desliza hacia abajo para recargar las últimas noticias',
     },
     draw: {
       title: 'Cuadro del Torneo',

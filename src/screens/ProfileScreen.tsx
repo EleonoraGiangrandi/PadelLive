@@ -95,7 +95,7 @@ export const ProfileScreen: React.FC = () => {
                   <Image source={{ uri: player.flag }} style={styles.flag} />
                 ) : null}
                 <Text style={styles.countryText}>
-                  {decodeHtmlEntities(player.country || profile?.country || 'Internazionale')}
+                  {decodeHtmlEntities(player.country || profile?.country || 'International')}
                 </Text>
               </View>
             </View>
@@ -198,7 +198,7 @@ export const ProfileScreen: React.FC = () => {
                   )}
                   <View style={styles.partnerInfo}>
                     <Text style={styles.partnerName}>{decodeHtmlEntities(profile.partner.name)}</Text>
-                    <Text style={styles.partnerAction}>Tocca per visualizzare profilo →</Text>
+                    <Text style={styles.partnerAction}>{t.profile.viewProfile}</Text>
                   </View>
                 </TouchableOpacity>
               </View>
@@ -237,13 +237,13 @@ export const ProfileScreen: React.FC = () => {
                     <Text style={styles.statBoxValue}>
                       {profile.stats.consecutiveVictories ?? '-'}
                     </Text>
-                    <Text style={styles.statBoxLabel}>Vittorie Consecutive</Text>
+                    <Text style={styles.statBoxLabel}>{t.profile.consecutiveWins}</Text>
                   </View>
                   <View style={styles.statBox}>
                     <Text style={styles.statBoxValue}>
                       #{profile.stats.race ?? '-'}
                     </Text>
-                    <Text style={styles.statBoxLabel}>Posizione Race</Text>
+                    <Text style={styles.statBoxLabel}>{t.profile.racePosition}</Text>
                   </View>
                 </View>
               </View>

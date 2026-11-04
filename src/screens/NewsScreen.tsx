@@ -32,8 +32,8 @@ export const NewsScreen: React.FC = () => {
     refetch,
     error,
   } = useQuery<RssArticle[]>({
-    queryKey: ['news'],
-    queryFn: () => getNewsArticles('it'),
+    queryKey: ['news', language],
+    queryFn: () => getNewsArticles(language),
   });
 
   const handleOpenArticle = async (url: string) => {
@@ -132,10 +132,8 @@ export const NewsScreen: React.FC = () => {
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Newspaper size={44} color={theme.colors.textMuted} style={{ marginBottom: 12 }} />
-              <Text style={styles.emptyTitle}>Nessuna notizia disponibile</Text>
-              <Text style={styles.emptySubtitle}>
-                Trascina verso il basso per ricaricare le notizie più recenti
-              </Text>
+              <Text style={styles.emptyTitle}>{t.news.emptyTitle}</Text>
+              <Text style={styles.emptySubtitle}>{t.news.emptySubtitle}</Text>
             </View>
           }
         />

@@ -1,14 +1,14 @@
 /**
- * Client di connessione alle sorgenti dati ufficiali PadelLive.
- * L'applicazione opera in modalità autonoma (serverless) interrogando
- * direttamente i provider ufficiali:
- * - padelfip.com (Classifiche mondiali, Tornei, Notizie)
- * - widget.matchscorerlive.com (Partite live, Punti, Statistiche)
+ * Connection client for official PadelLive data sources.
+ * The application operates autonomously (serverless) by directly querying
+ * official providers:
+ * - padelfip.com (World rankings, Tournaments, News)
+ * - widget.matchscorerlive.com (Live matches, Points, Statistics)
  */
 
 export const FIP_API_BASE = 'https://www.padelfip.com/wp-json/fip/v1';
 
-// Server di riserva secondario (usato esclusivamente se le sorgenti ufficiali dirette non rispondono)
+// Secondary fallback server (used exclusively if direct official sources do not respond)
 const BACKUP_SERVER_BASE = 'http://fredericosilva.net:8081';
 
 const DEFAULT_HEADERS = {

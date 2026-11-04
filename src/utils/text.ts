@@ -1,11 +1,11 @@
 /**
- * Decodifica entità HTML numeriche (es. &#xED; o &#237;) ed entità con nome (es. &aacute; &amp;)
- * in caratteri Unicode corretti.
+ * Decodes numeric HTML entities (e.g. &#xED; or &#237;) and named entities (e.g. &aacute; &amp;)
+ * into proper Unicode characters.
  */
 export function decodeHtmlEntities(str?: string): string {
   if (!str) return '';
   return str
-    // Entità esadecimali (es. &#xED; -> í, &#xE1; -> á)
+    // Hexadecimal entities (e.g. &#xED; -> í, &#xE1; -> á)
     .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => {
       try {
         return String.fromCodePoint(parseInt(hex, 16));
@@ -13,7 +13,7 @@ export function decodeHtmlEntities(str?: string): string {
         return _;
       }
     })
-    // Entità decimali (es. &#237; -> í, &#039; -> ')
+    // Decimal entities (e.g. &#237; -> í, &#039; -> ')
     .replace(/&#(\d+);/g, (_, dec) => {
       try {
         return String.fromCodePoint(parseInt(dec, 10));
@@ -21,7 +21,7 @@ export function decodeHtmlEntities(str?: string): string {
         return _;
       }
     })
-    // Entità con nome frequenti
+    // Common named entities
     .replace(/&aacute;/gi, 'á')
     .replace(/&eacute;/gi, 'é')
     .replace(/&iacute;/gi, 'í')

@@ -1,9 +1,9 @@
 import { FipEvent } from '../types/models';
 
 /**
- * Recupera l'elenco dei tornei direttamente dal calendario ufficiale FIP
- * (padelfip.com/calendar-cupra-fip-tour e calendar-premier-padel)
- * senza passare da alcun server intermediario.
+ * Retrieves the list of tournaments directly from the official FIP calendar
+ * (padelfip.com/calendar-cupra-fip-tour and calendar-premier-padel)
+ * without using any intermediate server.
  */
 export async function getFipCalendarEvents(year: number = new Date().getFullYear()): Promise<FipEvent[]> {
   const urls = [
@@ -30,7 +30,7 @@ export async function getFipCalendarEvents(year: number = new Date().getFullYear
     })
   );
 
-  // Rimuovi eventuali duplicati basati sul link
+  // Remove any duplicates based on link
   const uniqueMap = new Map<string, FipEvent>();
   for (const ev of events) {
     if (!uniqueMap.has(ev.href)) {
@@ -42,7 +42,7 @@ export async function getFipCalendarEvents(year: number = new Date().getFullYear
 }
 
 /**
- * Parser HTML leggero per estrarre gli articoli dei tornei dal calendario FIP.
+ * Lightweight HTML parser to extract tournament articles from the FIP calendar.
  */
 function parseFipCalendarHtml(html: string): FipEvent[] {
   const events: FipEvent[] = [];
@@ -54,34 +54,34 @@ function parseFipCalendarHtml(html: string): FipEvent[] {
     const content = match[2] || '';
 
     try {
-      // 1. Categoria Torneo
+      // 1. Tournament category
       const type = classAttr.trim().replace(/^article\s*/, '') || 'fip-tour';
 
-      // 2. Titolo e Link
+      // 2. Title and link
       const titleMatch = content.match(/<div class=\"event-title\">[\s\S]*?<a[^>]*href=\"([^\"]+)\"[^>]*>([\s\S]*?)<\/a>/i);
       if (!titleMatch) continue;
 
       const href = titleMatch[1];
       const name = titleMatch[2].replace(/<[^>]+>/g, '').trim();
 
-      // 3. Date inizio/fine (From DD/MM/YYYY to DD/MM/YYYY)
+      // 3. Start/end dates (From DD/MM/YYYY to DD/MM/YYYY)
       const dateMatch = content.match(/From\s+(\d{2}\/\d{2}\/\d{4})\s+to\s+(\d{2}\/\d{2}\/\d{4})/i);
       const startDate = dateMatch ? dateMatch[1] : '';
       const endDate = dateMatch ? dateMatch[2] : '';
 
-      // 4. Luogo
+      // 4. Location
       const locMatch = content.match(/<div class=\"event-location\">([\s\S]*?)<\/div>/i);
       const location = locMatch ? locMatch[1].replace(/<[^>]+>/g, '').trim() : '';
 
-      // 5. Immagine di copertina
+      // 5. Cover image
       const imgMatch = content.match(/<img[^>]*class=\"cover-category-event\"[^>]*src=\"([^\"]+)\"/i);
       const cover = imgMatch ? imgMatch[1] : '';
 
-      // 6. Id univoco generato dallo slug del link
+      // 6. Unique ID generated from link slug
       const slug = href.replace(/\/$/, '').split('/').pop() || name;
 
-      // EventId per il collegamento a MatchScorerLive
-      // I tornei FIP estraggono l'eventId nel widget; per default usiamo lo slug come ID
+      // EventId for MatchScorerLive connection
+      // FIP tournaments extract the eventId in the widget; by default we use the slug as ID
       events.push({
         id: slug,
         name,

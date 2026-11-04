@@ -63,7 +63,7 @@ export const TournamentScreen: React.FC = () => {
     return getDatesBetween(event.startDate, event.endDate, dateLocale, t.tournament.today);
   }, [event.startDate, event.endDate, dateLocale, t.tournament.today]);
 
-  // Find initial day (if "OGGI" exists, select it, otherwise day 1)
+  // Find initial day (if today exists, select it, otherwise day 1)
   const initialDay = useMemo(() => {
     const todayTab = dayTabs.find((t) => t.isToday);
     return todayTab ? todayTab.dayNumber : 1;
@@ -93,7 +93,7 @@ export const TournamentScreen: React.FC = () => {
     refetchInterval: 20000, // Live auto-refresh polling every 20s
   });
 
-  // Valuta in background cambi di stato dei match per inviare notifiche tempestive
+  // Evaluate match status changes in background to dispatch timely notifications
   useEffect(() => {
     if (matches && matches.length > 0) {
       evaluateMatches(matches, event);
@@ -198,7 +198,7 @@ export const TournamentScreen: React.FC = () => {
             <View style={styles.searchBar}>
               <TextInput
                 style={styles.searchInput}
-                placeholder="Cerca giocatore o turno..."
+                placeholder={t.tournament.searchPlaceholder}
                 placeholderTextColor={theme.colors.textMuted}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -232,14 +232,14 @@ export const TournamentScreen: React.FC = () => {
                 onPress={() => setShowWhereToWatch(true)}
                 style={styles.watchHeaderBtn}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                accessibilityLabel="Dove vedere"
+                accessibilityLabel="Where to watch"
               >
                 <Tv size={20} color={theme.colors.primary} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setIsSearching(true)}
                 style={styles.searchButton}
-                accessibilityLabel="Cerca"
+                accessibilityLabel="Search"
               >
                 <Search size={20} color={theme.colors.textPrimary} />
               </TouchableOpacity>
@@ -286,7 +286,7 @@ export const TournamentScreen: React.FC = () => {
                 >
                   <Tv size={12} color={theme.colors.primary} />
                   <Text style={styles.heroWatchText}>
-                    {language === 'it' ? 'Dove vedere' : language === 'es' ? 'Dónde ver' : 'Where to watch'}
+                    {t.streaming.whereToWatch}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -294,7 +294,7 @@ export const TournamentScreen: React.FC = () => {
           </View>
         ) : null}
 
-        {/* Switcher Vista: Partite (Schedule) / Tabellone (Draw) */}
+        {/* View Switcher: Matches (Schedule) / Draw */}
         <View style={styles.viewModeSwitcher}>
           <TouchableOpacity
             style={[styles.viewModeBtn, viewMode === 'matches' && styles.viewModeBtnActive]}
@@ -435,20 +435,12 @@ export const TournamentScreen: React.FC = () => {
                     <Trophy size={42} color={theme.colors.textMuted} style={{ marginBottom: 12 }} />
                     <Text style={styles.emptyTitle}>
                       {onlyFavorites
-                        ? (language === 'it'
-                            ? 'Nessuna partita dei tuoi preferiti'
-                            : language === 'es'
-                            ? 'Ningún partido de tus favoritos'
-                            : 'No favorite player matches')
+                        ? t.tournament.noFavoritesTitle
                         : t.tournament.noMatches}
                     </Text>
                     <Text style={styles.emptySubtitle}>
                       {onlyFavorites
-                        ? (language === 'it'
-                            ? 'Nessun giocatore preferito in programma in questa giornata'
-                            : language === 'es'
-                            ? 'No hay jugadores favoritos programados en este día'
-                            : 'No favorite players scheduled for this day')
+                        ? t.tournament.noFavoritesSub
                         : t.tournament.noMatchesSub}
                     </Text>
                   </View>
