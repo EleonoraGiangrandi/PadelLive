@@ -1,13 +1,21 @@
-# PadelLive
+<p align="center">
+  <img src="./assets/logo.png" alt="PadelLive Logo" width="128" height="128" />
+</p>
 
-[![GitHub Release](https://img.shields.io/github/v/release/EleonoraGiangrandi/PadelLive?include_prereleases&color=00e676)](https://github.com/EleonoraGiangrandi/PadelLive/releases/latest)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Expo SDK](https://img.shields.io/badge/Expo-SDK_58-black.svg)](https://expo.dev/)
-[![React Native](https://img.shields.io/badge/React_Native-0.88-61dafb.svg)](https://reactnative.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue.svg)](https://www.typescriptlang.org/)
-[![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](https://github.com/EleonoraGiangrandi/PadelLive/releases/latest)
+<h1 align="center">PadelLive</h1>
 
-An open-source mobile application for real-time tracking of international padel tournaments, live point-by-point scores, bracket draws, match statistics, official FIP world rankings, and news.
+<p align="center">
+  <a href="https://github.com/EleonoraGiangrandi/PadelLive/releases/latest"><img src="https://img.shields.io/github/v/release/EleonoraGiangrandi/PadelLive?include_prereleases&color=00e676" alt="GitHub Release" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+  <a href="https://expo.dev/"><img src="https://img.shields.io/badge/Expo-SDK_58-black.svg" alt="Expo SDK" /></a>
+  <a href="https://reactnative.dev/"><img src="https://img.shields.io/badge/React_Native-0.88-61dafb.svg" alt="React Native" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-6.0-blue.svg" alt="TypeScript" /></a>
+  <a href="https://github.com/EleonoraGiangrandi/PadelLive/releases/latest"><img src="https://img.shields.io/badge/Platform-Android-green.svg" alt="Platform" /></a>
+</p>
+
+<p align="center">
+  Open-source mobile application for real-time tracking of international padel tournaments, live point-by-point scores, bracket draws, match statistics, official FIP world rankings, and news.
+</p>
 
 Built with React Native and Expo in TypeScript, PadelLive is architected as a decentralized, client-only application. It queries live data directly from official circuit sources (Premier Padel and FIP Tour) without middleman servers, tracking scripts, or user account requirements.
 
