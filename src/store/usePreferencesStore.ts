@@ -57,14 +57,23 @@ interface PreferencesState {
   loadPreferences: () => Promise<void>;
 }
 
-const PREF_GENRE_KEY = '@padely_genre';
-const PREF_FILTERS_KEY = '@padely_filters_v2';
-const PREF_THEME_KEY = '@padely_theme_mode';
-const PREF_LANGUAGE_KEY = '@padely_language_v1';
-const PREF_HOME_TAB_KEY = '@padely_home_tab_v1';
-const PREF_RANKINGS_GENDER_KEY = '@padely_rankings_gender_v1';
-const PREF_RANKINGS_VIEW_KEY = '@padely_rankings_view_v1';
-const PREF_TOURNAMENT_VIEW_KEY = '@padely_tournament_view_v1';
+const PREF_GENRE_KEY = '@padellive_genre';
+const PREF_FILTERS_KEY = '@padellive_filters_v2';
+const PREF_THEME_KEY = '@padellive_theme_mode';
+const PREF_LANGUAGE_KEY = '@padellive_language_v1';
+const PREF_HOME_TAB_KEY = '@padellive_home_tab_v1';
+const PREF_RANKINGS_GENDER_KEY = '@padellive_rankings_gender_v1';
+const PREF_RANKINGS_VIEW_KEY = '@padellive_rankings_view_v1';
+const PREF_TOURNAMENT_VIEW_KEY = '@padellive_tournament_view_v1';
+
+const LEGACY_PREF_GENRE_KEY = '@padely_genre';
+const LEGACY_PREF_FILTERS_KEY = '@padely_filters_v2';
+const LEGACY_PREF_THEME_KEY = '@padely_theme_mode';
+const LEGACY_PREF_LANGUAGE_KEY = '@padely_language_v1';
+const LEGACY_PREF_HOME_TAB_KEY = '@padely_home_tab_v1';
+const LEGACY_PREF_RANKINGS_GENDER_KEY = '@padely_rankings_gender_v1';
+const LEGACY_PREF_RANKINGS_VIEW_KEY = '@padely_rankings_view_v1';
+const LEGACY_PREF_TOURNAMENT_VIEW_KEY = '@padely_tournament_view_v1';
 
 export const usePreferencesStore = create<PreferencesState>((set, get) => ({
   genre: 'both',
@@ -190,7 +199,7 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
 
   loadPreferences: async () => {
     try {
-      const [
+      let [
         savedGenre,
         savedFilters,
         savedTheme,
@@ -209,6 +218,15 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
         AsyncStorage.getItem(PREF_RANKINGS_VIEW_KEY),
         AsyncStorage.getItem(PREF_TOURNAMENT_VIEW_KEY),
       ]);
+
+      if (!savedGenre) savedGenre = await AsyncStorage.getItem(LEGACY_PREF_GENRE_KEY);
+      if (!savedFilters) savedFilters = await AsyncStorage.getItem(LEGACY_PREF_FILTERS_KEY);
+      if (!savedTheme) savedTheme = await AsyncStorage.getItem(LEGACY_PREF_THEME_KEY);
+      if (!savedLang) savedLang = await AsyncStorage.getItem(LEGACY_PREF_LANGUAGE_KEY);
+      if (!savedHomeTab) savedHomeTab = await AsyncStorage.getItem(LEGACY_PREF_HOME_TAB_KEY);
+      if (!savedRankingsGender) savedRankingsGender = await AsyncStorage.getItem(LEGACY_PREF_RANKINGS_GENDER_KEY);
+      if (!savedRankingsView) savedRankingsView = await AsyncStorage.getItem(LEGACY_PREF_RANKINGS_VIEW_KEY);
+      if (!savedTournamentView) savedTournamentView = await AsyncStorage.getItem(LEGACY_PREF_TOURNAMENT_VIEW_KEY);
 
       const validLang = savedLang === 'it' || savedLang === 'es' || savedLang === 'en' ? savedLang : 'en';
 

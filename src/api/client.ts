@@ -1,6 +1,6 @@
 /**
- * Client di connessione alle sorgenti dati di Padely.
- * L'applicazione opera in modalità 100% autonoma (serverless) interrogando
+ * Client di connessione alle sorgenti dati ufficiali PadelLive.
+ * L'applicazione opera in modalità autonoma (serverless) interrogando
  * direttamente i provider ufficiali:
  * - padelfip.com (Classifiche mondiali, Tornei, Notizie)
  * - widget.matchscorerlive.com (Partite live, Punti, Statistiche)
@@ -34,7 +34,7 @@ export async function fetchFipDirect<T>(endpoint: string, options?: RequestInit)
   return response.json() as Promise<T>;
 }
 
-export async function fetchPadely<T>(endpoint: string, options?: RequestInit): Promise<T> {
+export async function fetchPadelBackup<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${BACKUP_SERVER_BASE}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
   const response = await fetch(url, {
     ...options,
@@ -59,3 +59,5 @@ export async function fetchPadely<T>(endpoint: string, options?: RequestInit): P
     throw new Error(`Failed to parse response: ${text.slice(0, 100)}`);
   }
 }
+
+

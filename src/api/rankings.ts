@@ -192,7 +192,7 @@ export async function getPlayerProfile(handler: string): Promise<PlayerProfile> 
     console.warn('FIP direct player error, checking fallback:', err);
   }
 
-  // Fallback
+  // Fallback a fornitore dati secondario
   try {
     const fallbackRes = await fetch(`http://fredericosilva.net:8081/padely/player?handler=${cleanHandler}`, {
       headers: { 'User-Agent': 'okhttp/4.12.0' },

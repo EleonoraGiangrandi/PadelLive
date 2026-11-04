@@ -1,119 +1,179 @@
-# 🎾 Padely - Padel Live Scores (React Native / Expo)
+# PadelLive
 
-Applicazione mobile in **React Native** con **Expo** (TypeScript) che replica fedelmente le funzionalità e l'interfaccia dell'applicazione Android **Padely - Padel Live Scores (v2.0.0)**.
+Applicazione mobile open source per il monitoraggio in tempo reale dei tornei di padel mondiali, risultati live, tabelloni, statistiche di gioco, classifiche ufficiali FIP e notizie.
 
-Progetto realizzato a scopo di apprendimento ed uso personale.
-
----
-
-## 🚀 Avvio Rapido
-
-Per avviare l'applicazione in modalità sviluppo:
-
-```bash
-# Avvia il server di sviluppo Expo
-npx expo start
-```
-
-Da qui puoi:
-- Premere **`a`** per avviare l'emulatore Android.
-- Premere **`w`** per visualizzare l'app nel browser web.
-- Inquadrare il QR code con l'app **Expo Go** sul tuo smartphone (iOS o Android).
+Sviluppata con React Native ed Expo in TypeScript, PadelLive e' progettata con un'architettura client-side che interagisce direttamente con i dati ufficiali di tornei e circuiti internazionali (Premier Padel e FIP Tour), senza intermediari proprietari e nel pieno rispetto della privacy degli utenti.
 
 ---
 
-## 🔍 Riepilogo del Reverse Engineering & Funzionamento API
+## Download e Installazione Android (APK)
 
-L'analisi dei binari Android (`classes.dex`, `classes2.dex`, `classes3.dex`) e dei file AXML ha permesso di estrarre:
+L'applicazione e' distribuita direttamente tramite pacchetto APK standalone, scaricabile gratuitamente dalla sezione Releases di GitHub, senza necessita' di passare dal Google Play Store.
 
-### 1. Sorgenti Dati & API Gratuite
-Tutte le API utilizzate sono **completamente gratuite**, pubbliche e non richiedono alcuna chiave a pagamento o abbonamento:
+### Requisiti di Sistema
+- Dispositivo Android con versione 8.0 (Oreo) o successiva.
+- Circa 40 MB di spazio libero in memoria.
 
-1. **Tornei, Partite Live e Schede Giocatore** (`http://fredericosilva.net:8081`):
-   - `GET /padely/events`: Elenco tornei mondiali FIP e Premier Padel (titolo, cover, date, location).
-   - `GET /padely/event?id={id}&day={day}&utcOffset={utcOffset}`: Incontri del giorno con punteggi live dei set, punti correnti del game (`15`, `30`, `40`, `AD`), indicatore del servizio (`isServing`), vincitori e walkover.
-   - `GET /padely/match_stats?matchId={matchId}&eventId={eventId}`: Statistiche avanzate di servizio, risposta, break point e serie.
-   - `GET /padely/player?handler={handler}`: Scheda biografica, compagno di squadra e statistiche di rendimento stagionali.
-   - **Nota Tecnica**: Il backend Jetty richiede tassativamente l'header `User-Agent: okhttp/4.12.0` (già configurato nel client [client.ts](file:///c:/Users/lenovo/Desktop/Ele/projects/padel-score/src/api/client.ts)).
+### 1. Download del file di installazione
+1. Apri la pagina delle Release su GitHub dal browser del tuo smartphone:
+   `https://github.com/<TUO-USERNAME>/<TUO-REPOSITORY>/releases/latest`
+2. Nella sezione **Assets**, tocca il file **`PadelLive.apk`** per avviare il download.
 
-2. **Classifiche Ufficiali FIP Dirette** (`https://www.padelfip.com/wp-json/fip/v1`):
-   - `GET /ranking/load-more?gender=male|female&year=2026&circuit=fip`: Classifica ufficiale FIP maschile e femminile in tempo reale con delta posizioni, punti, foto e bandiere nazionali.
-   - `GET /player/search`: Ricerca istantanea giocatori.
+### 2. Abilitazione delle Origini Sconosciute (Installa app sconosciute)
+A partire da Android 8.0, Google gestisce i permessi di installazione per singola applicazione (ad esempio Google Chrome, Firefox, Samsung Internet o l'app File/Gestione File). Al primo tentativo di apertura dell'APK scaricato:
 
-3. **Notizie e Aggiornamenti** (`GET /padely/news?locale=it`):
-   - Aggregazione e parsing automatico di feed RSS ufficiali (FIP, PadelAddict) con anteprime e apertura nel browser.
+1. Quando il download e' completato, tocca la notifica di download oppure apri l'app **File / Download** e tocca il file `PadelLive.apk`.
+2. Se il sistema mostra il messaggio di avviso:
+   > "Per motivi di sicurezza, il telefono non e' autorizzato a installare app sconosciute da questa fonte"
+3. Tocca **Impostazioni** (o **Dettagli**).
+4. Attiva l'interruttore su **Consenti da questa fonte** (o **Consenti installazione di app sconosciute**).
+5. Premi il tasto Indietro del telefono e tocca **Installa**.
 
----
+### 3. Gestione avviso Google Play Protect
+Poiche' l'applicazione e' distribuita in formato open source direttamente dalla community e non tramite i server commerciali di Google, durante l'installazione Google Play Protect potrebbe mostrare una schermata informativa ("App bloccata da Play Protect" o "Sviluppatore non riconosciuto"):
 
-## 📱 Schermate e Funzionalità Implementate
-
-1. **Tornei (Home)**:
-   - Sezione **"In Corso Ora"** (Live Now) per i tornei attivi con badge live pulsante.
-   - Sezione **"Prossimi Tornei"** (Up Next) e **"Tornei Conclusi"** (Past).
-   - Ricerca per nome torneo o città.
-   - Fogli modali per il filtro per categoria torneo (Premier Major, P1, P2, FIP Platinum, Gold, Star, Bronze, ecc.) e informazioni About.
-
-2. **Dettaglio Torneo & Tabellone Partite**:
-   - Barra orizzontale dei giorni calcolata dinamicamente (`Day 1`, `Day 2`, ..., con selezione automatica del tab **"TODAY"** se in corso).
-   - Switch per filtrare tra Uomini, Donne e Tutti.
-   - Ricerca rapida per giocatore o turno.
-   - Card incontro con giocatori, bandiere, battuta con pallina da padel, punteggi per set e punti del game in corso in evidenza dorata.
-   - Polling automatico ogni 20 secondi per gli aggiornamenti live.
-
-3. **Dettaglio Partita & Statistiche Live**:
-   - Scoreboard completo con indicatore battuta e durata dell'incontro.
-   - Tab di selezione: **Match**, **Set 1**, **Set 2**, **Set 3**.
-   - Barre di confronto statistiche testa a testa (Aces, Doppi Falli, Punti Vinti al Servizio/Risposta, Break Point Convertiti, Serie più lunga).
-
-4. **Classifiche FIP**:
-   - Tab switch istantaneo Uomini / Donne.
-   - Scorrimento infinito con caricamento automatico progressivo (20 giocatori per volta).
-   - Indicatore visivo variazione ranking (verde `+`, rosso `-`, grigio `=`).
-   - Ricerca integrata per nome giocatore.
-
-5. **Profilo Giocatore**:
-   - Foto, bandiera, paese, posizione e punteggio FIP.
-   - Dati anagrafici (data di nascita, luogo, altezza, posizione Drive/Revés, coach).
-   - Compagno di squadra interattivo (toccare il compagno apre direttamente il suo profilo).
-   - Box statistiche di rendimento (partite vinte/perse, % efficacia, miglior ranking, race).
-
-6. **Notizie**:
-   - Feed notizie padel sincronizzato da feed RSS ufficiali.
-   - Switch lingua (`IT`, `ES`, `EN`).
-   - Apertura articoli con formattazione pulita nel browser.
+1. Nella finestra di avviso, tocca la voce **Ulteriori dettagli** (oppure **Maggiori informazioni**).
+2. Tocca il pulsante **Installa comunque**.
+3. Al termine dell'installazione tocca **Apri** per avviare PadelLive.
 
 ---
 
-## 🛠️ Architettura del Codice
+## Funzionalita
+
+- **Monitoraggio Tornei**:
+  - Visualizzazione tornei In Corso, Prossimi e Conclusi dei circuiti Premier Padel e FIP.
+  - Filtro dinamico per categoria (Major, P1, P2, Platinum, Gold, Star, Rise, Promotion).
+  - Ricerca rapida per nome torneo o localita.
+- **Risultati e Partite Live**:
+  - Scoreboard in tempo reale con punteggio dei set e game in corso (15, 30, 40, AD).
+  - Indicatore visivo del turno di servizio.
+  - Statistiche dettagliate della partita (break point convertiti, aces, doppi falli, efficacia servizio/risposta).
+  - Aggiornamento automatico e polling intelligente durante gli incontri attivi.
+- **Tabelloni Torneo (Draws)**:
+  - Tabellone completo maschile e femminile suddiviso per turni (Trentaduesimi, Sedicesimi, Ottavi, Quarti, Semifinali, Finale).
+  - Consultazione tabellone interattivo o download del PDF ufficiale.
+- **Dirette Streaming e Info Canali**:
+  - Link diretto alle dirette ufficiali (canali YouTube ufficiali e piattaforme broadcaster autorizzate).
+  - Scheda informativa integrata sui diritti di trasmissione per nazione.
+- **Giocatori Preferiti e Notifiche**:
+  - Salvataggio dei giocatori preferiti con un tocco.
+  - Notifiche locali per inizio partita, fine set e fine match dei tuoi atleti preferiti.
+  - Filtro istantaneo per vedere unicamente le partite dei tuoi atleti preferiti nei tornei.
+- **Classifiche Mondiali FIP**:
+  - Ranking ufficiale maschile e femminile aggiornato.
+  - Delta posizioni rispetto all'aggiornamento precedente.
+  - Ricerca per nome atleta o nazione.
+  - Scheda dettagliata del giocatore con statistiche di rendimento, partner abituale e dati anagrafici.
+- **Notizie e Aggiornamenti**:
+  - Feed notizie sincronizzato con fonti giornalistiche ufficiali di padel.
+  - Traduzione e supporto multilingua (Italiano, Spagnolo, Inglese).
+- **Personalizzazione**:
+  - Supporto completo Tema Scuro (Dark Mode) e Tema Chiaro (Light Mode).
+  - Persistenza automatica di filtri, tab selezionati e preferenze di notifica.
+
+---
+
+## Architettura e Privacy
+
+L'applicazione e' concepita secondo il principio della decentralizzazione:
+- **Nessun account obbligatorio**: l'app e' immediatamente pronta all'uso senza registrazione.
+- **Zero profilazione**: le preferenze, i giocatori seguiti e le impostazioni restano confinati nella memoria locale del dispositivo tramite AsyncStorage.
+- **Connessione diretta alle fonti**: i dati delle partite e le classifiche vengono interrogati direttamente dai feed e provider dei circuiti sportivi ufficiali.
 
 ```
 src/
- ├── api/                       # Client HTTP e chiamate API
- │    ├── client.ts             # Client fetch con header OkHttp e FIP direct
- │    ├── events.ts             # Tornei, partite e statistiche
- │    ├── rankings.ts           # Classifiche e schede anagrafiche giocatori
- │    └── news.ts               # Notizie e parser RSS
- ├── components/
- │    ├── common/               # Badge, FilterModal, AboutModal
- │    ├── tournament/           # TournamentCard, MatchCard, DayTabs
- │    ├── match/                # StatBar (confronto visivo statistiche)
- │    └── ranking/              # PlayerRow (riga classifica con delta e foto)
- ├── navigation/
- │    ├── BottomTabNavigator.tsx# Tab Tornei, Classifiche, Notizie
- │    └── RootNavigator.tsx     # Native Stack Navigation
- ├── screens/
- │    ├── HomeScreen.tsx
- │    ├── TournamentScreen.tsx
- │    ├── MatchScreen.tsx
- │    ├── RankingsScreen.tsx
- │    ├── ProfileScreen.tsx
- │    └── NewsScreen.tsx
- ├── store/
- │    └── usePreferencesStore.ts# Stato Zustand con persistenza AsyncStorage
- ├── types/
- │    ├── models.ts             # Tipizzazione TypeScript completa di tutti i modelli
- │    └── navigation.ts         # Tipizzazione rotte di navigazione
- └── utils/
-      ├── date.ts               # Parsing date DD/MM/YYYY, calcolo giorni e offset UTC
-      └── theme.ts              # Palette colori (Men Blue, Women Pink, Live Red, Gold)
+ |-- api/             # Client HTTP e connettori verso le sorgenti dati
+ |-- components/      # Componenti modulari (tornei, partite, classifiche, modali)
+ |-- i18n/            # Internazionalizzazione (IT, ES, EN)
+ |-- navigation/      # Navigazione nativa a schede e stack
+ |-- screens/         # Schermate principali dell'applicazione
+ |-- services/        # Gestori notifiche, tracker punteggi e tabelloni
+ |-- store/           # Gestione stato globale persistente (Zustand + AsyncStorage)
+ |-- types/           # Modelli di dati TypeScript
+ |-- utils/           # Funzioni di utilita data, testo e temi
 ```
+
+---
+
+## Sviluppo Locale
+
+### Prerequisiti
+- Node.js (versione 18.x o successiva)
+- npm oppure bun
+- Dispositivo Android con debug USB attivo o emulatore Android Studio (opzionale per sviluppo con client nativo)
+- App **Expo Go** per test rapidi
+
+### Installazione ed Esecuzione
+1. Clonare il repository:
+   ```bash
+   git clone https://github.com/<TUO-USERNAME>/<TUO-REPOSITORY>.git
+   cd <TUO-REPOSITORY>
+   ```
+
+2. Installare le dipendenze:
+   ```bash
+   npm install
+   ```
+
+3. Avviare il server di sviluppo:
+   ```bash
+   npx expo start
+   ```
+
+4. Controlli di qualita del codice:
+   ```bash
+   # Verifica dei tipi TypeScript
+   npx tsc --noEmit
+
+   # Analisi statica con linter
+   npx expo lint
+   ```
+
+---
+
+## Compilazione APK di Produzione
+
+Il progetto e' gia predisposto con Expo Application Services (EAS) per generare direttamente pacchetti APK standalone (senza necessita del formato AAB di Google Play).
+
+### Compilazione via EAS Cloud
+1. Installare la CLI di EAS se non presente:
+   ```bash
+   npm install -g eas-cli
+   ```
+
+2. Effettuare l'accesso con un account Expo (gratuito):
+   ```bash
+   eas login
+   ```
+
+3. Lanciare la compilazione del pacchetto APK:
+   ```bash
+   eas build -p android --profile production
+   ```
+   Al termine del processo verra fornito il link diretto per scaricare il file APK compilato.
+
+### Compilazione Locale (senza cloud)
+Se disponi di Android SDK e Java (JDK 17+) configurati localmente:
+```bash
+eas build -p android --profile production --local
+```
+
+---
+
+## Distribuzione Alternativa Consigliata
+
+Oltre alla pubblicazione diretta nelle **GitHub Releases**, il progetto puo essere inserito nei repository aperti della comunita Android per consentire agli utenti di ricevere aggiornamenti automatici:
+
+1. **IzzyOnDroid (F-Droid Community)**:
+   - E' il piu grande repository curato compatibile con i client F-Droid, Neo Store e Droid-ify.
+   - Non richiede di ricompilare il codice: monitora automaticamente le Releases del tuo repository GitHub e rende disponibile l'APK agli utenti.
+   - Per richiedere l'inserimento e' sufficiente aprire una richiesta su GitLab all'indirizzo `https://gitlab.com/IzzyOnDroid/repo/-/issues` indicando il link del repository GitHub.
+
+2. **GitHub Releases Badge**:
+   - E' possibile aggiungere un badge di download diretto per consentire agli utenti di ottenere sempre l'ultima versione stabile con un solo click.
+
+---
+
+## Licenza
+
+Questo progetto e' rilasciato sotto licenza **MIT**. Consulta il file [LICENSE](LICENSE) per i termini completi.

@@ -2,7 +2,8 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FavoritePlayer, PlayerRanking, Player } from '../types/models';
 
-const FAVORITES_STORAGE_KEY = '@padely_favorite_players_v1';
+const FAVORITES_STORAGE_KEY = '@padellive_favorite_players_v1';
+const LEGACY_STORAGE_KEY = '@padely_favorite_players_v1';
 
 /**
  * Normalizza una stringa rimuovendo accenti, punteggiatura e convertendo in minuscolo
@@ -100,7 +101,10 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
 
   loadFavorites: async () => {
     try {
-      const stored = await AsyncStorage.getItem(FAVORITES_STORAGE_KEY);
+      let stored = await AsyncStorage.getItem(FAVORITES_STORAGE_KEY);
+      if (!stored) {
+        stored = await AsyncStorage.getItem(LEGACY_STORAGE_KEY);
+      }
       if (stored) {
         const parsed = JSON.parse(stored);
         set({ favorites: Array.isArray(parsed) ? parsed : [], isFavoritesLoaded: true });

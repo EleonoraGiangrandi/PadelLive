@@ -13,7 +13,9 @@
     "android": {
       "package": "net.padellive.app",
       "versionCode": 1,
-      "permissions": ["POST_NOTIFICATIONS"],
+      "permissions": [
+        "POST_NOTIFICATIONS"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#0d1117",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -31,6 +33,11 @@
     ],
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1a1bea38-34af-4882-9434-1b92798c55ff"
+      }
     }
   }
 }
